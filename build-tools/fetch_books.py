@@ -38,14 +38,15 @@ for g, url in sorted(PAGES.items()):
                 if k[:4].lower() in n.lower(): subj = k
         items.append({'grade': g, 'subj': subj, 'href': href, 'label': re.sub(r'\s+', ' ', label)[-160:]})
 json.dump(items, open('out/links.json', 'w'), ensure_ascii=False, indent=1)
-subprocess.run(['pip', 'install', '-q', 'gdown'])
+subprocess.run(['python3', '-m', 'pip', 'install', '-q', '--user', 'gdown'])
 index = []
 for i, it in enumerate(items):
     if not it['subj']: continue
     href = it['href']; pdf = f'/tmp/b{i}.pdf'
     m = re.search(r'/d/([\w-]{20,})', href) or re.search(r'id=([\w-]{20,})', href)
     if m:
-        subprocess.run(['gdown', '-q', '--fuzzy', f'https://drive.google.com/uc?id={m.group(1)}', '-O', pdf], capture_output=True, timeout=600)
+        r = subprocess.run(['python3', '-m', 'gdown', '--fuzzy', f'https://drive.google.com/uc?id={m.group(1)}', '-O', pdf], capture_output=True, text=True, timeout=900)
+        if r.returncode: log.write(f'GDOWN-ERR {m.group(1)} {r.stderr[-300:]}\n')
     else:
         open(pdf, 'wb').write(get(href, True, 300))
     if not os.path.exists(pdf) or open(pdf, 'rb').read(4) != b'%PDF':
