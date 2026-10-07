@@ -210,7 +210,7 @@ const CONFIG = {
 };
 const PLANS = { monthly: { name: 'شهري', days: 30 }, yearly: { name: 'سنوي', days: 365 } };
 const PAY = { syriatel: 'سيريتل كاش', mtn: 'MTN كاش', sham: 'شام كاش' };
-const VERSION = '0.5';
+const VERSION = '0.5.1';
 
 /* ================== أدوات ================== */
 const AD='٠١٢٣٤٥٦٧٨٩';
@@ -759,7 +759,12 @@ function viewSub(){
       <li>اضغط الزر تحت، والإدارة بتفعّل الاشتراك.</li>
     </ol>
     <button class="btn teal" data-act="request" data-m="${meth}">حوّلت المبلغ، أرسل طلب التفعيل</button>`
-    :`<p>طرق الدفع رح تنضاف قريباً. تواصل مع الإدارة على واتساب ${waHTML()}.</p>`}
+    :`<ol class="steps">
+      <li>تواصل مع الإدارة على واتساب ${waHTML()} لتعرف طريقة دفع ${esc(price(plan))} (اشتراك ${planName(plan)}).</li>
+      <li>بعد ما تدفع، ابعت صورة الإيصال مع رقم موبايلك <b dir="ltr">${esc(APP.user.phone)}</b></li>
+      <li>اضغط الزر تحت، والإدارة بتفعّل الاشتراك.</li>
+    </ol>
+    <button class="btn teal" data-act="request" data-m="">دفعت، أرسل طلب التفعيل</button>`}
     ${msgHTML()}
   </section>`}`;
 }
