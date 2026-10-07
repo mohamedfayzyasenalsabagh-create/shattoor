@@ -181,6 +181,8 @@ input:focus{border-color:var(--teal);outline:none}
 .unit{font-size:1rem;color:var(--muted);margin-top:8px}
 .lesson{background:var(--card);border:1.5px solid var(--line);border-radius:16px;padding:12px 14px;display:flex;justify-content:space-between;align-items:center;gap:8px;text-align:start;font-weight:700}
 .lesson.now{border-color:var(--leaf);background:#EEF9F1}
+.lvl{border-radius:999px;padding:0 8px;font-size:.78rem;color:#fff;background:var(--leaf)}.lvl.l1{background:var(--sun);color:var(--ink)}.lvl.l2{background:var(--pom)}
+.lvlmsg{background:#FFF1D6;border-radius:14px;padding:10px 14px;font-weight:800}
 .four-t{grid-template-columns:repeat(4,1fr)}.four-t button{font-size:.85rem;padding:10px 2px}
 .spk{width:40px;height:40px;border-radius:12px;background:var(--ground);font-size:1.2rem;flex:none}
 .hadith .label .spk{width:34px;height:34px;font-size:1rem;margin-inline-start:6px;vertical-align:middle}
@@ -467,6 +469,7 @@ function bankItem(e){if(e.kind)return Object.assign({},e);const[qq,en]=String(e[
 function lessonQ(g,s,l,avoid){
   let q=null;avoid=avoid||seenSet();
   if(l.gen&&l.gen.length&&window.MATHG){for(let t=0;t<12;t++){const f=MATHG[pick(l.gen)];if(!f)break;q=f(g);if(!avoid.has(qKey(q)))break}}
+  if(!q&&l.fx&&l.fx.length){const bankFresh=(l.q||[]).some(e=>!avoid.has(qKey(bankItem(e))));if(!bankFresh||R()<.55){for(let t=0;t<15;t++){q=pick(l.fx)();if(!avoid.has(qKey(q)))break}}}
   if(!q&&l.q&&l.q.length){const items=shuf(l.q).map(bankItem);q=items.find(x=>!avoid.has(qKey(x)))||items[0]}
   if(!q)q=GEN_FOR[s](g);
   return Object.assign({s,lt:l.t},q);
@@ -474,12 +477,15 @@ function lessonQ(g,s,l,avoid){
 function buildDaily(g){
   const d=dayIdx(),old=R;R=mulberry32(hash('daily|'+d+'|'+g));
   const av=seenSet();
-  try{return['math','ar','sci','en'].map(s=>{const c=currentLesson(g,s);if(c){const pool=shuf(c.L.slice(Math.max(0,c.k-2),c.k+1));for(const l of pool){const q=lessonQ(g,s,l,av);if(!av.has(qKey(q)))return q}return lessonQ(g,s,pool[0],av)}return Object.assign({s},GEN_FOR[s](g))}).concat([Object.assign({s:'isl'},hadithQ(todayHadith()))])}finally{R=old}
+  try{return['math','ar','sci','en'].map(s=>{setDiff(s);const c=currentLesson(g,s);if(c){const pool=shuf(c.L.slice(Math.max(0,c.k-2),c.k+1));for(const l of pool){const q=lessonQ(g,s,l,av);if(!av.has(qKey(q)))return q}return lessonQ(g,s,pool[0],av)}return Object.assign({s},GEN_FOR[s](g))}).concat([Object.assign({s:'isl'},hadithQ(todayHadith()))])}finally{R=old}
 }
-function buildPractice(s,g,li){
+const LVL=['سهل','متوسط','تحدّي'];
+const lvlOf=s=>((S&&S.lvl)||{})[s]||0;
+function setDiff(s){if(window.DIFF!==undefined)window.DIFF=lvlOf(s)}
+function buildPractice(s,g,li){setDiff(s);
   const N=8,out=[],used=new Set(),old=seenSet(),all=curOf(g,s),L=li!=null?all[li]:null;
   const add=q=>{const k=qKey(q);if(used.has(k))return false;used.add(k);out.push(q);return true};
-  const fromLesson=(l,fresh)=>{if(l.gen&&l.gen.length){for(let t=0;t<30&&out.length<N;t++){const q=lessonQ(g,s,l,new Set([...old,...used]));if(fresh&&old.has(qKey(q)))continue;add(q)}}else{shuf(l.q||[]).map(bankItem).forEach(x=>{if(out.length>=N)return;if(fresh&&old.has(qKey(x)))return;add(Object.assign({s,lt:l.t},x))})}};
+  const fromLesson=(l,fresh)=>{if(l.fx&&l.fx.length){shuf(l.q||[]).map(bankItem).forEach(x=>{if(out.length>=Math.ceil(N/2))return;if(fresh&&old.has(qKey(x)))return;add(Object.assign({s,lt:l.t},x))});for(let t=0;t<40&&out.length<N;t++){const q=Object.assign({s,lt:l.t},pick(l.fx)());if(fresh&&old.has(qKey(q)))continue;add(q)}}else if(l.gen&&l.gen.length){for(let t=0;t<30&&out.length<N;t++){const q=lessonQ(g,s,l,new Set([...old,...used]));if(fresh&&old.has(qKey(q)))continue;add(q)}}else{shuf(l.q||[]).map(bankItem).forEach(x=>{if(out.length>=N)return;if(fresh&&old.has(qKey(x)))return;add(Object.assign({s,lt:l.t},x))})}};
   if(L){
     fromLesson(L,true);                                   // أسئلة الدرس الجديدة أولاً
     if(out.length<N){const sib=shuf(all.filter(x=>x!==L&&x.sem===L.sem&&x.unit===L.unit));sib.forEach(x=>fromLesson(x,true))}   // دروس نفس الوحدة
@@ -777,7 +783,7 @@ function viewQuiz(){
     <div class="prog">${Q.list.map((_,i)=>`<i class="${Q.res[i]===true?'ok':Q.res[i]===false?'no':i===Q.i?'cur':''}"></i>`).join('')}</div>
     <span class="pill">${JAS()} ${ar(bal())}</span></div>
   <div class="qcard" style="--c:${sj.c}">
-    <div class="row between"><div class="tag">${Q.mode==='surah'?'سورة '+SURAHS.find(x=>x.id===Q.surah).n:sj.n}${it.lt?' · '+esc(it.lt):''} · سؤال ${ar(Q.i+1)} من ${ar(Q.list.length)}</div>${it.preKind==='quran'?'':SPK('spkQ')}</div>
+    <div class="row between"><div class="tag">${Q.mode==='surah'?'سورة '+SURAHS.find(x=>x.id===Q.surah).n:sj.n}${it.lt?' · '+esc(it.lt):''} · سؤال ${ar(Q.i+1)} من ${ar(Q.list.length)}${Q.mode==='practice'?` · <span class="lvl l${lvlOf(Q.s)}">${LVL[lvlOf(Q.s)]}</span>`:''}</div>${it.preKind==='quran'?'':SPK('spkQ')}</div>
     ${it.pre?(it.preKind==='quran'?`<div class="pre quranpre">قال تعالى: ﴿${esc(it.pre)}﴾</div>`:`<div class="pre">قال رسول الله ﷺ: «${it.pre}»</div>`):''}
     <div class="q">${esc(f(it.q))}</div>
     ${it.kind==='spell'?`<div class="pic">${it.pic}</div><div class="slot" dir="${it.lang==='en'?'ltr':'rtl'}" id="slot">${esc((Q.built||[]).join(''))||'&nbsp;'}</div>`:''}
@@ -825,6 +831,8 @@ function finish(){
     save();
   }
   if(Q.c===Q.list.length&&Q.mode!=='surah')S.perfect=(S.perfect||0)+1;
+  let lvlMsg='';
+  if(Q.mode==='practice'){S.lvl=S.lvl||{};const cur=S.lvl[Q.s]||0,r0=Q.c/Q.list.length;if(r0>=.8&&cur<2){S.lvl[Q.s]=cur+1;lvlMsg=`🎉 انتقلت لمستوى «${LVL[cur+1]}» بـ${SUBJ[Q.s].n}!`}else if(r0<.4&&cur>0){S.lvl[Q.s]=cur-1;lvlMsg=`رجعنا لمستوى «${LVL[cur-1]}» لنتدرّب أكتر.`}}
   let memoMsg='';
   if(Q.mode==='surah'){S.memo=S.memo||{};if(Q.c===Q.list.length){if(!S.memo[Q.surah]){S.memo[Q.surah]=today();S.jas+=30;memoMsg=`حفظت سورة ${SURAHS.find(x=>x.id===Q.surah).n}! +${ar(30)} ياسمينة 🌼`}else memoMsg='ما شاء الله! لسا حافظها.'}else memoMsg='راجع السورة وجرّب مرة تانية، قرّبت!'}
   save();syncSummary();
@@ -832,6 +840,7 @@ function finish(){
   V.innerHTML=`<div class="result">${JAS('big')}
     <h1>${msg}</h1>
     <div class="score">${ar(Q.c)} / ${ar(Q.list.length)}</div>
+    ${lvlMsg?`<p class="lvlmsg">${lvlMsg}</p>`:''}
     ${Q.mode==='surah'?`<p><b>${memoMsg}</b></p>`:`<p>جمعت <b>${ar(Q.c*POINTS())}</b> ياسمينة${Q.mode==='daily'?` · سلسلة الأيام: <b>${ar(S.streak)}</b>`:''}</p>`}
     <div style="display:flex;flex-direction:column;gap:10px;width:100%">
       ${Q.mode==='practice'?(Q.li!=null?`<button class="btn teal wide" data-act="practiceL" data-s="${Q.s}" data-i="${Q.li}">تمرين جديد على نفس الدرس</button>`:`<button class="btn teal wide" data-act="practice" data-s="${Q.s}">تمرين جديد</button>`):''}
