@@ -1,0 +1,68 @@
+rules_version = '2';
+// قواعد حماية تطبيق شطّور — حساب الإدارة: 0986411114
+// مهم: سجّل حساب الإدارة من التطبيق (حساب جديد بنفس الرقم) قبل ما تنشر التطبيق للناس
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() { return request.auth != null; }
+    function parentDoc(phone) { return get(/databases/$(database)/documents/parents/$(phone)); }
+    function isOwner(phone) { return signedIn() && exists(/databases/$(database)/documents/parents/$(phone)) && parentDoc(phone).data.uid == request.auth.uid; }
+    function isAdmin() { return isOwner('0986411114'); }
+    function resetKey(phone) { return get(/databases/$(database)/documents/resets/$(phone)).data.key; }
+    function hasReset(phone) { return exists(/databases/$(database)/documents/resets/$(phone)); }
+    // صاحب رمز إعادة التعيين: أنشأ حساب دخول بالبريد المرتبط بالرمز
+    function isResetClaim(phone) { return signedIn() && hasReset(phone) && request.auth.token.email == phone + '.' + resetKey(phone) + '@shattoor.app'; }
+
+    // إعدادات التطبيق (الأسعار وطرق الدفع): يقرؤها الجميع ويعدّلها الأدمن
+    match /settings/{doc} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // يحدد البريد المستخدم للدخول لكل رقم (لا يحتوي كلمات سر)
+    match /logins/{phone} {
+      allow get: if true;
+      allow list: if false;
+      allow create: if signedIn() && request.auth.token.email == phone + '@shattoor.app' && request.resource.data.key == '';
+      allow update: if isResetClaim(phone) && request.resource.data.key == resetKey(phone);
+      allow delete: if isAdmin();
+    }
+
+    // رموز إعادة تعيين كلمة السر: ينشئها الأدمن فقط
+    match /resets/{phone} {
+      allow read, create, update: if isAdmin();
+      allow delete: if isAdmin() || isResetClaim(phone);
+    }
+
+    match /parents/{phone} {
+      allow read: if isOwner(phone) || isAdmin();
+      allow create: if signedIn()
+        && request.auth.token.email == phone + '@shattoor.app'
+        && request.resource.data.phone == phone
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.created == request.time;
+      allow update: if isAdmin()
+        || (isResetClaim(phone)
+            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['uid'])
+            && request.resource.data.uid == request.auth.uid);
+      allow delete: if isAdmin();
+
+      match /children/{cid} {
+        allow read: if isOwner(phone) || isAdmin();
+        allow create: if isOwner(phone) && !('subs' in request.resource.data);
+        // وليّ الأمر يعدّل الاسم والصف والتقدّم، لكن الاشتراك يعدّله الأدمن فقط
+        allow update: if isAdmin()
+          || (isOwner(phone) && request.resource.data.get('subs', null) == resource.data.get('subs', null));
+        allow delete: if isOwner(phone) || isAdmin();
+      }
+    }
+
+    match /requests/{rid} {
+      allow create: if signedIn()
+        && request.resource.data.uid == request.auth.uid
+        && isOwner(request.resource.data.phone)
+        && request.resource.data.status == 'pending';
+      allow read: if isAdmin() || (signedIn() && resource.data.uid == request.auth.uid);
+      allow update, delete: if isAdmin();
+    }
+  }
+}

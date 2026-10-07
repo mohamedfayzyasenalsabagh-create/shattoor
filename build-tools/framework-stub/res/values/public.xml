@@ -1,0 +1,16 @@
+<resources>
+<public type="attr" name="theme" id="0x7f010000"/>
+<public type="attr" name="label" id="0x7f010001"/>
+<public type="attr" name="icon" id="0x7f010002"/>
+<public type="attr" name="name" id="0x7f010003"/>
+<public type="attr" name="exported" id="0x7f010010"/>
+<public type="attr" name="screenOrientation" id="0x7f01001e"/>
+<public type="attr" name="configChanges" id="0x7f01001f"/>
+<public type="attr" name="minSdkVersion" id="0x7f01020c"/>
+<public type="attr" name="versionCode" id="0x7f01021b"/>
+<public type="attr" name="versionName" id="0x7f01021c"/>
+<public type="attr" name="targetSdkVersion" id="0x7f010270"/>
+<public type="attr" name="hardwareAccelerated" id="0x7f0102d3"/>
+<public type="attr" name="roundIcon" id="0x7f01052c"/>
+<public type="style" name="Theme.Material.Light.NoActionBar" id="0x7f030240"/>
+</resources>

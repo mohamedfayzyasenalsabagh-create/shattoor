@@ -1,0 +1,10 @@
+<resources>
+<attr name="theme" format="reference"/><attr name="label" format="reference|string"/><attr name="icon" format="reference"/>
+<attr name="name" format="string"/><attr name="exported" format="boolean"/>
+<attr name="screenOrientation" format="integer"/>
+<attr name="configChanges" format="integer"/>
+<attr name="minSdkVersion" format="integer|string"/><attr name="versionCode" format="integer"/><attr name="versionName" format="string"/>
+<attr name="targetSdkVersion" format="integer|string"/><attr name="hardwareAccelerated" format="boolean"/><attr name="roundIcon" format="reference"/>
+
+<style name="Theme.Material.Light.NoActionBar" parent=""/>
+</resources>

@@ -1,0 +1,873 @@
+<title>شطّور</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lalezar&family=Tajawal:wght@400;500;700;800&display=swap">
+<style>
+/* Layout: one-column phone app, Damascene teal + jasmine; reward currency is jasmine flowers (ياسمين الشام). Single bright look by choice. */
+:root{
+  --ground:#E6F3F1; --card:#FFFFFF; --ink:#15283A; --muted:#55697A; --line:#CBE2DF;
+  --teal:#0E7C77; --teal-d:#08504D; --sun:#FFC83D; --pom:#DD3F57; --leaf:#2E9A57;
+  --math:#2F6BD3; --ar:#0E7C77; --sci:#2E9A57; --en:#7E4FD0; --isl:#B87418;
+  --display:'Lalezar','Tajawal',system-ui,sans-serif;
+  --body:'Tajawal',system-ui,-apple-system,'Segoe UI',sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{background:var(--ground);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.6;direction:rtl;-webkit-tap-highlight-color:transparent}
+.app{max-width:520px;margin:0 auto;padding-inline:16px;padding-block:14px 48px;display:flex;flex-direction:column;gap:16px}
+h1,h2,h3{font-family:var(--display);font-weight:400;margin:0;line-height:1.25;text-wrap:balance}
+h1{font-size:2rem}h2{font-size:1.45rem}h3{font-size:1.15rem}
+p{margin:0}
+button{font-family:inherit;font-size:inherit;color:inherit;border:0;background:none;cursor:pointer}
+button:focus-visible,input:focus-visible{outline:3px solid var(--sun);outline-offset:2px}
+.muted{color:var(--muted)}
+.row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.spacer{flex:1}
+
+/* top bar */
+.top{display:flex;align-items:center;gap:12px}
+.top .hi{flex:1;min-width:0}
+.top .hi small{display:block;color:var(--muted);font-size:.9rem}
+.top .hi h2{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pill{display:inline-flex;align-items:center;gap:6px;background:var(--card);border:1.5px solid var(--line);border-radius:999px;padding:4px 12px;font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap}
+.jas{width:22px;height:22px;flex:none}
+
+/* hero: today's challenge */
+.today{background:var(--teal);color:#fff;border-radius:26px;padding:20px;position:relative;overflow:hidden;display:flex;flex-direction:column;gap:12px}
+.today::after{content:"";position:absolute;inset-inline-start:-40px;bottom:-60px;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,#ffffff22,#ffffff00 70%)}
+.today .date{opacity:.85;font-size:.95rem}
+.today h1{font-size:2.1rem}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{background:#ffffff26;border-radius:999px;padding:2px 10px;font-size:.85rem;font-weight:700}
+.btn{display:inline-flex;justify-content:center;align-items:center;gap:8px;border-radius:16px;padding:13px 20px;font-weight:800;font-size:1.05rem;min-height:52px}
+.btn.sun{background:var(--sun);color:var(--ink);box-shadow:0 4px 0 #C99410}
+.btn.sun:active{transform:translateY(3px);box-shadow:0 1px 0 #C99410}
+.btn.teal{background:var(--teal);color:#fff;box-shadow:0 4px 0 var(--teal-d)}
+.btn.teal:active{transform:translateY(3px);box-shadow:0 1px 0 var(--teal-d)}
+.btn.ghost{background:var(--card);border:1.5px solid var(--line)}
+.btn.wide{width:100%}
+.btn[disabled]{opacity:.5;pointer-events:none}
+.done-badge{background:#ffffff26;border-radius:16px;padding:12px 14px;font-weight:700}
+
+/* hadith */
+.hadith{background:var(--card);border-radius:22px;padding:18px;border:1.5px solid var(--line);display:flex;flex-direction:column;gap:10px}
+.hadith .label{display:flex;justify-content:space-between;align-items:center;gap:8px;color:var(--isl);font-weight:800;font-size:.9rem;letter-spacing:.02em}
+.free{background:#FFF1D6;color:#7A4A06;border-radius:999px;padding:1px 10px;font-size:.78rem}
+.hadith blockquote{margin:0;font-family:var(--display);font-size:1.5rem;line-height:1.55;color:var(--ink)}
+.hadith .src{color:var(--muted);font-size:.9rem}
+.hadith .ex{background:var(--ground);border-radius:14px;padding:10px 12px;font-size:.98rem}
+
+/* subjects */
+.sec-title{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.subj{background:var(--card);border-radius:18px;padding:14px;text-align:start;display:flex;flex-direction:column;gap:6px;border-bottom:4px solid var(--c);min-height:104px}
+.subj .ico{width:38px;height:38px;border-radius:12px;background:var(--c);color:#fff;display:grid;place-items:center;font-family:var(--display);font-size:1.3rem}
+.subj b{font-size:1.02rem}
+.subj small{color:var(--muted);font-size:.82rem;font-variant-numeric:tabular-nums}
+.subj.wide{grid-column:1/-1;flex-direction:row;align-items:center;min-height:0}
+.subj.wide .t{display:flex;flex-direction:column}
+.lockveil{position:relative}
+.lockveil.locked .subj{opacity:.55}
+
+.links{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.status{border-radius:16px;padding:12px 14px;font-weight:700;font-size:.95rem;display:flex;gap:8px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.status.ok{background:#DDF2E4;color:#145C31}
+.status.trial{background:#FFF1D6;color:#7A4A06}
+.status.off{background:#FBDDE2;color:#8A1C2E}
+
+/* onboarding */
+.onb{display:flex;flex-direction:column;gap:18px;padding-top:10px}
+.logo{display:flex;align-items:center;gap:12px}
+.logo h1{font-size:2.8rem;color:var(--teal)}
+.field{display:flex;flex-direction:column;gap:6px}
+.field label{font-weight:800}
+input[type=text]{font:inherit;font-size:1.15rem;padding:12px 14px;border-radius:14px;border:2px solid var(--line);background:var(--card);color:var(--ink);width:100%}
+.grades{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.grades button{background:var(--card);border:2px solid var(--line);border-radius:14px;padding:10px 4px;font-weight:800;display:flex;flex-direction:column;align-items:center}
+.grades button span{font-family:var(--display);font-size:1.6rem;line-height:1.1;color:var(--teal)}
+.grades button.on{border-color:var(--teal);background:var(--teal);color:#fff}
+.grades button.on span{color:var(--sun)}
+
+/* quiz */
+.qbar{display:flex;align-items:center;gap:10px}
+.x{width:44px;height:44px;border-radius:14px;background:var(--card);border:1.5px solid var(--line);font-size:1.4rem;line-height:1}
+.prog{flex:1;display:flex;gap:5px}
+.prog i{flex:1;height:10px;border-radius:6px;background:var(--line)}
+.prog i.ok{background:var(--leaf)}.prog i.no{background:var(--pom)}.prog i.cur{background:var(--sun)}
+.qcard{background:var(--card);border-radius:24px;padding:22px 18px;display:flex;flex-direction:column;gap:14px;border-top:6px solid var(--c)}
+.qcard .tag{color:var(--c);font-weight:800;font-size:.9rem}
+.qcard .pre{font-family:var(--display);font-size:1.25rem;background:#FFF6E3;border-radius:14px;padding:10px 12px;color:#5C3A06}
+.qcard .q{font-size:1.45rem;font-weight:800;white-space:pre-line;line-height:1.5}
+.qcard .en{direction:ltr;text-align:left;font-size:1.35rem;font-weight:700;background:var(--ground);border-radius:12px;padding:8px 12px;unicode-bidi:isolate}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.opt{background:var(--card);border:2px solid var(--line);border-radius:18px;padding:14px 10px;font-size:1.3rem;font-weight:800;min-height:68px;box-shadow:0 4px 0 var(--line);unicode-bidi:plaintext}
+.opt:active{transform:translateY(3px);box-shadow:0 1px 0 var(--line)}
+.opt.right{background:#DDF2E4;border-color:var(--leaf);box-shadow:0 4px 0 var(--leaf)}
+.opt.wrong{background:#FBDDE2;border-color:var(--pom);box-shadow:0 4px 0 var(--pom)}
+.opt[disabled]{pointer-events:none}
+.fb{border-radius:18px;padding:14px;font-weight:800;display:flex;flex-direction:column;gap:10px}
+.fb.good{background:#DDF2E4;color:#145C31}.fb.bad{background:#FBDDE2;color:#8A1C2E}
+
+/* result */
+.result{text-align:center;display:flex;flex-direction:column;align-items:center;gap:14px;padding-top:30px}
+.result .big{width:120px;height:120px;animation:pop .6s ease-out}
+.score{font-family:var(--display);font-size:3rem;color:var(--teal);font-variant-numeric:tabular-nums}
+@keyframes pop{0%{transform:scale(.3) rotate(-40deg)}70%{transform:scale(1.15)}100%{transform:scale(1)}}
+.fall{position:fixed;top:-40px;width:26px;height:26px;pointer-events:none;animation:fall linear forwards;z-index:9}
+@keyframes fall{to{transform:translateY(110vh) rotate(540deg)}}
+@media (prefers-reduced-motion:reduce){.fall{display:none}.result .big{animation:none}}
+
+/* panels */
+.panel{background:var(--card);border-radius:22px;padding:18px;display:flex;flex-direction:column;gap:12px;border:1.5px solid var(--line)}
+.bar{height:12px;background:var(--ground);border-radius:8px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--c);border-radius:8px}
+.stat{display:flex;flex-direction:column;gap:4px}
+.stat .row{justify-content:space-between;font-variant-numeric:tabular-nums}
+.price{font-family:var(--display);font-size:1.8rem;color:var(--teal)}
+.steps{margin:0;padding-inline-start:20px;display:flex;flex-direction:column;gap:4px}
+.msg{font-weight:800;font-size:.95rem}
+.msg.ok{color:var(--leaf)}.msg.no{color:var(--pom)}
+.code{font-family:ui-monospace,monospace;direction:ltr;font-size:1.4rem;font-weight:800;letter-spacing:.08em;background:var(--ground);border-radius:12px;padding:10px;text-align:center;user-select:all}
+.ver{color:var(--muted);font-size:.8rem;text-align:center;padding:8px;user-select:none}
+.confirm{background:#FBDDE2;border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:8px}
+.three{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+
+/* accounts, children, plans, admin */
+input[type=tel],input[type=password]{font:inherit;font-size:1.15rem;padding:12px 14px;border-radius:14px;border:2px solid var(--line);background:var(--card);color:var(--ink);width:100%;text-align:left}
+input:focus{border-color:var(--teal);outline:none}
+.tabs{display:grid;grid-template-columns:1fr 1fr;gap:4px;background:var(--card);border:1.5px solid var(--line);border-radius:16px;padding:4px}
+.tabs button{border-radius:12px;padding:10px 6px;font-weight:800;color:var(--muted)}
+.tabs button.on{background:var(--teal);color:#fff}
+.btn.sm{min-height:36px;padding:4px 12px;font-size:.9rem;border-radius:12px}
+.row.between{justify-content:space-between}
+.okc{color:var(--leaf)}.offc{color:var(--pom)}
+.sel{user-select:all;font-variant-numeric:tabular-nums}
+.kids{display:flex;flex-direction:column;gap:10px}
+.kid{display:flex;align-items:center;gap:12px;background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:12px 14px;text-align:start;box-shadow:0 4px 0 var(--line)}
+.kid:active{transform:translateY(3px);box-shadow:0 1px 0 var(--line)}
+.kid .av{width:48px;height:48px;border-radius:50%;background:var(--teal);color:#fff;display:grid;place-items:center;font-family:var(--display);font-size:1.5rem;flex:none}
+.kid .t{flex:1;min-width:0;display:flex;flex-direction:column}
+.kid .t small{color:var(--muted)}
+.kid.add{border-style:dashed;box-shadow:none}
+.kid.add .av{background:var(--ground);color:var(--teal)}
+.tag{border-radius:999px;padding:2px 10px;font-size:.8rem;font-weight:800;white-space:nowrap}
+.tag.ok{background:#DDF2E4;color:#145C31}.tag.trial{background:#FFF1D6;color:#7A4A06}.tag.off{background:#FBDDE2;color:#8A1C2E}
+.plans{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.plan{background:var(--card);border:2px solid var(--line);border-radius:18px;padding:12px;display:flex;flex-direction:column;align-items:center;gap:2px}
+.plan .price{font-family:var(--display);font-size:1.2rem;color:var(--teal);text-align:center}
+.plan small{color:var(--muted)}
+.plan.on{border-color:var(--teal);background:#DFF1EF;box-shadow:inset 0 0 0 1px var(--teal)}
+.plan[disabled]{opacity:.6}
+.req{gap:8px}
+.three-t{grid-template-columns:repeat(3,1fr)}
+.link{color:var(--teal);font-weight:800;text-decoration:underline;text-underline-offset:4px;padding:6px;align-self:center}
+.center{text-align:center}.small{font-size:.85rem}
+.methods{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:8px}
+.codebox{background:#FFF1D6;border-radius:16px;padding:12px;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center}
+.codebox .code{font-size:1.8rem;letter-spacing:.12em;direction:ltr;background:var(--card);padding:6px 14px;border-radius:12px}
+</style>
+
+<div class="app" id="view"></div>
+
+<script>
+/* ================== الإعدادات (عدّلها قبل الإطلاق) ================== */
+const CONFIG = {
+  // إعدادات مشروع Firebase (من Project settings > Your apps > Web app). إذا تُركت null يعمل التطبيق بالوضع التجريبي على هذا الجهاز فقط
+  firebase: null,
+  adminPhone: '0986411114',             // رقم موبايل حساب الأدمن (نفس الرقم في قواعد Firestore)
+  emailDomain: 'shattoor.app',          // لا تغيّره بعد الإطلاق
+  // القيم الافتراضية فقط: الأدمن يعدّل الأسعار وأرقام الدفع من «الإعدادات» داخل التطبيق
+  defaults: {
+    trialDays: 7,
+    prices: { monthly: 'يُحدَّد لاحقاً', yearly: 'يُحدَّد لاحقاً' },
+    pay: { syriatel: '', mtn: '', sham: '' },
+    whatsapp: ''
+  }
+};
+const PLANS = { monthly: { name: 'شهري', days: 30 }, yearly: { name: 'سنوي', days: 365 } };
+const PAY = { syriatel: 'سيريتل كاش', mtn: 'MTN كاش', sham: 'شام كاش' };
+const VERSION = '0.3';
+
+/* ================== أدوات ================== */
+const AD='٠١٢٣٤٥٦٧٨٩';
+const ar=s=>String(s).replace(/\d/g,d=>AD[d]).replace(/([٠-٩])\.(?=[٠-٩])/g,'$1٫').replace(/%/g,'٪');
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function hash(s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)}return h>>>0}
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+let R=Math.random;
+const ri=(a,b)=>a+Math.floor(R()*(b-a+1));
+const pick=a=>a[Math.floor(R()*a.length)];
+const shuf=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(R()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+function mc(q,ans,wr,extra){const o=[String(ans)];for(const w of wr){const s=String(w);if(!o.includes(s)&&o.length<4)o.push(s)}return Object.assign({q,a:String(ans),opts:shuf(o)},extra||{})}
+function nearN(ans,spread,min){spread=spread||3;min=min===undefined?0:min;const s=new Set();let g=0;while(s.size<3&&g++<80){const v=ans+ri(1,spread)*(R()<.5?-1:1);if(v>=min&&v!==ans)s.add(v)}let k=1;while(s.size<3){if(!s.has(ans+k))s.add(ans+k);k++}return[...s]}
+const mN=(q,ans,spread,unit,min)=>{unit=unit||'';return mc(q,ans+unit,nearN(ans,spread,min).map(v=>v+unit),{m:true})};
+function mD(q,v){v=Math.round(v*10)/10;const w=[v+.1,v-.1,v+1,v-1].filter(x=>x>0).map(x=>(Math.round(x*10)/10).toFixed(1));return mc(q,v.toFixed(1),w,{m:true})}
+function fromBank(bank,ai,wi,n){const e=pick(bank);const pool=shuf(bank.filter(x=>x!==e)).map(x=>x[wi===undefined?ai:wi]);return{e,w:pool.slice(0,n||3)}}
+
+const EPOCH=Date.UTC(2026,0,1);
+function dayIdx(d){d=d||new Date();return Math.floor((Date.UTC(d.getFullYear(),d.getMonth(),d.getDate())-EPOCH)/864e5)}
+function fmtDay(i,opts){try{return new Intl.DateTimeFormat('ar-SY',Object.assign({timeZone:'UTC'},opts||{day:'numeric',month:'long',year:'numeric'})).format(new Date(EPOCH+i*864e5))}catch(e){return ar(i)}}
+
+/* ================== المحتوى ================== */
+const SUBJ={
+  math:{n:'الرياضيات',c:'var(--math)',i:'٣+'},
+  ar:{n:'اللغة العربية',c:'var(--ar)',i:'ض'},
+  sci:{n:'العلوم',c:'var(--sci)',i:'ع'},
+  en:{n:'اللغة الإنكليزية',c:'var(--en)',i:'A'},
+  isl:{n:'التربية الإسلامية',c:'var(--isl)',i:'ح'}
+};
+const GRADES=['الأول','الثاني','الثالث','الرابع','الخامس','السادس'];
+
+/* ---- الرياضيات: أسئلة مولّدة بلا نهاية حسب الصف ---- */
+const MATH={
+1:[()=>{const a=ri(1,10),b=ri(1,10);return mN(`${a} + ${b} = ؟`,a+b,3)},
+   ()=>{const a=ri(6,20),b=ri(1,a-1);return mN(`${a} − ${b} = ؟`,a-b,3)},
+   ()=>{const f=pick([['🍎','تفاحة'],['⭐','نجمة'],['🐟','سمكة'],['🌼','زهرة'],['🍊','برتقالة']]);const n=ri(3,9);return mN(`كم ${f[1]} هنا؟\n${f[0].repeat(n)}`,n,2,'',1)},
+   ()=>{const a=ri(1,50);let b=ri(1,50);while(b===a)b=ri(1,50);return mc('أيّ العددين أكبر؟',Math.max(a,b),[Math.min(a,b)],{m:true})},
+   ()=>{const s=ri(1,15);return mN(`${s}، ${s+1}، ${s+2}، ؟`,s+3,2)}],
+2:[()=>{const a=ri(10,60),b=ri(10,39);return mN(`${a} + ${b} = ؟`,a+b,10)},
+   ()=>{const a=ri(40,99),b=ri(11,a-10);return mN(`${a} − ${b} = ؟`,a-b,10)},
+   ()=>{const a=pick([2,5,10]),b=ri(1,10);return mN(`${a} × ${b} = ؟`,a*b,a)},
+   ()=>{const t=ri(2,9);return mN(`كم عشرة في العدد ${t*10}؟`,t,2,'',1)},
+   ()=>{const a=ri(10,50),b=ri(5,30);return mN(`${a} + ؟ = ${a+b}`,b,4,'',1)},
+   ()=>{const st=pick([2,5,10]),s=st*ri(1,5);return mN(`${s}، ${s+st}، ${s+2*st}، ؟`,s+3*st,st)}],
+3:[()=>{const a=ri(2,10),b=ri(2,10);return mN(`${a} × ${b} = ؟`,a*b,a)},
+   ()=>{const a=ri(2,10),b=ri(2,10);return mN(`${a*b} ÷ ${b} = ؟`,a,2,'',1)},
+   ()=>{const a=ri(120,560),b=ri(110,430);return mN(`${a} + ${b} = ؟`,a+b,20)},
+   ()=>{const k=ri(4,30);return mN(`ما نصف العدد ${2*k}؟`,k,3,'',1)},
+   ()=>{const a=ri(3,9),b=ri(3,9);return mN(`${a} × ؟ = ${a*b}`,b,2,'',1)}],
+4:[()=>{const a=ri(12,99),b=ri(3,9);return mN(`${a} × ${b} = ؟`,a*b,10)},
+   ()=>{const b=ri(3,9),a=ri(20,99),r=a%b,w=[];for(let i=1;i<b&&w.length<3;i++)w.push((r+i)%b);return mc(`ما باقي قسمة ${a} على ${b}؟`,r,w,{m:true})},
+   ()=>{const l=ri(5,20),w=ri(2,l-1),p=2*(l+w);return mc(`مستطيل طوله ${l} سم وعرضه ${w} سم.\nما محيطه؟`,p+' سم',[l*w+' سم',(l+w)+' سم',(p+2)+' سم',(p-2)+' سم'],{m:true})},
+   ()=>{const k=ri(2,12);return mN(`ما ربع العدد ${4*k}؟`,k,3,'',1)},
+   ()=>{const k=ri(2,12);return mN(`ما ثلث العدد ${3*k}؟`,k,3,'',1)},
+   ()=>{const a=ri(1200,8900),b=ri(1100,a-100);return mN(`${a} − ${b} = ؟`,a-b,100)}],
+5:[()=>{const a=ri(11,59)/10,b=ri(11,49)/10;return mD(`${a.toFixed(1)} + ${b.toFixed(1)} = ؟`,a+b)},
+   ()=>{const x=ri(11,99)/10,m=pick([10,100]),v=Math.round(x*m);return mc(`${x.toFixed(1)} × ${m} = ؟`,v,[v*10,Math.round(v/10),v+m],{m:true})},
+   ()=>{const l=ri(4,15),w=ri(2,9);return mc(`ما مساحة مستطيل طوله ${l} سم وعرضه ${w} سم؟`,l*w+' سم²',[2*(l+w)+' سم²',(l+w)+' سم²',(l*w+l)+' سم²'],{m:true})},
+   ()=>{const p=pick([10,20,25,50]),n=20*ri(2,15);return mN(`${p}% من ${n} = ؟`,p*n/100,5)},
+   ()=>{const d=ri(5,12),a=ri(1,d-2),b=ri(1,d-a-1);return mc(`${a}/${d} + ${b}/${d} = ؟`,`${a+b}/${d}`,[`${a+b}/${2*d}`,`${a+b+1}/${d}`,`${a*b}/${d}`,`${a+b-1}/${d}`],{m:true})}],
+6:[()=>{const a=ri(2,9),b=ri(2,6),c=ri(2,6);return mc(`${a} + ${b} × ${c} = ؟`,a+b*c,[(a+b)*c,a+b+c,a*b+c,a+b*c+1],{m:true})},
+   ()=>{const[p,q]=pick([[1,2],[2,3],[3,4],[1,3],[2,5],[3,5],[4,5]]),k=ri(2,6);return mc(`بسّط النسبة ${p*k} : ${q*k}`,`${p} : ${q}`,[`${q} : ${p}`,`${p+1} : ${q+1}`,`${p*k} : ${q}`],{m:true})},
+   ()=>{const n=ri(4,15);return mN(`ما مربع العدد ${n}؟`,n*n,n)},
+   ()=>{const m=ri(10,30),d=ri(2,8),v=shuf([m-d,m,m+d]);return mN(`ما متوسط الأعداد ${v[0]} و ${v[1]} و ${v[2]}؟`,m,3)},
+   ()=>{const[p,q]=pick([[3,4],[2,3],[2,5],[3,5],[5,6]]),k=ri(2,8);return mN(`كم يساوي ${p}/${q} من العدد ${q*k}؟`,p*k,k)},
+   ()=>{const p=pick([5,15,30,40,75]),n=20*ri(1,10);return mN(`${p}% من ${n} = ؟`,p*n/100,5)}]
+};
+
+/* ---- اللغة العربية ---- */
+const WORDS=[['أسد','🦁'],['بطة','🦆'],['تفاحة','🍎'],['جمل','🐫'],['حصان','🐴'],['خروف','🐑'],['دب','🐻'],['زرافة','🦒'],['سمكة','🐟'],['شمس','☀️'],['فيل','🐘'],['قمر','🌙'],['كتاب','📖'],['ليمون','🍋'],['موز','🍌'],['نحلة','🐝'],['وردة','🌹'],['ثعلب','🦊'],['ضفدع','🐸'],['طائرة','✈️'],['غيمة','☁️'],['هدية','🎁'],['صقر','🦅'],['عنب','🍇']];
+const ALPH='أبتثجحخدذرزسشصضطظعغفقكلمنهوي'.split('');
+const OPP=[['كبير','صغير'],['طويل','قصير'],['ساخن','بارد'],['نهار','ليل'],['فوق','تحت'],['سريع','بطيء'],['فرح','حزين'],['قريب','بعيد'],['نظيف','متّسخ'],['مفتوح','مغلق'],['أبيض','أسود'],['قوي','ضعيف'],['جديد','قديم'],['دخل','خرج'],['صعد','نزل'],['نام','استيقظ'],['ثقيل','خفيف'],['كثير','قليل']];
+const PLU=[['ولد','أولاد'],['كتاب','كتب'],['قلم','أقلام'],['بيت','بيوت'],['شجرة','أشجار'],['نجم','نجوم'],['باب','أبواب'],['طائر','طيور'],['جبل','جبال'],['بحر','بحار'],['درس','دروس'],['صديق','أصدقاء'],['زهرة','أزهار'],['يوم','أيام']];
+const SYN=[['سعيد','فرحان'],['بيت','منزل'],['عام','سنة'],['طريق','درب'],['صديق','رفيق'],['جميل','حسن'],['شجاع','جريء'],['أسرع','عجّل'],['الضياء','النور'],['البحر','اليمّ'],['الغيث','المطر'],['جلس','قعد']];
+const TYPE=[['مدرسة','اسم'],['شجرة','اسم'],['دمشق','اسم'],['معلّم','اسم'],['حديقة','اسم'],['قلم','اسم'],['كتبَ','فعل'],['يلعبُ','فعل'],['ذهبَ','فعل'],['يرسمُ','فعل'],['شربَ','فعل'],['اقرأْ','فعل'],['في','حرف'],['من','حرف'],['على','حرف'],['إلى','حرف'],['عن','حرف'],['هل','حرف']];
+const NUM=[['الطالبان','مثنى'],['المعلمون','جمع'],['الكتاب','مفرد'],['الشجرتان','مثنى'],['الطالبات','جمع'],['القلم','مفرد'],['اللاعبون','جمع'],['البنتان','مثنى'],['المدرسة','مفرد'],['العصافير','جمع'],['الوردتان','مثنى'],['الجبل','مفرد']];
+const GEN=[['المعلمة','مؤنث'],['الأستاذ','مذكر'],['الشجرة','مؤنث'],['الجبل','مذكر'],['السيارة','مؤنث'],['القمر','مذكر'],['الحديقة','مؤنث'],['الباب','مذكر'],['الطاولة','مؤنث'],['الكتاب','مذكر']];
+const PLT=[['المعلمون','جمع مذكر سالم'],['الفلاحين','جمع مذكر سالم'],['المهندسون','جمع مذكر سالم'],['المعلمات','جمع مؤنث سالم'],['الطالبات','جمع مؤنث سالم'],['السيارات','جمع مؤنث سالم'],['الكتب','جمع تكسير'],['الأقلام','جمع تكسير'],['البيوت','جمع تكسير'],['الرجال','جمع تكسير']];
+const STY=[['الشمسُ مشرقةٌ','جملة اسمية'],['ذهبَ الطالبُ إلى المدرسة','جملة فعلية'],['يلعبُ الأطفالُ في الحديقة','جملة فعلية'],['الحديقةُ جميلةٌ','جملة اسمية'],['البحرُ واسعٌ','جملة اسمية'],['شربَ الولدُ الحليبَ','جملة فعلية'],['المعلمُ نشيطٌ','جملة اسمية'],['تكتبُ سلمى الدرسَ','جملة فعلية']];
+const FM=[['كتبَ الطالبُ الدرسَ','الطالب','الدرس','كتب'],['قرأ خالدٌ القصةَ','خالد','القصة','قرأ'],['زرعَ الفلاحُ الشجرةَ','الفلاح','الشجرة','زرع'],['رسمَتْ ليلى الورودَ','ليلى','الورود','رسمت'],['شربَ الطفلُ الماءَ','الطفل','الماء','شرب'],['فتحَ المعلمُ البابَ','المعلم','الباب','فتح'],['أكلَ القطُّ السمكةَ','القط','السمكة','أكل']];
+const MK=[['السماءُ صافيةٌ','السماء','صافية'],['العلمُ نورٌ','العلم','نور'],['الوردةُ جميلةٌ','الوردة','جميلة'],['الطالبُ مجتهدٌ','الطالب','مجتهد'],['الجوُّ باردٌ','الجو','بارد'],['الكتابُ مفيدٌ','الكتاب','مفيد']];
+
+const gFirst=()=>{const w=pick(WORDS),f=w[0][0];return mc(`بأيّ حرف تبدأ كلمة «${w[0]}»؟ ${w[1]}`,f,shuf(ALPH.filter(x=>x!==f)).slice(0,3))};
+const gCount=()=>{const w=pick(WORDS),n=w[0].length;return mc(`كم حرفاً في كلمة «${w[0]}»؟`,ar(n),nearN(n,2,2).map(ar))};
+const gStarts=()=>{const w=pick(WORDS),f=w[0][0];const o=shuf(WORDS.filter(x=>x[0][0]!==f)).slice(0,3).map(x=>x[0]);return mc(`أيّ كلمة تبدأ بحرف «${f}»؟`,w[0],o)};
+const gOpp=()=>{const{e,w}=fromBank(OPP,1);return mc(`ما عكس كلمة «${e[0]}»؟`,e[1],w)};
+const gPlu=()=>{const{e,w}=fromBank(PLU,1);return mc(`ما جمع كلمة «${e[0]}»؟`,e[1],w)};
+const gSyn=()=>{const{e,w}=fromBank(SYN,1);return mc(`ما معنى كلمة «${e[0]}»؟`,e[1],w)};
+const gType=()=>{const e=pick(TYPE);return mc(`ما نوع الكلمة «${e[0]}»؟`,e[1],['اسم','فعل','حرف'])};
+const gNum=()=>{const e=pick(NUM);return mc(`الكلمة «${e[0]}» هي:`,e[1],['مفرد','مثنى','جمع'])};
+const gGen=()=>{const e=pick(GEN);return mc(`الكلمة «${e[0]}»:`,e[1],['مذكر','مؤنث'])};
+const gPlt=()=>{const e=pick(PLT);return mc(`نوع الجمع في كلمة «${e[0]}»:`,e[1],['جمع مذكر سالم','جمع مؤنث سالم','جمع تكسير'])};
+const gSty=()=>{const e=pick(STY);return mc(`«${e[0]}»\nما نوع هذه الجملة؟`,e[1],['جملة اسمية','جملة فعلية'])};
+const gFM=()=>{const e=pick(FM),f=R()<.5;return mc(`«${e[0]}»\nما ${f?'الفاعل':'المفعول به'} في الجملة؟`,f?e[1]:e[2],[f?e[2]:e[1],e[3]])};
+const gMK=()=>{const e=pick(MK),m=R()<.5;return mc(`«${e[0]}»\nما ${m?'المبتدأ':'الخبر'} في الجملة؟`,m?e[1]:e[2],[m?e[2]:e[1]])};
+const ARB={1:[gFirst,gCount,gStarts],2:[gOpp,gPlu,gFirst,gStarts],3:[gType,gOpp,gSyn,gPlu],4:[gNum,gGen,gSyn,gPlu,gType],5:[gPlt,gSty,gSyn,gNum],6:[gFM,gMK,gSty,gPlt]};
+
+/* ---- العلوم: [السؤال، الجواب الصحيح، خيارات خاطئة...] ---- */
+const SCI={
+1:[['بماذا نرى الأشياء؟','العين','الأذن','الأنف','اليد'],['بماذا نسمع الأصوات؟','الأذن','العين','الفم','القدم'],['أيّ هذه كائن حي؟','القطة','الحجر','الكرسي','الكرة'],['ماذا يحتاج النبات ليعيش؟','الماء والضوء','الحلوى','الظلام فقط','البلاستيك'],['أيّ حيوان يضع البيض؟','الدجاجة','البقرة','القطة','الحصان'],['كم فصلاً في السنة؟','٤','٢','٣','٦'],['ماذا تعطينا الشمس؟','الضوء والحرارة','المطر','الثلج','الظلام'],['ماذا تعطينا البقرة؟','الحليب','البيض','العسل','الصوف فقط'],['متى نغسل أسناننا؟','بعد الأكل وقبل النوم','مرة في الشهر','لا نغسلها','عند المرض فقط'],['أيّ فصل هو الأبرد؟','الشتاء','الصيف','الربيع','الخريف']],
+2:[['أيّ جزء من النبات يمتص الماء من التربة؟','الجذر','الزهرة','الورقة','الثمرة'],['الثلج هو ماء في حالة:','صلبة','سائلة','غازية','لا شيء مما سبق'],['المغناطيس يجذب:','الحديد','الخشب','الورق','البلاستيك'],['الأرنب يتغذى على:','النباتات','اللحوم','الحجارة','الرمل'],['بماذا يتنفس السمك؟','الخياشيم','الرئتين','الجلد فقط','الزعانف'],['بماذا يُغطّى جسم الطائر؟','الريش','الحراشف','الصوف','الشعر'],['أيّ مادة شفافة نرى من خلالها؟','الزجاج','الخشب','الحديد','الحجر'],['يحدث الليل والنهار بسبب:','دوران الأرض حول نفسها','حركة الغيوم','دوران القمر','هبوب الرياح'],['أيّ طعام مفيد أكثر لجسمك؟','الخضار والفواكه','الحلوى','المشروبات الغازية','الشيبس'],['ماذا يحدث للماء إذا سخّناه كثيراً؟','يغلي ويتبخر','يتجمد','يصبح حجراً','لا يتغير']],
+3:[['تحوّل الماء إلى بخار يسمى:','التبخر','التجمد','الانصهار','التكاثف'],['كم رجلاً للحشرة؟','٦','٤','٨','١٠'],['أيّ هذه الحيوانات من الثدييات؟','الحوت','السمكة','الدجاجة','الضفدع'],['يصنع النبات غذاءه في:','الأوراق','الجذور','التربة','الزهرة فقط'],['يحمي الدماغَ عظمُ:','الجمجمة','الفخذ','الأضلاع','الذراع'],['ما وظيفة القلب؟','ضخ الدم','الهضم','التنفس','التفكير'],['ينتج الصوت عن:','اهتزاز الأجسام','الضوء','الحرارة','الألوان'],['ينتشر الضوء في:','خطوط مستقيمة','خطوط متعرجة','دوائر','لا ينتشر'],['الأرض هي:','كوكب','نجم','قمر','مذنّب'],['للمغناطيس قطبان هما:','شمالي وجنوبي','شرقي وغربي','علوي وسفلي','أيمن وأيسر']],
+4:[['حالات المادة هي:','صلبة وسائلة وغازية','صلبة فقط','سائلة وغازية فقط','حارة وباردة'],['يغلي الماء النقي عند درجة:','١٠٠ درجة مئوية','٥٠ درجة مئوية','صفر درجة مئوية','٢٠٠ درجة مئوية'],['في السلسلة الغذائية، المنتِج هو:','النبات','الأسد','الإنسان','النسر'],['يبدأ هضم الطعام في:','الفم','المعدة','الأمعاء','الكبد'],['أيّ مادة توصل الكهرباء؟','النحاس','الخشب','المطاط','البلاستيك'],['يضيء المصباح عندما تكون الدارة الكهربائية:','مغلقة','مفتوحة','مكسورة','بلا بطارية'],['نتنفس بواسطة:','الرئتين','المعدة','القلب','الكليتين'],['أيّ مصدر طاقة متجدد؟','الشمس','الفحم','النفط','الغاز الطبيعي'],['يتجمد الماء عند درجة:','صفر درجة مئوية','١٠٠ درجة مئوية','٥٠ درجة مئوية','٣٧ درجة مئوية'],['تكثّف بخار الماء يكوّن:','الغيوم','الرياح','الصخور','الرمال']],
+5:[['كم عدد كواكب المجموعة الشمسية؟','٨','٩','٧','١٠'],['أقرب كوكب إلى الشمس هو:','عطارد','المريخ','الأرض','زحل'],['تدور الأرض حول الشمس دورة كاملة في نحو:','سنة','يوم','شهر','أسبوع'],['يمتص النبات في البناء الضوئي غاز:','ثنائي أكسيد الكربون','الأكسجين','الهيليوم','النتروجين'],['الوحدة الأساسية في بناء الكائن الحي هي:','الخلية','العظم','الدم','الجلد'],['تنقل الأكسجينَ في الدم:','الكريات الحمراء','الكريات البيضاء','الصفائح','العظام'],['قوة تعيق حركة الأجسام هي:','الاحتكاك','المغناطيسية','الضوء','الصوت'],['نفصل الرمل عن الماء بواسطة:','الترشيح','التسخين فقط','التجميد','الخلط'],['أيّ هذه الحيوانات من الفقاريات؟','القطة','الدودة','الحلزون','العنكبوت'],['الرافعة من:','الآلات البسيطة','الكائنات الحية','الكواكب','المعادن']],
+6:[['تتكون الذرة من نواة تدور حولها:','الإلكترونات','الخلايا','الكواكب','الجزيئات'],['القوة التي تجذب الأجسام نحو الأرض هي:','الجاذبية','الاحتكاك','المغناطيسية','الكهرباء'],['أيّ هذه تحوّل كيميائي؟','احتراق الورق','ذوبان الثلج','تقطيع الورق','غليان الماء'],['طعم الحموض غالباً:','حامض','حلو','مالح','بلا طعم'],['أيّ مصدر طاقة غير متجدد؟','النفط','الرياح','الشمس','الماء الجاري'],['السرعة تساوي:','المسافة ÷ الزمن','الزمن ÷ المسافة','المسافة × الزمن','الكتلة × الزمن'],['نرى البرق قبل سماع الرعد لأن:','الضوء أسرع من الصوت','الصوت أسرع من الضوء','البرق أقرب','الرعد يأتي لاحقاً دائماً'],['الطبقة الخارجية من الأرض تسمى:','القشرة','اللب','الوشاح','النواة'],['عضو التكاثر في النبات الزهري هو:','الزهرة','الجذر','الساق','الورقة'],['يدافع عن الجسم ضد الجراثيم:','جهاز المناعة','جهاز الهضم','الهيكل العظمي','الجلد فقط']]
+};
+const gSci=g=>{const e=pick(SCI[g]);return mc(e[0],e[1],e.slice(2),{m:/[٠-٩]/.test(e[1])})};
+
+/* ---- اللغة الإنكليزية ---- */
+const VOC=[['🐱','cat'],['🐶','dog'],['🍎','apple'],['☀️','sun'],['🚗','car'],['🏠','house'],['⚽','ball'],['🐟','fish'],['📖','book'],['🌳','tree'],['🐦','bird'],['🌙','moon'],['✏️','pencil'],['🍌','banana'],['🥚','egg'],['🪑','chair']];
+const COL=[['🍌','yellow'],['🍓','red'],['🌿','green'],['🌊','blue'],['🥛','white'],['🍊','orange']];
+const NUMS=['one','two','three','four','five','six','seven','eight','nine','ten'];
+const EN2=[['اختر الكلمة المناسبة:','I ___ a student.','am','is','are'],['اختر الكلمة المناسبة:','They ___ my friends.','are','is','am'],['اختر الكلمة المناسبة:','She ___ a teacher.','is','am','are'],['ما عكس الكلمة؟','big','small','tall','happy'],['ما عكس الكلمة؟','hot','cold','new','fast'],['ما اليوم الذي يأتي بعد:','Monday','Tuesday','Sunday','Friday'],['ما جمع الكلمة؟','box','boxes','boxs','boxies'],['ما جمع الكلمة؟','child','children','childs','childes'],['اختر الكلمة المناسبة:','I have ___ apple.','an','a','the'],['اختر الكلمة المناسبة:','The cat is ___ the box.','in','on','at']];
+const EN3=[['ما الماضي من الفعل؟','go','went','goed','gone'],['ما الماضي من الفعل؟','eat','ate','eated','eats'],['ما الماضي من الفعل؟','see','saw','seed','seen'],['ما الماضي من الفعل؟','write','wrote','writed','writes'],['اختر الكلمة المناسبة:','Yesterday we ___ at home.','were','was','are'],['اختر الكلمة المناسبة:','She ___ to school every day.','goes','go','going'],['اختر الكلمة المناسبة:','___ is your name?','What','Where','When'],['اختر الكلمة المناسبة:','An elephant is ___ than a cat.','bigger','big','biggest'],['اختر الكلمة المناسبة:','___ do you live? In Damascus.','Where','What','Who'],['اختر الكلمة المناسبة:','He is ___ football now.','playing','play','played']];
+const EN4=[['اختر الكلمة المناسبة:','I have lived here ___ 2020.','since','for','from'],['اختر الكلمة المناسبة:','She has ___ finished her homework.','already','yet','ago'],['اختر الكلمة المناسبة:','If it rains, we ___ stay at home.','will','would','are'],['اختر الكلمة المناسبة:','This is the ___ book in the library.','best','good','better'],['اختر الكلمة المناسبة:','We ___ go to the park tomorrow.','are going to','went','goes'],['اختر الكلمة المناسبة:','You ___ wash your hands before eating.','should','shouldn\'t','can\'t'],['ما معنى الكلمة؟','library','مكتبة','مطبخ','ملعب'],['ما معنى الكلمة؟','journey','رحلة','حديقة','مدرسة'],['ما الماضي من الفعل؟','buy','bought','buyed','buys'],['ما الماضي من الفعل؟','teach','taught','teached','teaches']];
+const gVoc=()=>{const{e,w}=fromBank(VOC,1);return mc(`ما الكلمة الإنكليزية لـ ${e[0]}؟`,e[1],w)};
+const gCol=()=>{const{e,w}=fromBank(COL,1);return mc(`ما لون ${e[0]} بالإنكليزية؟`,e[1],w)};
+const gNumEn=()=>{const i=ri(0,9);return mc(`كيف نكتب العدد ${ar(i+1)} بالإنكليزية؟`,NUMS[i],shuf(NUMS.filter((_,j)=>j!==i)).slice(0,3))};
+const gLetter=()=>{const e=pick(VOC),f=e[1][0].toUpperCase();return mc(`بأيّ حرف تبدأ كلمة ${e[0]}؟`,f,shuf('ABCDEFGHIKLMNPRST'.split('').filter(x=>x!==f)).slice(0,3),{en:e[1]})};
+const gBank=b=>()=>{const e=pick(b);return mc(e[0],e[2],e.slice(3),{en:e[1]})};
+const ENB={1:[gVoc,gCol,gNumEn,gLetter],2:[gVoc,gCol,gNumEn,gLetter],3:[gBank(EN2),gVoc],4:[gBank(EN2),gBank(EN3)],5:[gBank(EN3),gBank(EN4)],6:[gBank(EN4),gBank(EN3)]};
+
+/* ---- الحديث الشريف: نص، مصدر، شرح للطفل، سؤال، جواب، خياران خاطئان ---- */
+const HADITH=[
+['إنّما الأعمالُ بالنيّات','رواه البخاري ومسلم','الله يجزي كل إنسان على نيّته، فاجعل نيّتك طيبة في كل عمل تعمله.','على ماذا تقوم الأعمال في هذا الحديث؟','النيّة','السرعة','كثرة الكلام'],
+['الكلمةُ الطيّبةُ صدقة','رواه البخاري ومسلم','كلامك اللطيف مع أهلك وأصدقائك له أجر مثل أجر الصدقة.','ما الذي جعله النبي ﷺ صدقة؟','الكلمة الطيبة','الصراخ','السكوت دائماً'],
+['تبسُّمُكَ في وجهِ أخيكَ لكَ صدقة','رواه الترمذي','ابتسامتك تُفرح الناس، ولك بها أجر مثل الصدقة.','كيف أتصدّق دون مال؟','بالابتسامة','بالعبوس','بالغضب'],
+['لا يؤمنُ أحدُكم حتى يحبَّ لأخيه ما يحبُّ لنفسه','رواه البخاري ومسلم','تمنَّ الخير لأصحابك وإخوتك كما تتمناه لنفسك.','ماذا نحب لإخوتنا؟','ما نحبه لأنفسنا','أقلّ مما نحبه لأنفسنا','لا شيء'],
+['مَن كان يؤمنُ باللهِ واليومِ الآخرِ فليقلْ خيراً أو ليصمت','رواه البخاري ومسلم','إذا لم يكن كلامك مفيداً ولطيفاً فالسكوت أفضل.','إذا لم يكن عندي كلام خير، ماذا أفعل؟','أسكت','أقول أي شيء','أرفع صوتي'],
+['المسلمُ مَن سَلِمَ المسلمون من لسانِه ويدِه','رواه البخاري ومسلم','المسلم الحقيقي لا يؤذي أحداً بكلامه ولا بيده.','المسلم لا يؤذي الناس بـ:','لسانه ويده','ماله فقط','عينيه فقط'],
+['الدينُ النصيحة','رواه مسلم','ننصح بعضنا بلطف وأدب، لأننا نحب الخير للجميع.','ما هو الدين في هذا الحديث؟','النصيحة','اللعب','الخصام'],
+['لا تغضب','رواه البخاري','عندما تشعر بالغضب: اهدأ، واسكت، وتوضأ، وابتعد عن الشجار.','بماذا أوصى النبي ﷺ في هذا الحديث؟','ألّا نغضب','ألّا نبتسم','ألّا نلعب'],
+['خيرُكم مَن تعلّمَ القرآنَ وعلّمه','رواه البخاري','من يتعلم القرآن ويعلّمه لغيره من أفضل الناس.','مَن خير الناس في هذا الحديث؟','من تعلّم القرآن وعلّمه','من يملك مالاً كثيراً','من يلعب كثيراً'],
+['مَن سلكَ طريقاً يلتمسُ فيه علماً سهّلَ اللهُ له به طريقاً إلى الجنّة','رواه مسلم','كل يوم تتعلم فيه شيئاً جديداً تمشي في طريق الخير.','طلب العلم طريق إلى:','الجنة','التعب فقط','الملل'],
+['ارحموا مَن في الأرضِ يرحمْكم مَن في السماء','رواه الترمذي وأبو داود','ارحم الناس والحيوانات والنباتات، يرحمك الله.','من نرحم؟','كل من في الأرض','الكبار فقط','أصحابنا فقط'],
+['ليس الشديدُ بالصُّرَعة، إنما الشديدُ الذي يملكُ نفسَه عند الغضب','رواه البخاري ومسلم','القوي الحقيقي هو من يهدأ ويتحكم بنفسه عندما يغضب.','من القوي حقاً؟','من يملك نفسه عند الغضب','من يغلب في المصارعة','من يصرخ أعلى'],
+['يا غلام، سمِّ الله، وكُلْ بيمينك، وكُلْ ممّا يليك','رواه البخاري ومسلم','من آداب الطعام: نقول بسم الله، ونأكل باليد اليمنى، ومن الطعام القريب منا.','بأيّ يد نأكل؟','باليد اليمنى','باليد اليسرى','لا فرق'],
+['مَن لا يَرحمْ لا يُرحمْ','رواه البخاري ومسلم','من يرحم الناس يرحمه الله، فكن رحيماً.','ماذا يحدث لمن لا يرحم غيره؟','لا يُرحَم','يُرحَم دائماً','يصبح قوياً'],
+['إنّ اللهَ رفيقٌ يحبُّ الرِّفقَ في الأمرِ كلِّه','رواه البخاري','الرفق هو اللطف واللين في الكلام والتعامل.','ما معنى الرفق؟','اللطف واللين','القسوة','العجلة'],
+['أحبُّ الأعمالِ إلى اللهِ أدومُها وإن قلّ','رواه البخاري ومسلم','عمل صغير تداوم عليه كل يوم، مثل تحديك اليومي، أفضل من كثير تتركه.','أيّ الأعمال أحبّ إلى الله؟','الدائم ولو كان قليلاً','الكثير مرة واحدة','الصعب فقط'],
+['الحياءُ من الإيمان','رواه البخاري ومسلم','الحياء خُلق جميل يمنعنا من الكلام والفعل القبيح.','الحياء جزء من:','الإيمان','اللعب','الخوف'],
+['تهادَوا تحابُّوا','رواه البخاري في الأدب المفرد','الهدية ولو كانت صغيرة تزيد المحبة بين الناس.','ماذا تفعل الهدية؟','تزيد المحبة','تزيد الخصام','لا شيء'],
+['مَن لا يشكرُ الناسَ لا يشكرُ الله','رواه أبو داود والترمذي','قل شكراً لكل من يساعدك: أمك وأبوك ومعلمك وأصدقاؤك.','لمن نقول شكراً؟','للناس ولله','لله فقط','لا لأحد'],
+['إنّ اللهَ جميلٌ يحبُّ الجمال','رواه مسلم','الله يحب النظافة والترتيب وحسن المظهر.','ماذا يحب الله؟','الجمال','الفوضى','الوسخ'],
+['أفشُوا السلامَ بينكم','رواه مسلم','قل: السلام عليكم لمن تعرف ومن لا تعرف.','ماذا ننشر بيننا؟','السلام','الأسرار','الخصام'],
+['المؤمنُ للمؤمنِ كالبنيانِ يشدُّ بعضُه بعضاً','رواه البخاري ومسلم','المؤمنون يساعد بعضهم بعضاً مثل حجارة البناء المتماسكة.','المؤمنون مثل:','البنيان القوي','البحر','الريح'],
+['اليدُ العليا خيرٌ من اليدِ السفلى','رواه البخاري ومسلم','اليد التي تعطي خير من اليد التي تأخذ.','أيّ يد أفضل؟','اليد التي تعطي','اليد التي تأخذ','لا فرق'],
+['ليس منّا مَن لم يرحمْ صغيرَنا ويوقّرْ كبيرَنا','رواه الترمذي','نعطف على الصغار ونحترم الكبار.','كيف نعامل الكبار؟','نوقّرهم ونحترمهم','نرفع صوتنا عليهم','نتجاهلهم'],
+['وتُميطُ الأذى عن الطريقِ صدقة','رواه البخاري ومسلم','إذا رأيت حجراً أو زجاجاً في الطريق فأبعده، ولك أجر.','ما معنى إماطة الأذى عن الطريق؟','إزالة ما يؤذي من الطريق','رمي الأوساخ','الركض في الطريق'],
+['لا تحقِرَنّ من المعروفِ شيئاً ولو أن تلقى أخاك بوجهٍ طَلْق','رواه مسلم','حتى الوجه المبتسم عمل خير لا نستصغره.','ما معنى «وجه طلق»؟','وجه مبتسم','وجه غاضب','وجه نائم'],
+['خيرُكم خيرُكم لأهله','رواه الترمذي','أفضل الناس من يحسن إلى أمه وأبيه وإخوته.','من خير الناس؟','الأحسن لأهله','الأقوى جسماً','الأغنى'],
+['إنّ مِن أحبِّكم إليّ أحسنَكم أخلاقاً','رواه البخاري','الأخلاق الحسنة تقرّبنا من حب النبي ﷺ.','من أحبّ الناس إلى النبي ﷺ؟','أحسنهم أخلاقاً','أكثرهم مالاً','أطولهم'],
+['اتّقِ اللهَ حيثما كنت، وأتبعِ السيئةَ الحسنةَ تمحُها، وخالقِ الناسَ بخلقٍ حسن','رواه الترمذي','إذا أخطأت فاعمل عملاً حسناً بعده، وعامل الناس بأخلاق طيبة.','إذا أخطأتُ ماذا أفعل؟','أتبع الخطأ بعمل حسن','أكرر الخطأ','أغضب'],
+['الطُّهورُ شطرُ الإيمان','رواه مسلم','النظافة والوضوء نصف الإيمان، فحافظ على نظافتك.','الطُّهور نصف:','الإيمان','اللعب','النوم'],
+['مَن صلّى البَرْدَين دخلَ الجنّة','رواه البخاري ومسلم','البردان هما صلاة الفجر وصلاة العصر.','ما البَردان؟','الفجر والعصر','الظهر والمغرب','العشاء والظهر']
+];
+const ISL=[['كم عدد أركان الإسلام؟','٥','٣','٤','٦'],['كم صلاة نصلي في اليوم والليلة؟','خمس صلوات','ثلاث صلوات','سبع صلوات','صلاتان'],['في أيّ شهر نصوم؟','رمضان','شعبان','رجب','شوال'],['ما أول سورة في القرآن الكريم؟','الفاتحة','البقرة','الناس','الإخلاص'],['أين وُلد النبي محمد ﷺ؟','مكة المكرمة','المدينة المنورة','دمشق','القدس'],['ما اسم أمّ النبي ﷺ؟','آمنة بنت وهب','خديجة','فاطمة','حليمة'],['أين تقع الكعبة المشرفة؟','مكة المكرمة','المدينة المنورة','القدس','دمشق'],['كم ركعة في صلاة الفجر؟','ركعتان','ثلاث ركعات','أربع ركعات','ركعة واحدة'],['ماذا نقول قبل الطعام؟','بسم الله','الحمد لله','صباح الخير','مع السلامة'],['ماذا نقول بعد الطعام؟','الحمد لله','بسم الله','صباح الخير','مع السلامة'],['ما آخر سورة في القرآن الكريم؟','الناس','الفلق','الفاتحة','الإخلاص'],['كم ركعة في صلاة المغرب؟','ثلاث ركعات','ركعتان','أربع ركعات','خمس ركعات'],['إلى أين هاجر النبي ﷺ من مكة؟','المدينة المنورة','دمشق','مصر','اليمن']];
+const hadithQ=h=>mc(h[3],h[4],h.slice(5),{pre:h[0]});
+const gIsl=()=>R()<.5?(e=>mc(e[0],e[1],e.slice(2)))(pick(ISL)):hadithQ(pick(HADITH));
+const todayHadith=()=>HADITH[((dayIdx()%HADITH.length)+HADITH.length)%HADITH.length];
+
+const GEN_FOR={math:g=>pick(MATH[g])(),ar:g=>pick(ARB[g])(),sci:g=>gSci(g),en:g=>pick(ENB[g])(),isl:()=>gIsl()};
+
+function buildDaily(g){
+  const d=dayIdx(),old=R;R=mulberry32(hash('daily|'+d+'|'+g));
+  try{return[
+    Object.assign({s:'math'},GEN_FOR.math(g)),
+    Object.assign({s:'ar'},GEN_FOR.ar(g)),
+    Object.assign({s:'sci'},GEN_FOR.sci(g)),
+    Object.assign({s:'en'},GEN_FOR.en(g)),
+    Object.assign({s:'isl'},hadithQ(todayHadith()))
+  ]}finally{R=old}
+}
+function buildPractice(s,g){const out=[],seen=new Set();let k=0;while(out.length<8&&k++<60){const q=Object.assign({s},GEN_FOR[s](g)),key=q.q+'|'+(q.en||'')+'|'+(q.pre||'');if(!seen.has(key)){seen.add(key);out.push(q)}}return out}
+
+/* ================== الحسابات والبيانات ================== */
+const AR2EN=s=>String(s).replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace(/[۰-۹]/g,d=>'۰۱۲۳۴۵۶۷۸۹'.indexOf(d));
+function normPhone(p){let d=AR2EN(p).replace(/\D/g,'');if(d.startsWith('00963'))d=d.slice(5);else if(d.startsWith('963'))d=d.slice(3);if(d.length===9&&d[0]==='9')d='0'+d;return/^09\d{8}$/.test(d)?d:null}
+const normCode=c=>AR2EN(c).replace(/\D/g,'');
+const isAdminPhone=p=>p===normPhone(CONFIG.adminPhone);
+const today=()=>dayIdx();
+const tsDay=t=>t==null?today():typeof t==='number'?t:dayIdx(new Date(t.toMillis?t.toMillis():t));
+function newUntil(cur,days){return Math.max(cur==null?-1:cur,today()-1)+days}
+function newCode(){let s='';const a=new Uint32Array(8);(window.crypto||{}).getRandomValues?crypto.getRandomValues(a):a.forEach((_,i)=>a[i]=Math.random()*1e9);a.forEach(x=>s+=x%10);return s[0]==='0'?'7'+s.slice(1):s}
+const ERR={'auth/email-already-in-use':'هذا الرقم مسجّل من قبل. سجّل الدخول بدلاً من ذلك.','auth/invalid-credential':'الرقم أو كلمة السر غير صحيحة.','auth/wrong-password':'الرقم أو كلمة السر غير صحيحة.','auth/invalid-login-credentials':'الرقم أو كلمة السر غير صحيحة.','auth/user-not-found':'لا يوجد حساب بهذا الرقم. أنشئ حساباً جديداً.','auth/weak-password':'كلمة السر قصيرة. اكتب ٦ أحرف أو أرقام على الأقل.','auth/network-request-failed':'لا يوجد اتصال بالإنترنت. اتصل وحاول مرة ثانية.','auth/too-many-requests':'محاولات كثيرة. انتظر قليلاً ثم حاول.','permission-denied':'ليس لديك صلاحية لهذه العملية.','unavailable':'لا يوجد اتصال بالإنترنت. اتصل وحاول مرة ثانية.','bad-code':'رمز إعادة التعيين غير صحيح. تأكد منه أو اطلب رمزاً جديداً من الإدارة.','no-reset':'لا يوجد طلب إعادة تعيين لهذا الرقم. راسل الإدارة على واتساب.'};
+const errMsg=e=>ERR[e&&(e.code||e.message)]||'حدث خطأ. حاول مرة ثانية.';
+const fail=(code)=>{const e=new Error(code);e.code=code;return e};
+const mergeSettings=s=>{const d=CONFIG.defaults;s=s||{};return{trialDays:s.trialDays!=null?+s.trialDays:d.trialDays,prices:Object.assign({},d.prices,s.prices),pay:Object.assign({},d.pay,s.pay),whatsapp:s.whatsapp!=null?s.whatsapp:d.whatsapp}};
+
+/* ---- الوضع التجريبي: كل البيانات على هذا الجهاز ---- */
+function DemoBackend(){
+  const K='shattoor_demo_db2';
+  let D;try{D=JSON.parse(localStorage.getItem(K))}catch(e){}
+  if(!D)D={parents:{},children:{},requests:{},resets:{},settings:null,session:null,n:1};
+  const adm=normPhone(CONFIG.adminPhone);
+  if(adm&&!D.parents[adm]){D.parents[adm]={name:'الإدارة',pass:'123456',created:today()-30};D.children[adm]={}}
+  const save=()=>{try{localStorage.setItem(K,JSON.stringify(D))}catch(e){}};save();
+  const id=()=>'x'+(D.n++)+Math.random().toString(36).slice(2,6);
+  const me=()=>D.session&&D.parents[D.session]?{uid:D.session,phone:D.session,name:D.parents[D.session].name,created:D.parents[D.session].created}:null;
+  const wait=v=>new Promise(r=>setTimeout(()=>r(v),120));
+  const kids=p=>Object.entries(D.children[p]||{}).map(([k,v])=>Object.assign({id:k},v));
+  return{
+    demo:true,
+    async init(){return wait(me())},
+    async signUp(phone,name,pass){if(D.parents[phone])throw fail('auth/email-already-in-use');if(pass.length<6)throw fail('auth/weak-password');D.parents[phone]={name,pass,created:today()};D.children[phone]={};D.session=phone;save();return wait(me())},
+    async signIn(phone,pass){const u=D.parents[phone];if(!u)throw fail('auth/user-not-found');if(u.pass!==pass)throw fail('auth/wrong-password');D.session=phone;save();return wait(me())},
+    async resetWithCode(phone,code,pass){const r=D.resets[phone];if(!D.parents[phone]||!r)throw fail('no-reset');if(r.key!==code)throw fail('bad-code');if(pass.length<6)throw fail('auth/weak-password');D.parents[phone].pass=pass;delete D.resets[phone];D.session=phone;save();return wait(me())},
+    async signOut(){D.session=null;save()},
+    async getSettings(){return wait(mergeSettings(D.settings))},
+    async saveSettings(s){D.settings=s;save();return wait()},
+    async listChildren(){return wait(kids(D.session))},
+    async addChild(c){const k=id();D.children[D.session][k]=Object.assign({subs:{}},c);save();return wait(k)},
+    async updateChild(cid,p){Object.assign(D.children[D.session][cid],p);save();return wait()},
+    async deleteChild(cid){delete D.children[D.session][cid];save();return wait()},
+    async requestSub(r){const k=id();D.requests[k]=Object.assign({status:'pending',created:today()},r);save();return wait(k)},
+    async myRequests(){return wait(Object.entries(D.requests).filter(([k,r])=>r.phone===D.session).map(([k,r])=>Object.assign({id:k},r)))},
+    async pending(){return wait(Object.entries(D.requests).filter(([k,r])=>r.status==='pending').map(([k,r])=>Object.assign({id:k},r)))},
+    async findByPhone(phone){const u=D.parents[phone];if(!u)return wait(null);return wait({phone,name:u.name,created:u.created,reset:D.resets[phone]?D.resets[phone].key:null,children:kids(phone)})},
+    async activate(phone,cid,grade,plan){const c=D.children[phone]&&D.children[phone][cid];if(!c)throw fail('not-found');c.subs=c.subs||{};const cur=c.subs[grade];c.subs[grade]={plan,until:newUntil(cur&&cur.until,PLANS[plan].days)};save();return wait(c.subs[grade])},
+    async cancelSub(phone,cid,grade){delete D.children[phone][cid].subs[grade];save();return wait()},
+    async resolve(rid,status){D.requests[rid].status=status;D.requests[rid].done=today();save();return wait()},
+    async makeReset(phone){const key=newCode();D.resets[phone]={key,created:today()};save();return wait(key)}
+  };
+}
+
+/* ---- Firebase: حسابات حقيقية على السيرفر (يعمل على الخطة المجانية) ---- */
+function FirebaseBackend(cfg){
+  firebase.initializeApp(cfg);
+  const auth=firebase.auth(),db=firebase.firestore(),FV=firebase.firestore.FieldValue;
+  try{db.enablePersistence({synchronizeTabs:false}).catch(()=>{})}catch(e){}
+  const dom='@'+CONFIG.emailDomain;
+  const emailOf=(p,key)=>key?`${p}.${key}${dom}`:p+dom;
+  let U=null;
+  const P=p=>db.collection('parents').doc(p);
+  const load=async fu=>{if(!fu)return U=null;const phone=fu.email.split('@')[0].split('.')[0];const s=await P(phone).get();const d=s.exists?s.data():{};
+    if(s.exists&&d.uid!==fu.uid){await auth.signOut();return U=null}
+    U={uid:fu.uid,phone,name:d.name||'',created:tsDay(d.created)};return U};
+  const kidsCol=p=>P(p).collection('children');
+  const kids=async p=>(await kidsCol(p).get()).docs.map(d=>Object.assign({id:d.id},d.data()));
+  return{
+    demo:false,
+    init(){return new Promise(r=>{const off=auth.onAuthStateChanged(async fu=>{off();try{r(await load(fu))}catch(e){r(null)}})})},
+    async signUp(phone,name,pass){
+      const c=await auth.createUserWithEmailAndPassword(emailOf(phone),pass);
+      const b=db.batch();b.set(P(phone),{phone,name,uid:c.user.uid,created:FV.serverTimestamp()});b.set(db.collection('logins').doc(phone),{key:''});await b.commit();
+      return load(c.user)},
+    async signIn(phone,pass){
+      const l=await db.collection('logins').doc(phone).get({source:'server'}).catch(()=>db.collection('logins').doc(phone).get());
+      if(!l.exists)throw fail('auth/user-not-found');
+      const c=await auth.signInWithEmailAndPassword(emailOf(phone,l.data().key),pass);return load(c.user)},
+    async resetWithCode(phone,code,pass){
+      let c;
+      try{c=await auth.createUserWithEmailAndPassword(emailOf(phone,code),pass)}
+      catch(e){if(e.code==='auth/email-already-in-use'){c=await auth.signInWithEmailAndPassword(emailOf(phone,code),pass).catch(()=>{throw fail('bad-code')})}else throw e}
+      try{const b=db.batch();b.update(P(phone),{uid:c.user.uid});b.set(db.collection('logins').doc(phone),{key:code});b.delete(db.collection('resets').doc(phone));await b.commit()}
+      catch(e){try{await c.user.delete()}catch(x){}await auth.signOut().catch(()=>{});throw fail(e.code==='permission-denied'?'bad-code':e.code)}
+      return load(c.user)},
+    async signOut(){await auth.signOut();U=null},
+    async getSettings(){const s=await db.doc('settings/app').get();return mergeSettings(s.exists?s.data():null)},
+    saveSettings(s){return db.doc('settings/app').set(s)},
+    listChildren(){return kids(U.phone)},
+    async addChild(c){const r=await kidsCol(U.phone).add(Object.assign({},c));return r.id},
+    updateChild(cid,p){return kidsCol(U.phone).doc(cid).update(p)},
+    deleteChild(cid){return kidsCol(U.phone).doc(cid).delete()},
+    async requestSub(r){const d=await db.collection('requests').add(Object.assign({status:'pending',uid:U.uid,created:FV.serverTimestamp()},r));return d.id},
+    async myRequests(){return(await db.collection('requests').where('uid','==',U.uid).get()).docs.map(d=>Object.assign({id:d.id},d.data()))},
+    async pending(){return(await db.collection('requests').where('status','==','pending').get()).docs.map(d=>Object.assign({id:d.id},d.data()))},
+    async findByPhone(phone){const s=await P(phone).get();if(!s.exists)return null;const x=s.data();const r=await db.collection('resets').doc(phone).get();return{phone,name:x.name,created:tsDay(x.created),reset:r.exists?r.data().key:null,children:await kids(phone)}},
+    async activate(phone,cid,grade,plan){const ref=kidsCol(phone).doc(cid);const s=await ref.get();if(!s.exists)throw fail('not-found');const cur=((s.data().subs||{})[grade]||{}).until;const v={plan,until:newUntil(cur,PLANS[plan].days)};await ref.update({['subs.'+grade]:v});return v},
+    cancelSub(phone,cid,grade){return kidsCol(phone).doc(cid).update({['subs.'+grade]:FV.delete()})},
+    resolve(rid,status){return db.collection('requests').doc(rid).update({status,done:FV.serverTimestamp()})},
+    async makeReset(phone){const key=newCode();await db.collection('resets').doc(phone).set({key,created:FV.serverTimestamp()});return key}
+  };
+}
+
+const API=(CONFIG.firebase&&window.firebase)?FirebaseBackend(CONFIG.firebase):DemoBackend();
+
+/* ---- حالة التطبيق ---- */
+const APP={user:null,kids:[],child:null,reqs:[],set:mergeSettings((()=>{try{return JSON.parse(localStorage.getItem('shattoor_set'))}catch(e){return null}})())};
+async function loadSettings(){try{APP.set=await API.getSettings();localStorage.setItem('shattoor_set',JSON.stringify(APP.set))}catch(e){}}
+const isAdmin=()=>APP.user&&isAdminPhone(APP.user.phone);
+const payList=()=>Object.keys(PAY).filter(k=>APP.set.pay[k]);
+// تقدّم الطفل محفوظ على الجهاز
+function freshP(){return{jas:0,streak:0,lastDaily:null,daily:{},stats:{},sound:true}}
+let S=null;
+function loadP(cid){try{const t=localStorage.getItem('shattoor_p_'+cid);if(t)return Object.assign(freshP(),JSON.parse(t))}catch(e){}return freshP()}
+function save(){if(!APP.child||!S)return;try{localStorage.setItem('shattoor_p_'+APP.child.id,JSON.stringify(S))}catch(e){}}
+function syncSummary(){if(!APP.child)return;const p={jas:S.jas,streak:S.streak,stats:S.stats,lastActive:today()};Object.assign(APP.child,p);API.updateChild(APP.child.id,p).catch(()=>{})}
+try{localStorage.removeItem('shattoor_v1');localStorage.removeItem('shattoor_demo_db')}catch(e){}
+
+const subOf=(c,g)=>(c&&c.subs&&c.subs[g])||null;
+const hasSubFor=(c,g)=>{const s=subOf(c,g);return!!s&&s.until>=today()};
+function trialLeft(){return APP.user?APP.user.created+APP.set.trialDays-today():0}
+function hasSub(){return hasSubFor(APP.child,APP.child.grade)}
+function hasAccess(){return hasSub()||trialLeft()>0}
+const pendingFor=(c,g)=>APP.reqs.find(r=>r.childId===c.id&&r.grade===g&&r.status==='pending');
+async function refreshReqs(){try{APP.reqs=await API.myRequests()}catch(e){}}
+
+/* ================== الصوت والاحتفال ================== */
+let AC;
+function tone(ok){if(!S||!S.sound)return;try{AC=AC||new(window.AudioContext||window.webkitAudioContext)();const t0=AC.currentTime;(ok?[523,659,784]:[311,233]).forEach((f,i)=>{const o=AC.createOscillator(),g=AC.createGain();o.type=ok?'triangle':'sine';o.frequency.value=f;const t=t0+i*.11;g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.25,t+.02);g.gain.exponentialRampToValueAtTime(.0001,t+.22);o.connect(g).connect(AC.destination);o.start(t);o.stop(t+.25)})}catch(e){}}
+const JAS=(cls)=>`<svg class="${cls||'jas'}" viewBox="0 0 40 40" aria-hidden="true"><g transform="translate(20 20)">${[0,72,144,216,288].map(r=>`<ellipse rx="7" ry="12" cy="-10" transform="rotate(${r})" fill="#FFFFFF" stroke="#E6C96A" stroke-width="1.5"/>`).join('')}<circle r="5" fill="#FFC83D"/></g></svg>`;
+function confetti(){if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;for(let i=0;i<24;i++){const d=document.createElement('div');d.className='fall';d.innerHTML=JAS('jas');d.style.left=Math.random()*100+'vw';d.style.animationDuration=(2.2+Math.random()*2)+'s';d.style.animationDelay=(Math.random()*.8)+'s';document.body.appendChild(d);setTimeout(()=>d.remove(),5200)}}
+
+/* ================== الشاشات ================== */
+const V=document.getElementById('view');
+let Q=null, ui={};
+const greet=()=>{const h=new Date().getHours();return h<12?'صباح الخير':'مساء الخير'};
+const val=id=>{const e=V.querySelector('#'+id);return e?e.value.trim():''};
+const back=(v,t)=>`<div class="qbar"><button class="x" data-act="go" data-v="${v}" aria-label="رجوع">→</button><h2>${t}</h2></div>`;
+const msgHTML=()=>ui.msg?`<p class="msg ${ui.msg.ok?'ok':'no'}" role="status">${ui.msg.t}</p>`:'';
+const gradeBtns=(sel,act)=>`<div class="grades">${GRADES.map((n,i)=>`<button type="button" data-act="${act}" data-g="${i+1}" class="${sel===i+1?'on':''}"><span>${ar(i+1)}</span>${n}</button>`).join('')}</div>`;
+const planName=p=>(PLANS[p]||{}).name||p;
+const price=p=>APP.set.prices[p]||'يُحدَّد لاحقاً';
+const waHTML=()=>APP.set.whatsapp?`<b dir="ltr" class="sel">${esc(APP.set.whatsapp)}</b>`:'المعلن من الإدارة';
+const demoNote=()=>API.demo?`<div class="status trial" style="font-size:.85rem">وضع تجريبي: الحسابات محفوظة على هذا الجهاز فقط. حساب الأدمن التجريبي: ${ar(normPhone(CONFIG.adminPhone)||'')} وكلمة السر ${ar('123456')}</div>`:'';
+function busy(b,t){if(b){b.disabled=true;b.dataset.t=b.textContent;b.textContent=t||'لحظة…'}}
+
+function viewLoading(){V.innerHTML=`<div class="result">${JAS('big')}<p class="muted">جارِ التحميل…</p></div>`}
+
+/* ---- الدخول وإنشاء الحساب ---- */
+function viewAuth(){
+  const m=ui.mode||'login',su=m==='signup',rs=m==='reset';
+  V.innerHTML=`<form class="onb" id="authf" novalidate>
+    <div class="logo">${JAS('big')}<div><h1>شطّور</h1><p class="muted">كل يوم تحدٍّ جديد وحديث شريف</p></div></div>
+    ${rs?`<div class="row between"><h2>إعادة تعيين كلمة السر</h2><button type="button" class="btn ghost sm" data-act="mode" data-m="login">رجوع</button></div>
+      <p class="muted">راسل الإدارة على واتساب ${waHTML()} واطلب رمز إعادة التعيين، ثم اكتبه هنا مع كلمة سر جديدة.</p>`
+    :`<div class="tabs"><button type="button" data-act="mode" data-m="login" class="${su?'':'on'}">تسجيل الدخول</button><button type="button" data-act="mode" data-m="signup" class="${su?'on':''}">حساب جديد</button></div>`}
+    ${su?`<div class="field"><label for="an">اسم وليّ الأمر</label><input id="an" type="text" maxlength="30" autocomplete="name" value="${esc(ui.an||'')}"></div>`:''}
+    <div class="field"><label for="ap">رقم الموبايل</label><input id="ap" type="tel" dir="ltr" inputmode="tel" placeholder="09XX XXX XXX" autocomplete="tel" value="${esc(ui.ap||'')}"></div>
+    ${rs?`<div class="field"><label for="ac">رمز إعادة التعيين</label><input id="ac" type="tel" dir="ltr" inputmode="numeric" maxlength="8" placeholder="8 أرقام" autocomplete="one-time-code"></div>`:''}
+    <div class="field"><label for="aw">${rs?'كلمة السر الجديدة':'كلمة السر'}</label><input id="aw" type="password" dir="ltr" autocomplete="${su||rs?'new-password':'current-password'}" placeholder="${su||rs?'٦ أحرف أو أرقام على الأقل':''}"></div>
+    <button class="btn teal wide" id="authb" type="submit">${su?'إنشاء الحساب':rs?'غيّر كلمة السر وادخل':'دخول'}</button>
+    ${msgHTML()}
+    ${su?`<p class="muted center">تجربة مجانية ${ar(APP.set.trialDays)} أيام لكل الأطفال في الحساب</p>`:rs?'':`<button type="button" class="link" data-act="mode" data-m="reset">نسيت كلمة السر؟</button>`}
+    ${demoNote()}
+  </form>`;
+  V.querySelector('.logo svg').style.cssText='width:64px;height:64px';
+  V.querySelector('#authf').addEventListener('submit',async e=>{
+    e.preventDefault();
+    ui.ap=val('ap');if(su)ui.an=val('an');const phone=normPhone(ui.ap),pass=V.querySelector('#aw').value,code=rs?normCode(val('ac')):'';
+    if(!phone){ui.msg={t:'اكتب رقم موبايل سوري صحيح يبدأ بـ ٠٩ ومؤلف من ١٠ أرقام.'};return viewAuth()}
+    if(su&&!ui.an){ui.msg={t:'اكتب اسم وليّ الأمر.'};return viewAuth()}
+    if(rs&&code.length!==8){ui.msg={t:'رمز إعادة التعيين مؤلف من ٨ أرقام.'};return viewAuth()}
+    if(pass.length<6){ui.msg={t:'كلمة السر لازم تكون ٦ أحرف أو أرقام على الأقل.'};return viewAuth()}
+    busy(V.querySelector('#authb'));
+    try{APP.user=su?await API.signUp(phone,ui.an,pass):rs?await API.resetWithCode(phone,code,pass):await API.signIn(phone,pass);ui={};await afterLogin()}
+    catch(err){ui.msg={t:errMsg(err)};viewAuth()}
+  });
+}
+async function afterLogin(){
+  viewLoading();
+  await loadSettings();
+  try{APP.kids=await API.listChildren()}catch(e){APP.kids=[]}
+  await refreshReqs();
+  APP.child=null;S=null;
+  if(isAdmin())return go('admin',true);
+  if(APP.kids.length===1)return pickChild(APP.kids[0].id);
+  go('kids',true);
+  if(!APP.kids.length){ui.keep={edit:null};go('kidForm')}
+}
+function pickChild(id){APP.child=APP.kids.find(k=>k.id===id);S=loadP(id);try{localStorage.setItem('shattoor_last',id)}catch(e){}go('home',true)}
+
+/* ---- اختيار الطفل ---- */
+function viewKids(){
+  V.innerHTML=`
+  <div class="top"><div class="hi"><small>${greet()}</small><h2>${esc(APP.user.name||'أهلاً')}</h2></div>
+    ${isAdmin()?`<button class="btn ghost" style="min-height:40px;padding:6px 14px" data-act="go" data-v="admin">لوحة الأدمن</button>`:''}</div>
+  <h1>مين بدو يلعب اليوم؟</h1>
+  <div class="kids">${APP.kids.map(k=>{const s=hasSubFor(k,k.grade);return`<button class="kid" data-act="pickKid" data-id="${k.id}">
+      <span class="av">${esc((k.name||'؟')[0])}</span><span class="t"><b>${esc(k.name)}</b><small>الصف ${GRADES[k.grade-1]}</small></span>
+      <span class="tag ${s?'ok':trialLeft()>0?'trial':'off'}">${s?'مشترك':trialLeft()>0?'تجربة':'غير مشترك'}</span></button>`}).join('')}
+    <button class="kid add" data-act="go" data-v="kidForm"><span class="av">+</span><b>إضافة طفل</b></button>
+  </div>
+  <button class="btn ghost" data-act="logout">تسجيل الخروج</button>`;
+}
+
+function viewKidForm(){
+  const k=ui.edit?APP.kids.find(x=>x.id===ui.edit):null;
+  if(ui.g==null)ui.g=k?k.grade:1;
+  V.innerHTML=`${back(k?'parent':'kids',k?'تعديل بيانات الطفل':'إضافة طفل')}
+  <form class="panel" id="kf" novalidate>
+    <div class="field"><label for="kn">اسم الطفل</label><input id="kn" type="text" maxlength="20" value="${esc(ui.kn!=null?ui.kn:(k?k.name:''))}"></div>
+    <div class="field"><label>الصف</label>${gradeBtns(ui.g,'kidGrade')}</div>
+    ${k&&k.grade!==ui.g&&!hasSubFor(k,ui.g)?`<p class="muted" style="font-size:.9rem">الاشتراك لكل صف لحاله: الصف ${GRADES[ui.g-1]} بدو اشتراك جديد.</p>`:''}
+    <button class="btn teal" id="kfb" type="submit">${k?'حفظ':'إضافة'}</button>
+    ${msgHTML()}
+  </form>`;
+  V.querySelector('#kf').addEventListener('submit',async e=>{
+    e.preventDefault();const n=val('kn');ui.kn=n;
+    if(!n){ui.msg={t:'اكتب اسم الطفل.'};return viewKidForm()}
+    busy(V.querySelector('#kfb'));
+    try{
+      if(k){await API.updateChild(k.id,{name:n,grade:ui.g});k.name=n;k.grade=ui.g;go('parent',true)}
+      else{const id=await API.addChild({name:n,grade:ui.g});APP.kids.push({id,name:n,grade:ui.g,subs:{}});pickChild(id)}
+    }catch(err){ui.msg={t:errMsg(err)};viewKidForm()}
+  });
+}
+
+/* ---- الرئيسية للطفل ---- */
+function statusHTML(){
+  const c=APP.child,s=subOf(c,c.grade),pend=pendingFor(c,c.grade);
+  if(hasSub())return`<div class="status ok"><span>اشتراك ${planName(s.plan)} للصف ${GRADES[c.grade-1]} حتى ${fmtDay(s.until)}</span></div>`;
+  if(pend)return`<div class="status trial"><span>طلب التفعيل قيد المراجعة</span><button class="btn ghost sm" data-act="go" data-v="sub">التفاصيل</button></div>`;
+  const t=trialLeft();
+  if(t>0)return`<div class="status trial"><span>الفترة التجريبية: ${t===1?'آخر يوم':'باقي '+ar(t)+' أيام'}</span><button class="btn ghost sm" data-act="go" data-v="sub">اشترك</button></div>`;
+  return`<div class="status off"><span>الصف ${GRADES[c.grade-1]} غير مشترك. الحديث اليومي مجاني</span><button class="btn sun sm" data-act="go" data-v="sub">اشترك</button></div>`;
+}
+
+function viewHome(){
+  const c=APP.child,d=dayIdx(),done=S.daily[d],h=todayHadith(),acc=hasAccess();
+  const st=s=>{const x=S.stats[s];return x&&x.t?`${ar(Math.round(100*x.c/x.t))}٪ صحيحة`:'ابدأ أول تمرين'};
+  V.innerHTML=`
+  <div class="top">
+    <div class="hi"><small>${greet()}</small><h2>${esc(c.name)}</h2></div>
+    <span class="pill" title="ياسمينات">${JAS()} ${ar(S.jas)}</span>
+    <span class="pill">الصف ${GRADES[c.grade-1]}</span>
+  </div>
+  ${statusHTML()}
+  <section class="today">
+    <div class="date">${fmtDay(d,{weekday:'long',day:'numeric',month:'long'})}</div>
+    <h1>تحدّي اليوم</h1>
+    <div class="chips">${['math','ar','sci','en','isl'].map(s=>`<span class="chip">${SUBJ[s].n}</span>`).join('')}</div>
+    ${done?`<div class="done-badge">أنجزت تحدي اليوم: ${ar(done.c)} من ${ar(done.t)}. نلتقي غداً بتحدٍّ جديد!</div>`
+      :acc?`<button class="btn sun" data-act="daily">ابدأ التحدي · ${ar(5)} أسئلة</button>`
+      :`<button class="btn sun" data-act="go" data-v="sub">اشترك لتكمل التحديات</button>`}
+    <div class="row" style="font-weight:700;font-size:.95rem"><span>سلسلة الأيام: ${ar(S.streak)}</span><span class="spacer"></span><span>كل جواب صحيح = ${ar(10)} ياسمينات</span></div>
+  </section>
+  <section class="hadith">
+    <div class="label"><span>حديث اليوم</span><span class="free">مجاني دائماً</span></div>
+    <p class="muted" style="font-size:.95rem">قال رسول الله ﷺ:</p>
+    <blockquote>«${h[0]}»</blockquote>
+    <div class="src">${h[1]}</div>
+    <div class="ex">${h[2]}</div>
+  </section>
+  <div class="sec-title"><h2>تمرّن على راحتك</h2><span class="muted" style="font-size:.9rem">${ar(8)} أسئلة لكل تمرين</span></div>
+  <div class="lockveil ${acc?'':'locked'}"><div class="grid">
+    ${['math','ar','sci','en'].map(s=>`<button class="subj" style="--c:${SUBJ[s].c}" data-act="${acc?'practice':'go'}" data-s="${s}" data-v="sub"><span class="ico">${SUBJ[s].i}</span><b>${SUBJ[s].n}</b><small>${st(s)}</small></button>`).join('')}
+    <button class="subj wide" style="--c:${SUBJ.isl.c}" data-act="${acc?'practice':'go'}" data-s="isl" data-v="sub"><span class="ico">${SUBJ.isl.i}</span><span class="t"><b>${SUBJ.isl.n} والأحاديث</b><small>${st('isl')}</small></span></button>
+  </div></div>
+  <div class="links"><button class="btn ghost" data-act="go" data-v="parent">ركن الأهل</button><button class="btn ghost" data-act="go" data-v="sub">الاشتراك</button></div>`;
+}
+
+function viewQuiz(){
+  const it=Q.list[Q.i],sj=SUBJ[it.s],f=it.m?ar:(x=>x);
+  V.innerHTML=`
+  <div class="qbar"><button class="x" data-act="quit" aria-label="خروج">×</button>
+    <div class="prog">${Q.list.map((_,i)=>`<i class="${Q.res[i]===true?'ok':Q.res[i]===false?'no':i===Q.i?'cur':''}"></i>`).join('')}</div>
+    <span class="pill">${JAS()} ${ar(S.jas)}</span></div>
+  <div class="qcard" style="--c:${sj.c}">
+    <div class="tag">${sj.n} · سؤال ${ar(Q.i+1)} من ${ar(Q.list.length)}</div>
+    ${it.pre?`<div class="pre">قال رسول الله ﷺ: «${it.pre}»</div>`:''}
+    <div class="q">${esc(f(it.q))}</div>
+    ${it.en?`<div class="en" dir="ltr">${esc(it.en)}</div>`:''}
+  </div>
+  <div class="opts">${it.opts.map((o,i)=>`<button class="opt" data-act="ans" data-i="${i}" dir="auto">${esc(f(o))}</button>`).join('')}</div>
+  <div id="fb"></div>`;
+}
+
+function answer(i){
+  const it=Q.list[Q.i];if(Q.res[Q.i]!==undefined)return;
+  const ok=it.opts[i]===it.a;Q.res[Q.i]=ok;if(ok)Q.c++;
+  const st=S.stats[it.s]||(S.stats[it.s]={c:0,t:0});st.t++;if(ok)st.c++;
+  if(ok)S.jas+=Q.mode==='daily'?10:5;
+  save();tone(ok);
+  const btns=[...V.querySelectorAll('.opt')];
+  btns.forEach((b,j)=>{b.disabled=true;if(it.opts[j]===it.a)b.classList.add('right');else if(j===i)b.classList.add('wrong')});
+  const prog=V.querySelectorAll('.prog i')[Q.i];prog.className=ok?'ok':'no';
+  V.querySelector('.qbar .pill').innerHTML=`${JAS()} ${ar(S.jas)}`;
+  const f=it.m?ar:(x=>x),praise=['أحسنت!','ممتاز!','برافو عليك!','رائع يا شطّور!'];
+  const last=Q.i===Q.list.length-1;
+  V.querySelector('#fb').innerHTML=`<div class="fb ${ok?'good':'bad'}"><span>${ok?pick(praise)+' +'+ar(Q.mode==='daily'?10:5)+' ياسمينات':'ولا يهمك! الجواب الصحيح: '+esc(f(it.a))}</span><button class="btn ${ok?'teal':'sun'} wide" data-act="next">${last?'شوف النتيجة':'السؤال التالي'}</button></div>`;
+  V.querySelector('#fb button').focus({preventScroll:true});
+  V.querySelector('#fb').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+function finish(){
+  if(Q.mode==='daily'){
+    const d=dayIdx();
+    if(!S.daily[d]){S.streak=(S.lastDaily===d-1)?S.streak+1:1;S.lastDaily=d;S.daily[d]={c:Q.c,t:Q.list.length};}
+    save();
+  }
+  syncSummary();
+  const r=Q.c/Q.list.length,msg=r===1?'علامة كاملة!':r>=.6?'شغل حلو!':'كل يوم أحسن من اللي قبله';
+  V.innerHTML=`<div class="result">${JAS('big')}
+    <h1>${msg}</h1>
+    <div class="score">${ar(Q.c)} / ${ar(Q.list.length)}</div>
+    <p>جمعت <b>${ar(Q.c*(Q.mode==='daily'?10:5))}</b> ياسمينة${Q.mode==='daily'?` · سلسلة الأيام: <b>${ar(S.streak)}</b>`:''}</p>
+    <div style="display:flex;flex-direction:column;gap:10px;width:100%">
+      ${Q.mode==='practice'?`<button class="btn teal wide" data-act="practice" data-s="${Q.s}">تمرين جديد</button>`:''}
+      <button class="btn ${Q.mode==='practice'?'ghost':'teal'} wide" data-act="go" data-v="home">الرجوع للرئيسية</button>
+    </div></div>`;
+  if(r>=.6)confetti();
+  Q=null;
+}
+
+/* ---- ركن الأهل ---- */
+function viewParent(){
+  const c=APP.child,days=Object.keys(S.daily).length;
+  const subs=Object.entries(c.subs||{}).sort((a,b)=>a[0]-b[0]);
+  V.innerHTML=`${back('home','ركن الأهل')}
+  <section class="panel">
+    <h3>تقدّم ${esc(c.name)}</h3>
+    <div class="row between"><span>أيام التحدي المنجزة</span><b>${ar(days)}</b></div>
+    <div class="row between"><span>سلسلة الأيام الحالية</span><b>${ar(S.streak)}</b></div>
+    <div class="row between"><span>مجموع الياسمينات</span><b>${ar(S.jas)}</b></div>
+    ${Object.keys(SUBJ).map(s=>{const x=S.stats[s]||{c:0,t:0},p=x.t?Math.round(100*x.c/x.t):0;return`<div class="stat" style="--c:${SUBJ[s].c}"><div class="row"><span>${SUBJ[s].n}</span><span class="muted">${x.t?ar(x.c)+' من '+ar(x.t)+' · '+ar(p)+'٪':'لا يوجد بعد'}</span></div><div class="bar"><i style="width:${p}%"></i></div></div>`}).join('')}
+  </section>
+  <section class="panel">
+    <h3>اشتراكات ${esc(c.name)}</h3>
+    ${subs.length?subs.map(([g,s])=>`<div class="row between"><span>الصف ${GRADES[g-1]} · ${planName(s.plan)}</span><b class="${s.until>=today()?'okc':'offc'}">${s.until>=today()?'حتى '+fmtDay(s.until):'منتهي'}</b></div>`).join(''):'<p class="muted">لا يوجد اشتراك بعد.</p>'}
+  </section>
+  <section class="panel">
+    <h3>الإعدادات</h3>
+    <button class="btn ghost" data-act="editKid">تعديل الاسم أو الصف</button>
+    <button class="btn ghost" data-act="sound">${S.sound?'إيقاف الأصوات':'تشغيل الأصوات'}</button>
+    ${ui.confirmDel?`<div class="confirm"><b>سيُحذف ${esc(c.name)} وكل تقدّمه من الحساب. متأكد؟</b><div class="row"><button class="btn sun" data-act="delYes">نعم، احذف</button><button class="btn ghost" data-act="delNo">إلغاء</button></div></div>`
+      :`<button class="btn ghost" data-act="delKid">حذف الطفل من الحساب</button>`}
+  </section>
+  <section class="panel">
+    <h3>الحساب</h3>
+    <div class="row between"><span>${esc(APP.user.name)}</span><b dir="ltr">${esc(APP.user.phone)}</b></div>
+    <button class="btn teal" data-act="go" data-v="kids">تبديل الطفل أو إضافة طفل</button>
+    ${isAdmin()?`<button class="btn ghost" data-act="go" data-v="admin">لوحة الأدمن</button>`:''}
+    <button class="btn ghost" data-act="logout">تسجيل الخروج</button>
+  </section>`;
+}
+
+/* ---- الاشتراك ---- */
+function viewSub(){
+  const c=APP.child,g=c.grade,pend=pendingFor(c,g),plan=ui.plan||'monthly',pays=payList(),meth=ui.meth&&pays.includes(ui.meth)?ui.meth:pays[0];
+  V.innerHTML=`${back('home','الاشتراك')}
+  ${statusHTML()}
+  <section class="panel">
+    <h3>اشتراك ${esc(c.name)} · الصف ${GRADES[g-1]}</h3>
+    <p class="muted">كل صف إله اشتراك لحاله. بيفتح التحديات اليومية والتمارين لكل المواد، والحديث اليومي مجاني دائماً.</p>
+    <div class="plans">${Object.entries(PLANS).map(([k,p])=>`<button class="plan ${plan===k?'on':''}" data-act="plan" data-p="${k}" ${pend?'disabled':''}><b>${p.name}</b><span class="price">${esc(price(k))}</span><small>${ar(p.days)} يوم</small></button>`).join('')}</div>
+  </section>
+  ${pend?`<section class="panel"><h3>طلبك قيد المراجعة</h3><p>طلبت اشتراك ${planName(pend.plan)}${pend.method?' ودفعت عبر '+PAY[pend.method]:''}. بعد ما نتأكد من وصول المبلغ بيتفعّل الاشتراك.</p><button class="btn teal" data-act="recheck">تحقّق من التفعيل</button>${msgHTML()}</section>`
+  :`<section class="panel">
+    <h3>طريقة الدفع</h3>
+    ${pays.length?`<div class="methods">${pays.map(k=>`<button class="plan ${meth===k?'on':''}" data-act="meth" data-m="${k}"><b>${PAY[k]}</b></button>`).join('')}</div>
+    <ol class="steps">
+      <li>حوّل ${esc(price(plan))} (اشتراك ${planName(plan)}) عبر <b>${PAY[meth]}</b> إلى: <b dir="ltr" class="sel">${esc(APP.set.pay[meth])}</b></li>
+      <li>ابعت صورة الإيصال على واتساب ${waHTML()} مع رقم موبايلك <b dir="ltr">${esc(APP.user.phone)}</b></li>
+      <li>اضغط الزر تحت، والإدارة بتفعّل الاشتراك.</li>
+    </ol>
+    <button class="btn teal" data-act="request" data-m="${meth}">حوّلت المبلغ، أرسل طلب التفعيل</button>`
+    :`<p>طرق الدفع رح تنضاف قريباً. تواصل مع الإدارة على واتساب ${waHTML()}.</p>`}
+    ${msgHTML()}
+  </section>`}`;
+}
+
+/* ---- لوحة الأدمن ---- */
+async function viewAdmin(){
+  const tab=ui.tab||'req';
+  V.innerHTML=`<div class="top"><div class="hi"><small>شطّور</small><h2>لوحة الإدارة</h2></div>
+    <button class="btn ghost sm" data-act="go" data-v="kids">أطفالي</button><button class="btn ghost sm" data-act="logout">خروج</button></div>
+  <div class="tabs three-t"><button data-act="tab" data-t="req" class="${tab==='req'?'on':''}">الطلبات</button><button data-act="tab" data-t="find" class="${tab==='find'?'on':''}">بحث بالرقم</button><button data-act="tab" data-t="set" class="${tab==='set'?'on':''}">الإعدادات</button></div>
+  <div id="adm"><p class="muted">جارِ التحميل…</p></div>`;
+  const box=V.querySelector('#adm');
+  if(tab==='req'){
+    try{ui.reqs=(await API.pending()).sort((a,b)=>tsDay(a.created)-tsDay(b.created))}catch(e){box.innerHTML=`<p class="msg no">${errMsg(e)}</p>`;return}
+    box.innerHTML=msgHTML()+(ui.reqs.length?ui.reqs.map((r,i)=>`<section class="panel req">
+      <div class="row between"><b>${esc(r.childName)} · الصف ${GRADES[r.grade-1]}</b><span class="tag trial">${planName(r.plan)}</span></div>
+      <div class="row between"><span>${esc(r.parentName||'')}</span><b dir="ltr" class="sel">${esc(r.phone)}</b></div>
+      <div class="muted small">${r.method?'الدفع عبر '+PAY[r.method]+' · ':''}${fmtDay(tsDay(r.created))}</div>
+      <div class="row"><button class="btn teal" data-act="approve" data-i="${i}">تأكد الدفع، فعّل</button><button class="btn ghost" data-act="reject" data-i="${i}">رفض</button></div>
+    </section>`).join(''):`<section class="panel"><p>ما في طلبات جديدة.</p><button class="btn ghost" data-act="tab" data-t="req">تحديث</button></section>`);
+  }else if(tab==='set'){
+    const st=APP.set;
+    box.innerHTML=`<form class="panel" id="sf" novalidate>
+      <h3>الأسعار</h3>
+      <div class="field"><label for="s_m">الاشتراك الشهري (٣٠ يوم)</label><input id="s_m" type="text" value="${esc(st.prices.monthly)}" placeholder="مثلاً: ٢٥٬٠٠٠ ل.س"></div>
+      <div class="field"><label for="s_y">الاشتراك السنوي (٣٦٥ يوم)</label><input id="s_y" type="text" value="${esc(st.prices.yearly)}" placeholder="مثلاً: ٢٥٠٬٠٠٠ ل.س"></div>
+      <div class="field"><label for="s_t">أيام التجربة المجانية للحساب الجديد</label><input id="s_t" type="tel" dir="ltr" inputmode="numeric" value="${esc(st.trialDays)}"></div>
+      <h3>طرق الدفع</h3><p class="muted small">اترك الحقل فاضي لإخفاء طريقة الدفع عن الأهل.</p>
+      ${Object.entries(PAY).map(([k,n])=>`<div class="field"><label for="s_${k}">${n}</label><input id="s_${k}" type="text" dir="ltr" value="${esc(st.pay[k]||'')}" placeholder="${k==='sham'?'رقم الحساب أو الموبايل':'09XX XXX XXX'}"></div>`).join('')}
+      <div class="field"><label for="s_w">رقم واتساب لاستقبال الإيصالات</label><input id="s_w" type="text" dir="ltr" value="${esc(st.whatsapp||'')}" placeholder="09XX XXX XXX"></div>
+      <button class="btn teal" id="sfb" type="submit">حفظ الإعدادات</button>${msgHTML()}
+    </form>`;
+    V.querySelector('#sf').addEventListener('submit',async e=>{e.preventDefault();
+      const t=parseInt(normCode(val('s_t')),10);
+      const ns={trialDays:isNaN(t)?APP.set.trialDays:Math.min(t,60),prices:{monthly:val('s_m'),yearly:val('s_y')},pay:Object.fromEntries(Object.keys(PAY).map(k=>[k,val('s_'+k)])),whatsapp:val('s_w')};
+      busy(V.querySelector('#sfb'),'جارِ الحفظ…');
+      try{await API.saveSettings(ns);APP.set=mergeSettings(ns);try{localStorage.setItem('shattoor_set',JSON.stringify(APP.set))}catch(x){}ui.msg={ok:true,t:'تم حفظ الإعدادات. الأهل بيشوفوا الأسعار الجديدة بأول فتح للتطبيق.'}}
+      catch(err){ui.msg={t:errMsg(err)}}viewAdmin()});
+  }else{
+    const f=ui.found;
+    box.innerHTML=`<form class="panel" id="ff" novalidate><div class="field"><label for="fp">رقم موبايل وليّ الأمر</label><input id="fp" type="tel" dir="ltr" inputmode="tel" placeholder="09XX XXX XXX" value="${esc(ui.fp||'')}"></div><button class="btn teal" type="submit" id="ffb">بحث</button>${msgHTML()}</form>
+    ${f?`<section class="panel"><h3>${esc(f.name)}</h3><div class="row between"><span>رقم الموبايل</span><b dir="ltr">${esc(f.phone)}</b></div><div class="row between"><span>انضم</span><span>${fmtDay(f.created)}</span></div>
+        ${f.reset?`<div class="codebox"><span>رمز إعادة تعيين كلمة السر</span><b class="code sel">${f.reset}</b><small class="muted">ابعته لوليّ الأمر على واتساب. بيدخله من «نسيت كلمة السر؟» بشاشة الدخول.</small><button class="btn ghost sm" data-act="copyCode">نسخ الرمز</button></div>`
+          :`<button class="btn ghost" data-act="mkReset">إعادة تعيين كلمة السر</button>`}</section>
+      ${f.children.length?f.children.map((k,i)=>{const g=ui['g'+i]||k.grade,p=ui['p'+i]||'monthly';return`<section class="panel">
+        <div class="row between"><h3>${esc(k.name)}</h3><span class="muted">حالياً بالصف ${GRADES[k.grade-1]}</span></div>
+        ${Object.entries(k.subs||{}).sort((a,b)=>a[0]-b[0]).map(([sg,s])=>`<div class="row between"><span>الصف ${GRADES[sg-1]} · ${planName(s.plan)} · <b class="${s.until>=today()?'okc':'offc'}">${s.until>=today()?'حتى '+fmtDay(s.until):'منتهي'}</b></span><button class="btn ghost sm" data-act="cancelSub" data-i="${i}" data-g="${sg}">إلغاء</button></div>`).join('')||'<p class="muted">لا يوجد اشتراك.</p>'}
+        <div class="field"><label>الصف</label><div class="grades">${GRADES.map((n,j)=>`<button type="button" data-act="admG" data-i="${i}" data-g="${j+1}" class="${g===j+1?'on':''}"><span>${ar(j+1)}</span>${n}</button>`).join('')}</div></div>
+        <div class="plans">${Object.entries(PLANS).map(([pk,pp])=>`<button class="plan ${p===pk?'on':''}" data-act="admP" data-i="${i}" data-p="${pk}"><b>${pp.name}</b><small>${ar(pp.days)} يوم</small></button>`).join('')}</div>
+        <button class="btn teal" data-act="admAct" data-i="${i}">فعّل اشتراك ${planName(p)} للصف ${GRADES[g-1]}</button>
+      </section>`}).join(''):'<section class="panel"><p class="muted">ما في أطفال بهالحساب بعد.</p></section>'}`:''}`;
+    V.querySelector('#ff').addEventListener('submit',async e=>{e.preventDefault();ui.fp=val('fp');const p=normPhone(ui.fp);ui.found=null;ui.msg=null;
+      if(!p){ui.msg={t:'اكتب رقم موبايل صحيح يبدأ بـ ٠٩.'};return viewAdmin()}
+      busy(V.querySelector('#ffb'),'جارِ البحث…');
+      try{ui.found=await API.findByPhone(p);if(!ui.found)ui.msg={t:'ما في حساب بهالرقم.'}}catch(err){ui.msg={t:errMsg(err)}}
+      Object.keys(ui).filter(k=>/^[gp]\d+$/.test(k)).forEach(k=>delete ui[k]);viewAdmin()});
+  }
+}
+async function reloadFound(){if(ui.found)ui.found=await API.findByPhone(ui.found.phone)}
+
+/* ---- التنقّل وزر الرجوع في تطبيق الأندرويد ---- */
+const IN_APP=location.protocol==='file:';
+function push(v){if(!IN_APP)return;try{if(history.state)history.replaceState({v},'','#'+v);else history.pushState({v},'','#'+v)}catch(e){}}
+const rootView=()=>!APP.user?'auth':APP.child?'home':isAdmin()?'admin':'kids';
+window.addEventListener('popstate',()=>{Q=null;go(rootView(),true)});
+const VIEWS={auth:viewAuth,kids:viewKids,kidForm:viewKidForm,home:viewHome,parent:viewParent,sub:viewSub,admin:viewAdmin};
+function go(v,fromPop){
+  v=v||rootView();
+  if(!APP.user)v='auth';
+  if((v==='home'||v==='parent'||v==='sub')&&!APP.child)v=isAdmin()?'admin':'kids';
+  if(v==='admin'&&!isAdmin())v='kids';
+  if(v==='kids'){APP.child=null;S=null}
+  const keep=ui.keep;ui={tab:ui.tab,mode:ui.mode};if(keep)Object.assign(ui,keep);
+  if(v!==rootView())push(v);else if(IN_APP&&!fromPop&&history.state){history.back();return}
+  VIEWS[v]();window.scrollTo(0,0);
+}
+
+document.addEventListener('click',async e=>{
+  const b=e.target.closest('[data-act]');if(!b||b.disabled)return;const a=b.dataset.act;
+  if(a==='mode'){ui.ap=val('ap')||ui.ap;ui.mode=b.dataset.m;ui.msg=null;viewAuth()}
+  else if(a==='go'){if(b.dataset.v==='kidForm')ui.keep={edit:null};go(b.dataset.v)}
+  else if(a==='pickKid')pickChild(b.dataset.id);
+  else if(a==='kidGrade'){ui.kn=val('kn');ui.g=+b.dataset.g;viewKidForm()}
+  else if(a==='editKid'){ui.keep={edit:APP.child.id};go('kidForm')}
+  else if(a==='logout'){await API.signOut();APP.user=null;APP.child=null;APP.kids=[];S=null;ui={};go('auth',true)}
+  else if(a==='daily'){if(!hasAccess())return go('sub');Q={mode:'daily',list:buildDaily(APP.child.grade),i:0,c:0,res:[]};push('quiz');viewQuiz();window.scrollTo(0,0)}
+  else if(a==='practice'){if(!hasAccess())return go('sub');const s=b.dataset.s;Q={mode:'practice',s,list:buildPractice(s,APP.child.grade),i:0,c:0,res:[]};push('quiz');viewQuiz();window.scrollTo(0,0)}
+  else if(a==='ans')answer(+b.dataset.i);
+  else if(a==='next'){Q.i++;if(Q.i>=Q.list.length)finish();else{viewQuiz();window.scrollTo(0,0)}}
+  else if(a==='quit'){Q=null;go('home')}
+  else if(a==='sound'){S.sound=!S.sound;save();viewParent()}
+  else if(a==='delKid'){ui.confirmDel=true;viewParent()}
+  else if(a==='delNo'){ui.confirmDel=false;viewParent()}
+  else if(a==='delYes'){const id=APP.child.id;busy(b);try{await API.deleteChild(id);try{localStorage.removeItem('shattoor_p_'+id)}catch(x){}APP.kids=APP.kids.filter(k=>k.id!==id);go('kids')}catch(err){ui.confirmDel=false;viewParent()}}
+  else if(a==='plan'){ui.plan=b.dataset.p;ui.msg=null;viewSub()}
+  else if(a==='meth'){ui.meth=b.dataset.m;ui.msg=null;viewSub()}
+  else if(a==='mkReset'){busy(b);try{const k=await API.makeReset(ui.found.phone);ui.found.reset=k;ui.msg=null}catch(err){ui.msg={t:errMsg(err)}}viewAdmin()}
+  else if(a==='copyCode'){const t=ui.found.reset;const el=V.querySelector('.codebox .code');const sel=()=>{const r=document.createRange();r.selectNodeContents(el);const g=getSelection();g.removeAllRanges();g.addRange(r)};try{navigator.clipboard.writeText(t).then(()=>{b.textContent='تم النسخ'},sel)}catch(err){sel()}}
+  else if(a==='request'){const c=APP.child;busy(b,'جارِ الإرسال…');
+    try{await API.requestSub({phone:APP.user.phone,parentName:APP.user.name,childId:c.id,childName:c.name,grade:c.grade,plan:ui.plan||'monthly',method:b.dataset.m||''});await refreshReqs();ui.msg={ok:true,t:'وصل طلبك. رح يتفعّل الاشتراك بعد التأكد من الدفع.'}}
+    catch(err){ui.msg={t:errMsg(err)}}viewSub()}
+  else if(a==='recheck'){busy(b,'جارِ التحقق…');
+    try{APP.kids=await API.listChildren();APP.child=APP.kids.find(k=>k.id===APP.child.id)||APP.child;await refreshReqs();
+      ui.msg=hasSub()?{ok:true,t:'تم التفعيل!'}:{t:'لسا ما تفعّل. جرّب بعد شوي.'}}catch(err){ui.msg={t:errMsg(err)}}
+    if(hasSub()){go('home',true)}else viewSub()}
+  else if(a==='tab'){ui.tab=b.dataset.t;ui.msg=null;ui.found=null;viewAdmin()}
+  else if(a==='approve'||a==='reject'){const r=ui.reqs[+b.dataset.i];busy(b);
+    try{if(a==='approve'){const s=await API.activate(r.phone,r.childId,r.grade,r.plan);await API.resolve(r.id,'approved');ui.msg={ok:true,t:`تفعّل اشتراك ${esc(r.childName)} للصف ${GRADES[r.grade-1]} حتى ${fmtDay(s.until)}`}}
+      else{await API.resolve(r.id,'rejected');ui.msg={ok:true,t:'تم رفض الطلب.'}}}
+    catch(err){ui.msg={t:errMsg(err)}}viewAdmin()}
+  else if(a==='admG'){ui['g'+b.dataset.i]=+b.dataset.g;viewAdmin()}
+  else if(a==='admP'){ui['p'+b.dataset.i]=b.dataset.p;viewAdmin()}
+  else if(a==='admAct'){const i=+b.dataset.i,k=ui.found.children[i],g=ui['g'+i]||k.grade,p=ui['p'+i]||'monthly';busy(b);
+    try{const s=await API.activate(ui.found.phone,k.id,g,p);
+      const pr=(await API.pending()).filter(r=>r.childId===k.id&&r.grade===g);for(const r of pr)await API.resolve(r.id,'approved');
+      ui.msg={ok:true,t:`تفعّل اشتراك ${esc(k.name)} للصف ${GRADES[g-1]} حتى ${fmtDay(s.until)}`};await reloadFound()}
+    catch(err){ui.msg={t:errMsg(err)}}viewAdmin()}
+  else if(a==='cancelSub'){const k=ui.found.children[+b.dataset.i];busy(b);try{await API.cancelSub(ui.found.phone,k.id,b.dataset.g);ui.msg={ok:true,t:'تم إلغاء الاشتراك.'};await reloadFound()}catch(err){ui.msg={t:errMsg(err)}}viewAdmin()}
+});
+
+(async()=>{
+  try{if(IN_APP&&history.state)history.replaceState(null,'',location.pathname)}catch(e){}
+  viewLoading();
+  try{APP.user=await API.init()}catch(e){APP.user=null}
+  await loadSettings();
+  if(!APP.user)return go('auth',true);
+  try{APP.kids=await API.listChildren()}catch(e){APP.kids=[]}
+  await refreshReqs();
+  let last=null;try{last=localStorage.getItem('shattoor_last')}catch(e){}
+  if(!isAdmin()&&last&&APP.kids.some(k=>k.id===last))return pickChild(last);
+  if(!isAdmin()&&APP.kids.length===1)return pickChild(APP.kids[0].id);
+  go(isAdmin()?'admin':'kids',true);
+})();
+
+</script>
