@@ -1,0 +1,75 @@
+name: جلب الكتب الناقصة مع OCR
+on:
+  push:
+    branches: [main]
+    paths: [".github/workflows/books4.yml"]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  book:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      max-parallel: 13
+      matrix:
+        b:
+          - "1-math 1Blj8hRL-FFOtRsxwYOsKLsrV6LF2j3LE"
+          - "2-math 1wLgNb3Dil5MclKuxZKfaqr_kBB_Z8GxJ"
+          - "3-math 1z9SWeTX6m22o1VZxp8c83v5Ml_SpwecL"
+          - "4-math 1W3xpr5kqVg2-VbyK8EFy1OiD3aWwqEmG"
+          - "5-math 1Bs9zEFWJKeSopGyaHHuyhONL-r9GnXxY"
+          - "6-math 1iZjTjcNN4xHGV_WeBWllCOYC_qtx8FBA"
+          - "5-sci 1eg3Pmv5oEsny-oKaT_2nmJpOlpzuHbWv"
+          - "6-sci 1H0N84ue_RUQ7jclGqS_Dl6dOSABl3Csx"
+          - "1-isl 1OS3t9ODJ2tGkhksvN4d202MNyFEaY9HI"
+          - "4-isl 14fLMHpwPyXXJzV4tmQUB6GQVRhr1B8Hu"
+          - "5-isl 1ngVYSQkM8ZIn8j2Pz_Pft1_SE7EFVF7k"
+          - "6-isl 1GgtZJiz3McdVK5vv92mrz5JSLi39Wuwq"
+          - "6-ar 1yPZVdQASL3hpifRf76VKHlO1kdGkzbIY"
+    steps:
+      - run: sudo apt-get update -qq && sudo apt-get install -y -qq poppler-utils tesseract-ocr tesseract-ocr-ara >/dev/null && python3 -m pip install -q --user gdown
+      - name: تنزيل وقراءة
+        run: |
+          set -x
+          NAME=$(echo "${{ matrix.b }}" | cut -d' ' -f1); ID=$(echo "${{ matrix.b }}" | cut -d' ' -f2)
+          echo "NAME=$NAME" >> $GITHUB_ENV
+          mkdir -p out
+          for i in 1 2 3 4 5 6; do
+            python3 -m gdown "$ID" -O b.pdf || true
+            [ "$(head -c4 b.pdf 2>/dev/null)" = "%PDF" ] && break
+            curl -sL -o b.pdf "https://drive.usercontent.google.com/download?id=$ID&export=download&confirm=t" || true
+            [ "$(head -c4 b.pdf 2>/dev/null)" = "%PDF" ] && break
+            sleep $((i*30))
+          done
+          [ "$(head -c4 b.pdf)" = "%PDF" ] || { echo MISS > out/$NAME.txt; exit 0; }
+          NP=$(pdfinfo b.pdf | awk '/^Pages/{print $2}')
+          pdftotext -layout b.pdf out/$NAME.txt
+          SZ=$(stat -c%s out/$NAME.txt)
+          if [ $((SZ / NP)) -lt 400 ]; then
+            mkdir -p p && pdftoppm -r 170 -gray -png b.pdf p/x
+            export OMP_THREAD_LIMIT=1
+            ls p/*.png | xargs -P 4 -I{} sh -c 'tesseract {} {}.o -l ara+eng --psm 4 >/dev/null 2>&1'
+            : > out/$NAME.txt
+            for f in $(ls p/*.png | sort -V); do echo "===== $(basename $f)" >> out/$NAME.txt; cat $f.o.txt >> out/$NAME.txt; done
+          fi
+          echo "pages=$NP" >> out/$NAME.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.NAME }}
+          path: out/
+  save:
+    needs: book
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          path: /tmp/a
+      - run: |
+          git config user.name "shattoor-ci"; git config user.email "ci@shattoor.app"
+          git checkout --orphan ocr-tmp && git rm -rqf . && git clean -fdq
+          find /tmp/a -name '*.txt' -exec cp {} . \;
+          git add -A && git commit -qm "كتب ناقصة" && git push -f origin ocr-tmp:books-ocr
