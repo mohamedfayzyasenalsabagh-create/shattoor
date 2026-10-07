@@ -16,7 +16,7 @@ def ocr(pdf, txt, pages):
     subprocess.run(['pdftoppm', '-r', '150', '-gray', '-png', pdf, f'{tmp}/p'], timeout=1800)
     out = []
     for png in sorted(glob.glob(f'{tmp}/p-*.png')):
-        r = subprocess.run(['tesseract', png, '-', '-l', 'ara+eng', '--psm', '4'], capture_output=True, text=True, timeout=120)
+        r = subprocess.run(['tesseract', png, '-', '-l', 'ara+eng', '--psm', '4'], capture_output=True, text=True, timeout=400, env=dict(os.environ, OMP_THREAD_LIMIT='1'))
         out.append(f'\n===== صفحة {png.rsplit("-",1)[1][:-4]} =====\n' + r.stdout)
     open(txt, 'w').write(''.join(out)); subprocess.run(['rm', '-rf', tmp])
 def textify(pdf, txt):
@@ -29,9 +29,13 @@ def textify(pdf, txt):
 for i, it, fid in todo:
     pdf = f'/tmp/r{i}.pdf'; ok = False
     for attempt in range(3):
-        subprocess.run(['python3', '-m', 'gdown', fid, '-O', pdf], capture_output=True, text=True, timeout=300)
-        if os.path.exists(pdf) and open(pdf, 'rb').read(4) == b'%PDF': ok = True; break
-        time.sleep(90)
+        for cmd in (['curl', '-sL', '--max-time', '400', '-o', pdf, f'https://drive.usercontent.google.com/download?id={fid}&export=download&confirm=t'],
+                    ['python3', '-m', 'gdown', fid, '-O', pdf]):
+            try: subprocess.run(cmd, capture_output=True, timeout=420)
+            except Exception: pass
+            if os.path.exists(pdf) and open(pdf, 'rb').read(4) == b'%PDF': ok = True; break
+        if ok: break
+        time.sleep(60)
     if not ok:
         log.write(f'MISS {it["grade"]} {fid} {it["label"][-70:]}\n'); log.flush(); continue
     name = f'{it["grade"]}-{it["subj"]}-{i}'; os.makedirs(f'out/{it["grade"]}', exist_ok=True)
@@ -43,9 +47,11 @@ for i, it, fid in todo:
 def redo(x):
     try:
         m = re.search(r'/file/d/([\w-]{20,})', x['href'])
-        if not m or x['chars'] / max(x['pages'] or 1, 1) >= 300: return
+        if not m or x.get('ocr') or x['chars'] / max(x['pages'] or 1, 1) >= 300: return
         pdf = f'/tmp/o{abs(hash(m.group(1)))}.pdf'
-        subprocess.run(['python3', '-m', 'gdown', m.group(1), '-O', pdf], capture_output=True, timeout=300)
+        subprocess.run(['curl', '-sL', '--max-time', '400', '-o', pdf, f'https://drive.usercontent.google.com/download?id={m.group(1)}&export=download&confirm=t'], capture_output=True, timeout=420)
+        if not (os.path.exists(pdf) and open(pdf, 'rb').read(4) == b'%PDF'):
+            subprocess.run(['python3', '-m', 'gdown', m.group(1), '-O', pdf], capture_output=True, timeout=300)
         if os.path.exists(pdf) and open(pdf, 'rb').read(4) == b'%PDF':
             ocr(pdf, 'out/' + x['file'], x['pages']); x['chars'] = os.path.getsize('out/' + x['file']); x['ocr'] = True
             log.write(f'OCR {x["file"]} chars={x["chars"]}\n'); log.flush()
