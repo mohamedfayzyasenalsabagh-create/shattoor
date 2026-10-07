@@ -53,7 +53,7 @@ log.write(f'JOBS {len(jobs)}\n'); log.flush()
 def work(job):
     i, it, fid = job; pdf = f'/tmp/b{i}.pdf'
     try:
-        r = subprocess.run(['python3', '-m', 'gdown', '--fuzzy', f'https://drive.google.com/uc?id={fid}', '-O', pdf], capture_output=True, text=True, timeout=240)
+        r = subprocess.run(['python3', '-m', 'gdown', fid, '-O', pdf], capture_output=True, text=True, timeout=240)
         err = r.stderr[-200:].replace('\n', ' ')
     except Exception as e:
         err = 'TIMEOUT ' + str(e)[:80]
