@@ -6,7 +6,7 @@ for f in glob.glob('node_modules/@fontsource/tajawal/files/tajawal-*-normal.woff
     if any(x in b for x in ('-arabic-','-latin-')) and '-latin-ext-' not in b: shutil.copy(f,out+'/fonts/'+b)
 open(out+'/.nojekyll','w').close()
 if os.path.exists('app/curriculum.js'):
-    parts=[open('app/curriculum.js').read()]+[open(f).read() for f in sorted(glob.glob('build-tools/content/*.js'))]
+    parts=[open('app/curriculum.js').read()]+['(function(){\n'+open(f).read()+'\n})();' for f in sorted(glob.glob('build-tools/content/*.js'))]
     open(out+'/curriculum.js','w').write('\n'.join(parts))
 if os.path.isdir('app/assets'):
     shutil.copytree('app/assets',out+'/assets',dirs_exist_ok=True)
