@@ -3,6 +3,9 @@ import re, os, subprocess, urllib.parse, json, time
 BASE = 'https://curricula.moed.gov.sy/'
 os.makedirs('out', exist_ok=True)
 log = open('out/LOG.txt', 'w')
+for probe in ['https://curricula.moed.gov.sy/', 'http://curricula.moed.gov.sy/', 'https://curricula.moed.gov.sy/curricula-2026-2025/01/1-arabic-1.pdf', 'http://curricula.moed.gov.sy/curricula-2026-2025/01/1-arabic-1.pdf', 'https://moed.gov.sy/', 'http://www.moed.gov.sy/altlym-alam/alsf-althalth']:
+    r = subprocess.run(['curl', '-skIL', '--max-time', '40', '-A', 'Mozilla/5.0', probe], capture_output=True, text=True)
+    log.write('PROBE ' + probe + '\n' + r.stdout[:800] + '\nERR ' + r.stderr[:300] + '\n')
 def get(url, binary=False):
     r = subprocess.run(['curl', '-skL', '--max-time', '120', '-A', 'Mozilla/5.0', url], capture_output=True)
     return r.stdout if binary else r.stdout.decode('utf-8', 'ignore')
