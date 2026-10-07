@@ -1,0 +1,24 @@
+name: جلب كتب المنهاج (مكتبة المدرسة الافتراضية)
+on:
+  push:
+    branches: [main]
+    paths: [".github/workflows/books3.yml", "build-tools/fetch_scv.py"]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  scv:
+    runs-on: ubuntu-latest
+    timeout-minutes: 240
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo apt-get update -qq && sudo apt-get install -y -qq poppler-utils tesseract-ocr tesseract-ocr-ara >/dev/null
+      - run: python3 -m pip install -q --user gdown
+      - run: timeout 12000 python3 build-tools/fetch_scv.py || echo FAILED >> out/LOG.txt
+      - name: حفظ
+        if: always()
+        run: |
+          mkdir -p /tmp/b && cp -r out/* /tmp/b/
+          git config user.name "shattoor-ci"; git config user.email "ci@shattoor.app"
+          git checkout --orphan scv-tmp && git rm -rqf . && git clean -fdq
+          cp -r /tmp/b/* . && git add -A && git commit -qm "كتب المدرسة الافتراضية" && git push -f origin scv-tmp:books-scv
