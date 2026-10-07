@@ -459,20 +459,37 @@ function schoolPos(){const t=Date.now();if(t<CAL.s2-14*864e5){return{sem:1,week:
 const curOf=(g,s)=>(window.CUR&&CUR[g]&&CUR[g][s])||[];
 const semLessons=(g,s,sem)=>curOf(g,s).map((l,i)=>Object.assign({i},l)).filter(l=>l.sem===sem);
 function currentLesson(g,s){const p=schoolPos(),L=semLessons(g,s,p.sem);if(!L.length)return null;const W=p.sem===1?CAL.w1:CAL.w2;const k=Math.min(L.length-1,Math.floor(Math.min(p.week,W-1)/W*L.length));return{lesson:L[k],k,L}}
-function lessonQ(g,s,l){
-  let q=null;
-  if(l.gen&&l.gen.length&&window.MATHG){const f=MATHG[pick(l.gen)];if(f)q=f(g)}
-  if(!q&&l.q&&l.q.length){const e=pick(l.q);if(e.kind)q=Object.assign({},e);else{const[qq,en]=String(e[0]).split('||');q=mc(qq,e[1],e.slice(2),Object.assign({m:/^[0-9٠-٩٫.,/ ]+$/.test(e[1])},en?{en}:{}))}}
+// منع التكرار: نتذكر آخر الأسئلة اللي شافها الطفل ونفضّل الجديدة
+const qKey=q=>(q.q||'')+'|'+(q.en||'')+'|'+(q.pre||'')+'|'+(q.a||'');
+const seenSet=()=>{if(!S)return new Set();S.seen=S.seen||[];return new Set(S.seen)};
+function markSeen(q){if(!S)return;S.seen=S.seen||[];const k=qKey(q);const i=S.seen.indexOf(k);if(i>=0)S.seen.splice(i,1);S.seen.push(k);if(S.seen.length>600)S.seen.splice(0,S.seen.length-600)}
+function bankItem(e){if(e.kind)return Object.assign({},e);const[qq,en]=String(e[0]).split('||');return mc(qq,e[1],e.slice(2),Object.assign({m:/^[0-9٠-٩٫.,/ ]+$/.test(e[1])},en?{en}:{}))}
+function lessonQ(g,s,l,avoid){
+  let q=null;avoid=avoid||seenSet();
+  if(l.gen&&l.gen.length&&window.MATHG){for(let t=0;t<12;t++){const f=MATHG[pick(l.gen)];if(!f)break;q=f(g);if(!avoid.has(qKey(q)))break}}
+  if(!q&&l.q&&l.q.length){const items=shuf(l.q).map(bankItem);q=items.find(x=>!avoid.has(qKey(x)))||items[0]}
   if(!q)q=GEN_FOR[s](g);
   return Object.assign({s,lt:l.t},q);
 }
 function buildDaily(g){
   const d=dayIdx(),old=R;R=mulberry32(hash('daily|'+d+'|'+g));
-  try{return['math','ar','sci','en'].map(s=>{const c=currentLesson(g,s);if(c){const pool=c.L.slice(Math.max(0,c.k-2),c.k+1);return lessonQ(g,s,pick(pool))}return Object.assign({s},GEN_FOR[s](g))}).concat([Object.assign({s:'isl'},hadithQ(todayHadith()))])}finally{R=old}
+  const av=seenSet();
+  try{return['math','ar','sci','en'].map(s=>{const c=currentLesson(g,s);if(c){const pool=shuf(c.L.slice(Math.max(0,c.k-2),c.k+1));for(const l of pool){const q=lessonQ(g,s,l,av);if(!av.has(qKey(q)))return q}return lessonQ(g,s,pool[0],av)}return Object.assign({s},GEN_FOR[s](g))}).concat([Object.assign({s:'isl'},hadithQ(todayHadith()))])}finally{R=old}
 }
-function buildPractice(s,g,li){const out=[],seen=new Set();let k=0;const L=li!=null?curOf(g,s)[li]:null;
-  while(out.length<8&&k++<80){const q=L?lessonQ(g,s,L):Object.assign({s},GEN_FOR[s](g)),key=q.q+'|'+(q.en||'')+'|'+(q.pre||'')+'|'+(q.a||'');if(!seen.has(key)){seen.add(key);out.push(q)}else if(k>40&&L&&out.length<4){out.push(q)}}
-  return out}
+function buildPractice(s,g,li){
+  const N=8,out=[],used=new Set(),old=seenSet(),all=curOf(g,s),L=li!=null?all[li]:null;
+  const add=q=>{const k=qKey(q);if(used.has(k))return false;used.add(k);out.push(q);return true};
+  const fromLesson=(l,fresh)=>{if(l.gen&&l.gen.length){for(let t=0;t<30&&out.length<N;t++){const q=lessonQ(g,s,l,new Set([...old,...used]));if(fresh&&old.has(qKey(q)))continue;add(q)}}else{shuf(l.q||[]).map(bankItem).forEach(x=>{if(out.length>=N)return;if(fresh&&old.has(qKey(x)))return;add(Object.assign({s,lt:l.t},x))})}};
+  if(L){
+    fromLesson(L,true);                                   // أسئلة الدرس الجديدة أولاً
+    if(out.length<N){const sib=shuf(all.filter(x=>x!==L&&x.sem===L.sem&&x.unit===L.unit));sib.forEach(x=>fromLesson(x,true))}   // دروس نفس الوحدة
+    if(out.length<N)fromLesson(L,false);                  // ثم ما سبق رؤيته من الدرس
+  }else{
+    const p=schoolPos(),pool=shuf(all.filter(x=>x.sem===p.sem));pool.forEach(x=>{if(out.length<N)fromLesson(x,true)});
+  }
+  for(let t=0;out.length<N&&t<80;t++){const q=Object.assign({s},GEN_FOR[s](g));if(!old.has(qKey(q))||t>40)add(q)}  // تكملة من بنك المادة العام
+  return shuf(out).slice(0,N);
+}
 
 /* ================== الحسابات والبيانات ================== */
 const AR2EN=s=>String(s).replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace(/[۰-۹]/g,d=>'۰۱۲۳۴۵۶۷۸۹'.indexOf(d));
@@ -785,7 +802,7 @@ function answer(i){
 }
 const POINTS=()=>Q.mode==='daily'?10:Q.mode==='surah'?0:5;
 function grade(ok,answerText){
-  const it=Q.list[Q.i];Q.res[Q.i]=ok;if(ok)Q.c++;stopSpeak();
+  const it=Q.list[Q.i];Q.res[Q.i]=ok;if(ok)Q.c++;stopSpeak();markSeen(it);
   if(Q.mode!=='surah'){const st=S.stats[it.s]||(S.stats[it.s]={c:0,t:0});st.t++;if(ok)st.c++;
     S.hist=S.hist||{};const d=today(),hd=S.hist[d]||(S.hist[d]={}),hs=hd[it.s]||(hd[it.s]={c:0,t:0});hs.t++;if(ok)hs.c++;
     const keys=Object.keys(S.hist).map(Number).sort((a,b)=>a-b);while(keys.length>60)delete S.hist[keys.shift()];}
@@ -973,7 +990,7 @@ function speak(text,lang){
     const v=ss.getVoices().find(x=>x.lang&&x.lang.toLowerCase().startsWith(lang==='en'?'en':'ar'));if(v)u.voice=v;ss.speak(u)}catch(e){}
 }
 function stopSpeak(){try{if(NATIVE&&NATIVE.stopSpeak)NATIVE.stopSpeak();else if(window.speechSynthesis)speechSynthesis.cancel()}catch(e){}}
-const autoRead=()=>S&&(S.autoRead!=null?S.autoRead:APP.child&&APP.child.grade<=2);
+const autoRead=()=>!!(S&&S.autoRead===true);
 function speakItem(it){
   if(it.kind==='spell'){speak(it.lang==='en'?'رتّب الحروف لتكتب الكلمة':'رتّب الحروف لتكتب اسم الصورة');return}
   const q=it.q.replace(/\n/g,'. ');
