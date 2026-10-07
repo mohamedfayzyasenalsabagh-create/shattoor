@@ -5,6 +5,8 @@ for f in glob.glob('node_modules/@fontsource/tajawal/files/tajawal-*-normal.woff
     b=os.path.basename(f)
     if any(x in b for x in ('-arabic-','-latin-')) and '-latin-ext-' not in b: shutil.copy(f,out+'/fonts/'+b)
 open(out+'/.nojekyll','w').close()
+if os.path.isdir('app/assets'):
+    shutil.copytree('app/assets',out+'/assets',dirs_exist_ok=True)
 import re
 s=open(sys.argv[1]).read()
 s=re.sub(r'<link rel="preconnect"[^>]*>\s*<link rel="stylesheet"[^>]*>','',s)

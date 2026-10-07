@@ -56,8 +56,13 @@ service cloud.firestore {
       }
     }
 
+    // الإحصائيات: الأدمن يقرأ كل الأطفال
+    match /{path=**}/children/{cid} {
+      allow read: if isAdmin();
+    }
+
     match /requests/{rid} {
-      allow create: if signedIn()
+      allow create: if isAdmin() || signedIn()
         && request.resource.data.uid == request.auth.uid
         && isOwner(request.resource.data.phone)
         && request.resource.data.status == 'pending';

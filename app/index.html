@@ -161,6 +161,47 @@ input:focus{border-color:var(--teal);outline:none}
 .req{gap:8px}
 .copyright{color:var(--muted);font-size:.75rem;text-align:center;opacity:.85;padding-inline:16px;padding-block:0 24px;max-width:520px;margin:0 auto}
 .copyright span{direction:ltr;unicode-bidi:isolate}
+.four-t{grid-template-columns:repeat(4,1fr)}.four-t button{font-size:.85rem;padding:10px 2px}
+.spk{width:40px;height:40px;border-radius:12px;background:var(--ground);font-size:1.2rem;flex:none}
+.hadith .label .spk{width:34px;height:34px;font-size:1rem;margin-inline-start:6px;vertical-align:middle}
+.ava{width:48px;height:48px;border-radius:50%;background:var(--card);border:2px solid var(--sun);display:grid;place-items:center;font-size:1.7rem;flex:none}
+.ava.big{width:60px;height:60px;font-size:2.2rem}
+button.pill{cursor:pointer}
+.store{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.item{background:var(--card);border:2px solid var(--line);border-radius:18px;padding:10px 6px;display:flex;flex-direction:column;align-items:center;gap:2px;text-align:center}
+.item .e{font-size:2.2rem;line-height:1.2}.item b{font-size:.85rem}.item small{color:var(--muted);font-size:.75rem}
+.item.on{border-color:var(--teal);background:#DFF1EF}.item[aria-disabled=true]{opacity:.55}
+.badges{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.badge{background:var(--card);border-radius:16px;padding:8px 4px;display:flex;flex-direction:column;align-items:center;text-align:center;filter:grayscale(1);opacity:.45}
+.badge span{font-size:1.7rem}.badge small{font-size:.7rem;font-weight:700}.badge.got{filter:none;opacity:1;border:2px solid var(--sun)}
+.quran p{font-family:var(--display);font-size:1.5rem;line-height:1.9;margin:0}
+.ayah{color:var(--isl);font-size:1rem}
+.quranpre{font-size:1.35rem}.qopt{font-size:1.05rem;font-family:var(--display);grid-column:1/-1;font-weight:400}
+.pic{font-size:3.6rem;text-align:center;line-height:1.2}
+.slot{min-height:64px;border:3px dashed var(--line);border-radius:16px;display:grid;place-items:center;font-size:2rem;font-weight:800;letter-spacing:.04em}
+.slot.right{border:3px solid var(--leaf);background:#DDF2E4}.slot.wrong{border:3px solid var(--pom);background:#FBDDE2}
+.tiles-row{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+.tilebtn{width:64px;height:64px;border-radius:16px;background:var(--card);border:2px solid var(--line);box-shadow:0 4px 0 var(--line);font-size:1.8rem;font-weight:800}
+.tilebtn[disabled]{opacity:.25;box-shadow:none}
+.week{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.week span{text-align:center;border-radius:10px;padding:6px 0;background:var(--ground);color:var(--muted);font-weight:800;font-size:.85rem}
+.week span.on{background:var(--leaf);color:#fff}
+.tip{background:#FFF1D6;border-radius:12px;padding:10px 12px;font-size:.95rem}
+.cert{width:100%;border-radius:18px;box-shadow:0 6px 24px #0e7c7733}
+.sham{display:flex;flex-direction:column;align-items:center;gap:8px;margin-top:10px;text-align:center}
+.sham img{width:min(260px,100%);border-radius:16px;background:#fff}
+.small-code{font-size:.95rem!important;letter-spacing:0!important;word-break:break-all}
+.qrprev img{width:160px;border-radius:12px;background:#fff}
+input[type=file]{font:inherit;font-size:.9rem}
+input[type=time]{font:inherit;font-size:1.1rem;padding:8px 10px;border-radius:12px;border:2px solid var(--line);background:var(--card);color:var(--ink)}
+.tiles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.tile{background:var(--card);border:1.5px solid var(--line);border-radius:18px;padding:14px;display:flex;flex-direction:column;gap:2px}
+.tile b{font-family:var(--display);font-size:1.8rem;color:var(--teal);font-weight:400;font-variant-numeric:tabular-nums}.tile span{color:var(--muted);font-size:.9rem}
+.tile.ok b{color:var(--leaf)}
+.gbar{display:grid;grid-template-columns:64px 1fr 32px;align-items:center;gap:8px;font-size:.9rem}
+.exp{display:flex;justify-content:space-between;align-items:center;gap:10px;padding-block:8px;border-bottom:1px solid var(--line)}
+.exp:last-child{border-bottom:0}.exp>div{min-width:0}
+a.btn{text-decoration:none;white-space:nowrap}
 .three-t{grid-template-columns:repeat(3,1fr)}
 .link{color:var(--teal);font-weight:800;text-decoration:underline;text-underline-offset:4px;padding:6px;align-self:center}
 .center{text-align:center}.small{font-size:.85rem}
@@ -183,13 +224,15 @@ const CONFIG = {
   defaults: {
     trialDays: 7,
     prices: { monthly: 'يُحدَّد لاحقاً', yearly: 'يُحدَّد لاحقاً' },
-    pay: { syriatel: '', mtn: '', sham: '' },
+    pay: { syriatel: '', mtn: '', sham: 'a36711eeff08f6ce348f796383159a22' },
+    shamName: 'محمد فائز صالح ياسين الصباغ',
+    shamQr: 'assets/shamcash.png',
     whatsapp: ''
   }
 };
 const PLANS = { monthly: { name: 'شهري', days: 30 }, yearly: { name: 'سنوي', days: 365 } };
 const PAY = { syriatel: 'سيريتل كاش', mtn: 'MTN كاش', sham: 'شام كاش' };
-const VERSION = '0.5.1';
+const VERSION = '0.6';
 
 /* ================== أدوات ================== */
 const AD='٠١٢٣٤٥٦٧٨٩';
@@ -351,6 +394,36 @@ const hadithQ=h=>mc(h[3],h[4],h.slice(5),{pre:h[0]});
 const gIsl=()=>R()<.5?(e=>mc(e[0],e[1],e.slice(2)))(pick(ISL)):hadithQ(pick(HADITH));
 const todayHadith=()=>HADITH[((dayIdx()%HADITH.length)+HADITH.length)%HADITH.length];
 
+/* ---- أنواع أسئلة إضافية ---- */
+// رتّب الحروف لتكتب اسم الصورة
+const SPELL_AR=WORDS.filter(w=>w[0].length>=3&&w[0].length<=5);
+const VOC_SPELL=VOC.filter(w=>w[1].length>=3&&w[1].length<=6);
+function mkSpell(word,pic,lang){const L=[...word];let t=shuf(L);let g=0;while(t.join('')===word&&g++<10)t=shuf(L);return{kind:'spell',q:lang==='en'?'رتّب الحروف لتكتب الكلمة بالإنكليزي':'رتّب الحروف لتكتب اسم الصورة',pic,a:word,tiles:t,lang}}
+const gSpell=()=>{const w=pick(SPELL_AR);return mkSpell(w[0],w[1],'ar')};
+const gSpellEn=()=>{const w=pick(VOC_SPELL);return mkSpell(w[1],w[0],'en')};
+// صح أم خطأ
+function gTF(g){const a=ri(1,g<3?9:20),b=ri(1,g<3?9:20),op=g>=3&&R()<.5?'×':'+',v=op==='+'?a+b:a*b,ok=R()<.5,shown=ok?v:v+pick([-2,-1,1,2]);return mc(`${a} ${op} ${b} = ${Math.max(0,shown)}\nهل هذه العملية صحيحة؟`,ok||Math.max(0,shown)===v?'صح':'خطأ',['صح','خطأ'],{m:true})}
+MATH[1].push(()=>gTF(1));MATH[2].push(()=>gTF(2));MATH[3].push(()=>gTF(3));MATH[4].push(()=>gTF(4));
+ARB[1].push(gSpell,gSpell);ARB[2].push(gSpell);ENB[2].push(gSpellEn);ENB[3].push(gSpellEn);
+
+/* ---- قصار السور (بالرسم الإملائي، للحفظ والتسميع) ---- */
+const SURAHS=[
+{id:'fatiha',n:'الفاتحة',v:['بسم الله الرحمن الرحيم','الحمد لله رب العالمين','الرحمن الرحيم','مالك يوم الدين','إياك نعبد وإياك نستعين','اهدنا الصراط المستقيم','صراط الذين أنعمت عليهم غير المغضوب عليهم ولا الضالين']},
+{id:'ikhlas',n:'الإخلاص',v:['قل هو الله أحد','الله الصمد','لم يلد ولم يولد','ولم يكن له كفوا أحد']},
+{id:'falaq',n:'الفلق',v:['قل أعوذ برب الفلق','من شر ما خلق','ومن شر غاسق إذا وقب','ومن شر النفاثات في العقد','ومن شر حاسد إذا حسد']},
+{id:'nas',n:'الناس',v:['قل أعوذ برب الناس','ملك الناس','إله الناس','من شر الوسواس الخناس','الذي يوسوس في صدور الناس','من الجنة والناس']},
+{id:'kawthar',n:'الكوثر',v:['إنا أعطيناك الكوثر','فصل لربك وانحر','إن شانئك هو الأبتر']},
+{id:'asr',n:'العصر',v:['والعصر','إن الإنسان لفي خسر','إلا الذين آمنوا وعملوا الصالحات وتواصوا بالحق وتواصوا بالصبر']},
+{id:'nasr',n:'النصر',v:['إذا جاء نصر الله والفتح','ورأيت الناس يدخلون في دين الله أفواجا','فسبح بحمد ربك واستغفره إنه كان توابا']},
+{id:'masad',n:'المسد',v:['تبت يدا أبي لهب وتب','ما أغنى عنه ماله وما كسب','سيصلى نارا ذات لهب','وامرأته حمالة الحطب','في جيدها حبل من مسد']},
+{id:'kafirun',n:'الكافرون',v:['قل يا أيها الكافرون','لا أعبد ما تعبدون','ولا أنتم عابدون ما أعبد','ولا أنا عابد ما عبدتم','ولا أنتم عابدون ما أعبد','لكم دينكم ولي دين']},
+{id:'quraysh',n:'قريش',v:['لإيلاف قريش','إيلافهم رحلة الشتاء والصيف','فليعبدوا رب هذا البيت','الذي أطعمهم من جوع وآمنهم من خوف']},
+{id:'fil',n:'الفيل',v:['ألم تر كيف فعل ربك بأصحاب الفيل','ألم يجعل كيدهم في تضليل','وأرسل عليهم طيرا أبابيل','ترميهم بحجارة من سجيل','فجعلهم كعصف مأكول']},
+{id:'maun',n:'الماعون',v:['أرأيت الذي يكذب بالدين','فذلك الذي يدع اليتيم','ولا يحض على طعام المسكين','فويل للمصلين','الذين هم عن صلاتهم ساهون','الذين هم يراءون','ويمنعون الماعون']}
+];
+// سؤال «ما الآية التالية؟» لكل آية في السورة
+function surahQuiz(su){const out=[];const all=SURAHS.flatMap(x=>x.v);for(let i=0;i<su.v.length-1;i++){const a=su.v[i+1];const wr=shuf(all.filter(x=>x!==a&&x!==su.v[i])).slice(0,3);out.push(Object.assign({s:'isl',surah:su.id},mc('ما الآية التالية؟',a,wr,{pre:su.v[i],preKind:'quran'})))}return out}
+
 const GEN_FOR={math:g=>pick(MATH[g])(),ar:g=>pick(ARB[g])(),sci:g=>gSci(g),en:g=>pick(ENB[g])(),isl:()=>gIsl()};
 
 function buildDaily(g){
@@ -377,7 +450,7 @@ function newCode(){let s='';const a=new Uint32Array(8);(window.crypto||{}).getRa
 const ERR={'auth/email-already-in-use':'هذا الرقم مسجّل من قبل. سجّل الدخول بدلاً من ذلك.','auth/invalid-credential':'الرقم أو كلمة السر غير صحيحة.','auth/wrong-password':'الرقم أو كلمة السر غير صحيحة.','auth/invalid-login-credentials':'الرقم أو كلمة السر غير صحيحة.','auth/user-not-found':'لا يوجد حساب بهذا الرقم. أنشئ حساباً جديداً.','auth/weak-password':'كلمة السر قصيرة. اكتب ٦ أحرف أو أرقام على الأقل.','auth/network-request-failed':'لا يوجد اتصال بالإنترنت. اتصل وحاول مرة ثانية.','auth/too-many-requests':'محاولات كثيرة. انتظر قليلاً ثم حاول.','permission-denied':'ليس لديك صلاحية لهذه العملية.','unavailable':'لا يوجد اتصال بالإنترنت. اتصل وحاول مرة ثانية.','bad-code':'رمز إعادة التعيين غير صحيح. تأكد منه أو اطلب رمزاً جديداً من الإدارة.','no-reset':'لا يوجد طلب إعادة تعيين لهذا الرقم. راسل الإدارة على واتساب.'};
 const errMsg=e=>ERR[e&&(e.code||e.message)]||'حدث خطأ. حاول مرة ثانية.';
 const fail=(code)=>{const e=new Error(code);e.code=code;return e};
-const mergeSettings=s=>{const d=CONFIG.defaults;s=s||{};return{trialDays:s.trialDays!=null?+s.trialDays:d.trialDays,prices:Object.assign({},d.prices,s.prices),pay:Object.assign({},d.pay,s.pay),whatsapp:s.whatsapp!=null?s.whatsapp:d.whatsapp}};
+const mergeSettings=s=>{const d=CONFIG.defaults;s=s||{};const pay=Object.assign({},d.pay,s.pay);if(!pay.sham)pay.sham=d.pay.sham;return{trialDays:s.trialDays!=null?+s.trialDays:d.trialDays,prices:Object.assign({},d.prices,s.prices),pay,shamName:s.shamName||d.shamName,shamQr:s.shamQr||d.shamQr,whatsapp:s.whatsapp!=null?s.whatsapp:d.whatsapp}};
 
 /* ---- الوضع التجريبي: كل البيانات على هذا الجهاز ---- */
 function DemoBackend(){
@@ -411,7 +484,9 @@ function DemoBackend(){
     async activate(phone,cid,grade,plan){const c=D.children[phone]&&D.children[phone][cid];if(!c)throw fail('not-found');c.subs=c.subs||{};const cur=c.subs[grade];c.subs[grade]={plan,until:newUntil(cur&&cur.until,PLANS[plan].days)};save();return wait(c.subs[grade])},
     async cancelSub(phone,cid,grade){delete D.children[phone][cid].subs[grade];save();return wait()},
     async resolve(rid,status){D.requests[rid].status=status;D.requests[rid].done=today();save();return wait()},
-    async makeReset(phone){const key=newCode();D.resets[phone]={key,created:today()};save();return wait(key)}
+    async makeReset(phone){const key=newCode();D.resets[phone]={key,created:today()};save();return wait(key)},
+    async logActivation(r){const k=id();D.requests[k]=Object.assign({created:today(),done:today()},r);save();return wait(k)},
+    async stats(){return wait({parents:Object.entries(D.parents).map(([phone,u])=>({phone,name:u.name})),kids:Object.entries(D.children).flatMap(([phone,o])=>Object.entries(o).map(([id,c])=>Object.assign({phone,id},c))),approved:Object.values(D.requests).filter(r=>r.status==='approved')})}
   };
 }
 
@@ -461,7 +536,10 @@ function FirebaseBackend(cfg){
     async activate(phone,cid,grade,plan){const ref=kidsCol(phone).doc(cid);const s=await ref.get();if(!s.exists)throw fail('not-found');const cur=((s.data().subs||{})[grade]||{}).until;const v={plan,until:newUntil(cur,PLANS[plan].days)};await ref.update({['subs.'+grade]:v});return v},
     cancelSub(phone,cid,grade){return kidsCol(phone).doc(cid).update({['subs.'+grade]:FV.delete()})},
     resolve(rid,status){return db.collection('requests').doc(rid).update({status,done:FV.serverTimestamp()})},
-    async makeReset(phone){const key=newCode();await db.collection('resets').doc(phone).set({key,created:FV.serverTimestamp()});return key}
+    async makeReset(phone){const key=newCode();await db.collection('resets').doc(phone).set({key,created:FV.serverTimestamp()});return key},
+    async logActivation(r){await db.collection('requests').add(Object.assign({uid:U.uid,created:FV.serverTimestamp(),done:FV.serverTimestamp()},r))},
+    async stats(){const[ps,cs,rq]=await Promise.all([db.collection('parents').get(),db.collectionGroup('children').get(),db.collection('requests').where('status','==','approved').get()]);
+      return{parents:ps.docs.map(d=>({phone:d.id,name:d.data().name})),kids:cs.docs.map(d=>Object.assign({phone:d.ref.parent.parent.id,id:d.id},d.data())),approved:rq.docs.map(d=>d.data())}}
   };
 }
 
@@ -471,9 +549,9 @@ const API=(CONFIG.firebase&&window.firebase)?FirebaseBackend(CONFIG.firebase):De
 const APP={user:null,kids:[],child:null,reqs:[],set:mergeSettings((()=>{try{return JSON.parse(localStorage.getItem('shattoor_set'))}catch(e){return null}})())};
 async function loadSettings(){try{APP.set=await API.getSettings();localStorage.setItem('shattoor_set',JSON.stringify(APP.set))}catch(e){}}
 const isAdmin=()=>APP.user&&isAdminPhone(APP.user.phone);
-const payList=()=>Object.keys(PAY).filter(k=>APP.set.pay[k]);
+const payList=()=>Object.keys(PAY).filter(k=>APP.set.pay[k]||(k==='sham'&&APP.set.shamQr));
 // تقدّم الطفل محفوظ على الجهاز
-function freshP(){return{jas:0,streak:0,lastDaily:null,daily:{},stats:{},sound:true}}
+function freshP(){return{jas:0,spent:0,streak:0,best:0,lastDaily:null,daily:{},stats:{},hist:{},perfect:0,owned:['jas'],avatar:'jas',memo:{},autoRead:null,remind:null,sound:true}}
 let S=null;
 function loadP(cid){try{const t=localStorage.getItem('shattoor_p_'+cid);if(t)return Object.assign(freshP(),JSON.parse(t))}catch(e){}return freshP()}
 function save(){if(!APP.child||!S)return;try{localStorage.setItem('shattoor_p_'+APP.child.id,JSON.stringify(S))}catch(e){}}
@@ -592,7 +670,8 @@ function viewKidForm(){
 /* ---- الرئيسية للطفل ---- */
 function statusHTML(){
   const c=APP.child,s=subOf(c,c.grade),pend=pendingFor(c,c.grade);
-  if(hasSub())return`<div class="status ok"><span>اشتراك ${planName(s.plan)} للصف ${GRADES[c.grade-1]} حتى ${fmtDay(s.until)}</span></div>`;
+  if(hasSub()){const left=s.until-today();if(left<=5)return`<div class="status trial"><span>اشتراك الصف ${GRADES[c.grade-1]} ${left<=0?'بينتهي اليوم':'بينتهي بعد '+ar(left)+' أيام'}</span><button class="btn sun sm" data-act="go" data-v="sub">جدّد</button></div>`;
+    return`<div class="status ok"><span>اشتراك ${planName(s.plan)} للصف ${GRADES[c.grade-1]} حتى ${fmtDay(s.until)}</span></div>`}
   if(pend)return`<div class="status trial"><span>طلب التفعيل قيد المراجعة</span><button class="btn ghost sm" data-act="go" data-v="sub">التفاصيل</button></div>`;
   const t=trialLeft();
   if(t>0)return`<div class="status trial"><span>الفترة التجريبية: ${t===1?'آخر يوم':'باقي '+ar(t)+' أيام'}</span><button class="btn ghost sm" data-act="go" data-v="sub">اشترك</button></div>`;
@@ -604,8 +683,9 @@ function viewHome(){
   const st=s=>{const x=S.stats[s];return x&&x.t?`${ar(Math.round(100*x.c/x.t))}٪ صحيحة`:'ابدأ أول تمرين'};
   V.innerHTML=`
   <div class="top">
-    <div class="hi"><small>${greet()}</small><h2>${esc(c.name)}</h2></div>
-    <span class="pill" title="ياسمينات">${JAS()} ${ar(S.jas)}</span>
+    <button class="ava" data-act="go" data-v="store" aria-label="شخصيتي">${avatarOf()}</button>
+    <div class="hi"><small>${greet()} · المستوى ${ar(levelOf(S.jas).n+1)}</small><h2>${esc(c.name)}</h2></div>
+    <button class="pill" data-act="go" data-v="store" title="ياسمينات">${JAS()} ${ar(bal())}</button>
     <span class="pill">الصف ${GRADES[c.grade-1]}</span>
   </div>
   ${statusHTML()}
@@ -619,7 +699,7 @@ function viewHome(){
     <div class="row" style="font-weight:700;font-size:.95rem"><span>سلسلة الأيام: ${ar(S.streak)}</span><span class="spacer"></span><span>كل جواب صحيح = ${ar(10)} ياسمينات</span></div>
   </section>
   <section class="hadith">
-    <div class="label"><span>حديث اليوم</span><span class="free">مجاني دائماً</span></div>
+    <div class="label"><span>حديث اليوم ${SPK('spkHadith')}</span><span class="free">مجاني دائماً</span></div>
     <p class="muted" style="font-size:.95rem">قال رسول الله ﷺ:</p>
     <blockquote>«${h[0]}»</blockquote>
     <div class="src">${h[1]}</div>
@@ -630,6 +710,10 @@ function viewHome(){
     ${['math','ar','sci','en'].map(s=>`<button class="subj" style="--c:${SUBJ[s].c}" data-act="${acc?'practice':'go'}" data-s="${s}" data-v="sub"><span class="ico">${SUBJ[s].i}</span><b>${SUBJ[s].n}</b><small>${st(s)}</small></button>`).join('')}
     <button class="subj wide" style="--c:${SUBJ.isl.c}" data-act="${acc?'practice':'go'}" data-s="isl" data-v="sub"><span class="ico">${SUBJ.isl.i}</span><span class="t"><b>${SUBJ.isl.n} والأحاديث</b><small>${st('isl')}</small></span></button>
   </div></div>
+  <div class="grid">
+    <button class="subj" style="--c:var(--isl)" data-act="go" data-v="surahs"><span class="ico">﴿</span><b>قصار السور</b><small>${ar(Object.keys(S.memo||{}).length)} من ${ar(SURAHS.length)} محفوظة</small></button>
+    <button class="subj" style="--c:var(--sun)" data-act="go" data-v="store"><span class="ico">${avatarOf()}</span><b>متجر الياسمين</b><small>شخصيات وشارات</small></button>
+  </div>
   <div class="links"><button class="btn ghost" data-act="go" data-v="parent">ركن الأهل</button><button class="btn ghost" data-act="go" data-v="sub">الاشتراك</button></div>`;
 }
 
@@ -638,30 +722,45 @@ function viewQuiz(){
   V.innerHTML=`
   <div class="qbar"><button class="x" data-act="quit" aria-label="خروج">×</button>
     <div class="prog">${Q.list.map((_,i)=>`<i class="${Q.res[i]===true?'ok':Q.res[i]===false?'no':i===Q.i?'cur':''}"></i>`).join('')}</div>
-    <span class="pill">${JAS()} ${ar(S.jas)}</span></div>
+    <span class="pill">${JAS()} ${ar(bal())}</span></div>
   <div class="qcard" style="--c:${sj.c}">
-    <div class="tag">${sj.n} · سؤال ${ar(Q.i+1)} من ${ar(Q.list.length)}</div>
-    ${it.pre?`<div class="pre">قال رسول الله ﷺ: «${it.pre}»</div>`:''}
+    <div class="row between"><div class="tag">${Q.mode==='surah'?'سورة '+SURAHS.find(x=>x.id===Q.surah).n:sj.n} · سؤال ${ar(Q.i+1)} من ${ar(Q.list.length)}</div>${it.preKind==='quran'?'':SPK('spkQ')}</div>
+    ${it.pre?(it.preKind==='quran'?`<div class="pre quranpre">قال تعالى: ﴿${esc(it.pre)}﴾</div>`:`<div class="pre">قال رسول الله ﷺ: «${it.pre}»</div>`):''}
     <div class="q">${esc(f(it.q))}</div>
+    ${it.kind==='spell'?`<div class="pic">${it.pic}</div><div class="slot" dir="${it.lang==='en'?'ltr':'rtl'}" id="slot">${esc((Q.built||[]).join(''))||'&nbsp;'}</div>`:''}
     ${it.en?`<div class="en" dir="ltr">${esc(it.en)}</div>`:''}
   </div>
-  <div class="opts">${it.opts.map((o,i)=>`<button class="opt" data-act="ans" data-i="${i}" dir="auto">${esc(f(o))}</button>`).join('')}</div>
+  ${it.kind==='spell'?`<div class="tiles-row" dir="${it.lang==='en'?'ltr':'rtl'}">${it.tiles.map((t,i)=>`<button class="tilebtn" data-act="tile" data-i="${i}" ${(Q.usedT||[]).includes(i)?'disabled':''}>${esc(t)}</button>`).join('')}</div>
+    <button class="btn ghost" data-act="untile" ${(Q.built||[]).length?'':'disabled'}>⌫ امسح آخر حرف</button>`
+  :`<div class="opts">${it.opts.map((o,i)=>`<button class="opt ${it.preKind==='quran'?'qopt':''}" data-act="ans" data-i="${i}" dir="auto">${esc(f(o))}</button>`).join('')}</div>`}
   <div id="fb"></div>`;
+  if(autoRead()&&!Q.read){Q.read=true;speakItem(it)}
 }
+function tileTap(i){const it=Q.list[Q.i];if(Q.res[Q.i]!==undefined)return;Q.usedT=Q.usedT||[];Q.built=Q.built||[];if(Q.usedT.includes(i))return;Q.usedT.push(i);Q.built.push(it.tiles[i]);
+  if(Q.built.length===it.tiles.length){const ok=Q.built.join('')===it.a;viewQuiz();grade(ok,it.a)}else viewQuiz()}
+function untile(){if(!Q.built||!Q.built.length||Q.res[Q.i]!==undefined)return;Q.built.pop();Q.usedT.pop();viewQuiz()}
 
 function answer(i){
   const it=Q.list[Q.i];if(Q.res[Q.i]!==undefined)return;
-  const ok=it.opts[i]===it.a;Q.res[Q.i]=ok;if(ok)Q.c++;
-  const st=S.stats[it.s]||(S.stats[it.s]={c:0,t:0});st.t++;if(ok)st.c++;
-  if(ok)S.jas+=Q.mode==='daily'?10:5;
-  save();tone(ok);
+  const ok=it.opts[i]===it.a;
   const btns=[...V.querySelectorAll('.opt')];
   btns.forEach((b,j)=>{b.disabled=true;if(it.opts[j]===it.a)b.classList.add('right');else if(j===i)b.classList.add('wrong')});
+  grade(ok,it.a);
+}
+const POINTS=()=>Q.mode==='daily'?10:Q.mode==='surah'?0:5;
+function grade(ok,answerText){
+  const it=Q.list[Q.i];Q.res[Q.i]=ok;if(ok)Q.c++;stopSpeak();
+  if(Q.mode!=='surah'){const st=S.stats[it.s]||(S.stats[it.s]={c:0,t:0});st.t++;if(ok)st.c++;
+    S.hist=S.hist||{};const d=today(),hd=S.hist[d]||(S.hist[d]={}),hs=hd[it.s]||(hd[it.s]={c:0,t:0});hs.t++;if(ok)hs.c++;
+    const keys=Object.keys(S.hist).map(Number).sort((a,b)=>a-b);while(keys.length>60)delete S.hist[keys.shift()];}
+  if(ok)S.jas+=POINTS();
+  save();tone(ok);
+  if(it.kind==='spell'){const sl=V.querySelector('#slot');if(sl)sl.classList.add(ok?'right':'wrong')}
   const prog=V.querySelectorAll('.prog i')[Q.i];prog.className=ok?'ok':'no';
-  V.querySelector('.qbar .pill').innerHTML=`${JAS()} ${ar(S.jas)}`;
+  V.querySelector('.qbar .pill').innerHTML=`${JAS()} ${ar(bal())}`;
   const f=it.m?ar:(x=>x),praise=['أحسنت!','ممتاز!','برافو عليك!','رائع يا شطّور!'];
   const last=Q.i===Q.list.length-1;
-  V.querySelector('#fb').innerHTML=`<div class="fb ${ok?'good':'bad'}"><span>${ok?pick(praise)+' +'+ar(Q.mode==='daily'?10:5)+' ياسمينات':'ولا يهمك! الجواب الصحيح: '+esc(f(it.a))}</span><button class="btn ${ok?'teal':'sun'} wide" data-act="next">${last?'شوف النتيجة':'السؤال التالي'}</button></div>`;
+  V.querySelector('#fb').innerHTML=`<div class="fb ${ok?'good':'bad'}"><span>${ok?pick(praise)+(POINTS()?' +'+ar(POINTS())+' ياسمينات':''):'ولا يهمك! الجواب الصحيح: '+esc(f(it.a))}</span><button class="btn ${ok?'teal':'sun'} wide" data-act="next">${last?'شوف النتيجة':'السؤال التالي'}</button></div>`;
   V.querySelector('#fb button').focus({preventScroll:true});
   V.querySelector('#fb').scrollIntoView({behavior:'smooth',block:'nearest'});
 }
@@ -669,17 +768,21 @@ function answer(i){
 function finish(){
   if(Q.mode==='daily'){
     const d=dayIdx();
-    if(!S.daily[d]){S.streak=(S.lastDaily===d-1)?S.streak+1:1;S.lastDaily=d;S.daily[d]={c:Q.c,t:Q.list.length};}
+    if(!S.daily[d]){S.streak=(S.lastDaily===d-1)?S.streak+1:1;S.best=Math.max(S.best||0,S.streak);S.lastDaily=d;S.daily[d]={c:Q.c,t:Q.list.length};}
     save();
   }
-  syncSummary();
+  if(Q.c===Q.list.length&&Q.mode!=='surah')S.perfect=(S.perfect||0)+1;
+  let memoMsg='';
+  if(Q.mode==='surah'){S.memo=S.memo||{};if(Q.c===Q.list.length){if(!S.memo[Q.surah]){S.memo[Q.surah]=today();S.jas+=30;memoMsg=`حفظت سورة ${SURAHS.find(x=>x.id===Q.surah).n}! +${ar(30)} ياسمينة 🌼`}else memoMsg='ما شاء الله! لسا حافظها.'}else memoMsg='راجع السورة وجرّب مرة تانية، قرّبت!'}
+  save();syncSummary();
   const r=Q.c/Q.list.length,msg=r===1?'علامة كاملة!':r>=.6?'شغل حلو!':'كل يوم أحسن من اللي قبله';
   V.innerHTML=`<div class="result">${JAS('big')}
     <h1>${msg}</h1>
     <div class="score">${ar(Q.c)} / ${ar(Q.list.length)}</div>
-    <p>جمعت <b>${ar(Q.c*(Q.mode==='daily'?10:5))}</b> ياسمينة${Q.mode==='daily'?` · سلسلة الأيام: <b>${ar(S.streak)}</b>`:''}</p>
+    ${Q.mode==='surah'?`<p><b>${memoMsg}</b></p>`:`<p>جمعت <b>${ar(Q.c*POINTS())}</b> ياسمينة${Q.mode==='daily'?` · سلسلة الأيام: <b>${ar(S.streak)}</b>`:''}</p>`}
     <div style="display:flex;flex-direction:column;gap:10px;width:100%">
       ${Q.mode==='practice'?`<button class="btn teal wide" data-act="practice" data-s="${Q.s}">تمرين جديد</button>`:''}
+      ${Q.mode==='surah'?`<button class="btn teal wide" data-act="go" data-v="surahs">قصار السور</button>`:''}
       <button class="btn ${Q.mode==='practice'?'ghost':'teal'} wide" data-act="go" data-v="home">الرجوع للرئيسية</button>
     </div></div>`;
   if(r>=.6)confetti();
@@ -696,7 +799,15 @@ function viewParent(){
     <div class="row between"><span>أيام التحدي المنجزة</span><b>${ar(days)}</b></div>
     <div class="row between"><span>سلسلة الأيام الحالية</span><b>${ar(S.streak)}</b></div>
     <div class="row between"><span>مجموع الياسمينات</span><b>${ar(S.jas)}</b></div>
-    ${Object.keys(SUBJ).map(s=>{const x=S.stats[s]||{c:0,t:0},p=x.t?Math.round(100*x.c/x.t):0;return`<div class="stat" style="--c:${SUBJ[s].c}"><div class="row"><span>${SUBJ[s].n}</span><span class="muted">${x.t?ar(x.c)+' من '+ar(x.t)+' · '+ar(p)+'٪':'لا يوجد بعد'}</span></div><div class="bar"><i style="width:${p}%"></i></div></div>`}).join('')}
+    <div class="row between"><span>المستوى</span><b>${ar(levelOf(S.jas).n+1)} · ${levelOf(S.jas).name}</b></div>
+    <div class="row between"><span>الشارات</span><b>${ar(BADGES.filter(b=>b.ok()).length)} من ${ar(BADGES.length)}</b></div>
+    <div class="row between"><span>السور المحفوظة</span><b>${ar(Object.keys(S.memo||{}).length)} من ${ar(SURAHS.length)}</b></div>
+  </section>
+  ${reportHTML()}
+  <section class="panel">
+    <h3>شهادة الشهر 🏅</h3>
+    <p class="muted">شهادة تقدير باسم ${esc(c.name)} فيها أيام التحدي والياسمينات، بتقدروا تشاركوها مع العيلة.</p>
+    <button class="btn sun" data-act="go" data-v="cert">اعرض الشهادة</button>
   </section>
   <section class="panel">
     <h3>اشتراكات ${esc(c.name)}</h3>
@@ -705,7 +816,10 @@ function viewParent(){
   <section class="panel">
     <h3>الإعدادات</h3>
     <button class="btn ghost" data-act="editKid">تعديل الاسم أو الصف</button>
-    <button class="btn ghost" data-act="sound">${S.sound?'إيقاف الأصوات':'تشغيل الأصوات'}</button>
+    <button class="btn ghost" data-act="sound">${S.sound?'إيقاف أصوات الإجابة':'تشغيل أصوات الإجابة'}</button>
+    <button class="btn ghost" data-act="autoread">${autoRead()?'إيقاف قراءة الأسئلة تلقائياً':'تشغيل قراءة الأسئلة تلقائياً'}</button>
+    ${remindHTML()}
+    ${msgHTML()}
     ${ui.confirmDel?`<div class="confirm"><b>سيُحذف ${esc(c.name)} وكل تقدّمه من الحساب. متأكد؟</b><div class="row"><button class="btn sun" data-act="delYes">نعم، احذف</button><button class="btn ghost" data-act="delNo">إلغاء</button></div></div>`
       :`<button class="btn ghost" data-act="delKid">حذف الطفل من الحساب</button>`}
   </section>
@@ -733,7 +847,7 @@ function viewSub(){
     <h3>طريقة الدفع</h3>
     ${pays.length?`<div class="methods">${pays.map(k=>`<button class="plan ${meth===k?'on':''}" data-act="meth" data-m="${k}"><b>${PAY[k]}</b></button>`).join('')}</div>
     <ol class="steps">
-      <li>حوّل ${esc(price(plan))} (اشتراك ${planName(plan)}) عبر <b>${PAY[meth]}</b> إلى: <b dir="ltr" class="sel">${esc(APP.set.pay[meth])}</b></li>
+      ${meth==='sham'?`<li>حوّل ${esc(price(plan))} (اشتراك ${planName(plan)}) عبر <b>شام كاش</b>:${shamHTML()}</li>`:`<li>حوّل ${esc(price(plan))} (اشتراك ${planName(plan)}) عبر <b>${PAY[meth]}</b> إلى: <b dir="ltr" class="sel">${esc(APP.set.pay[meth])}</b></li>`}
       <li>ابعت صورة الإيصال على واتساب ${waHTML()} مع رقم موبايلك <b dir="ltr">${esc(APP.user.phone)}</b></li>
       <li>اضغط الزر تحت، والإدارة بتفعّل الاشتراك.</li>
     </ol>
@@ -753,15 +867,17 @@ async function viewAdmin(){
   const tab=ui.tab||'req';
   V.innerHTML=`<div class="top"><div class="hi"><small>شطّور</small><h2>لوحة الإدارة</h2></div>
     <button class="btn ghost sm" data-act="go" data-v="kids">أطفالي</button><button class="btn ghost sm" data-act="logout">خروج</button></div>
-  <div class="tabs three-t"><button data-act="tab" data-t="req" class="${tab==='req'?'on':''}">الطلبات</button><button data-act="tab" data-t="find" class="${tab==='find'?'on':''}">بحث بالرقم</button><button data-act="tab" data-t="set" class="${tab==='set'?'on':''}">الإعدادات</button></div>
+  <div class="tabs four-t"><button data-act="tab" data-t="stats" class="${tab==='stats'?'on':''}">الإحصائيات</button><button data-act="tab" data-t="req" class="${tab==='req'?'on':''}">الطلبات</button><button data-act="tab" data-t="find" class="${tab==='find'?'on':''}">بحث بالرقم</button><button data-act="tab" data-t="set" class="${tab==='set'?'on':''}">الإعدادات</button></div>
   <div id="adm"><p class="muted">جارِ التحميل…</p></div>`;
   const box=V.querySelector('#adm');
-  if(tab==='req'){
+  if(tab==='stats'){
+    try{box.innerHTML=await adminStatsHTML()}catch(e){box.innerHTML=`<p class="msg no">${errMsg(e)}</p>`}
+  }else if(tab==='req'){
     try{ui.reqs=(await API.pending()).sort((a,b)=>tsDay(a.created)-tsDay(b.created))}catch(e){box.innerHTML=`<p class="msg no">${errMsg(e)}</p>`;return}
     box.innerHTML=msgHTML()+(ui.reqs.length?ui.reqs.map((r,i)=>`<section class="panel req">
       <div class="row between"><b>${esc(r.childName)} · الصف ${GRADES[r.grade-1]}</b><span class="tag trial">${planName(r.plan)}</span></div>
       <div class="row between"><span>${esc(r.parentName||'')}</span><b dir="ltr" class="sel">${esc(r.phone)}</b></div>
-      <div class="muted small">${r.method?'الدفع عبر '+PAY[r.method]+' · ':''}${fmtDay(tsDay(r.created))}</div>
+      <div class="muted small">${r.method?'الدفع عبر '+PAY[r.method]+' · ':''}${r.amount?esc(r.amount)+' · ':''}${fmtDay(tsDay(r.created))}</div>
       <div class="row"><button class="btn teal" data-act="approve" data-i="${i}">تأكد الدفع، فعّل</button><button class="btn ghost" data-act="reject" data-i="${i}">رفض</button></div>
     </section>`).join(''):`<section class="panel"><p>ما في طلبات جديدة.</p><button class="btn ghost" data-act="tab" data-t="req">تحديث</button></section>`);
   }else if(tab==='set'){
@@ -773,12 +889,18 @@ async function viewAdmin(){
       <div class="field"><label for="s_t">أيام التجربة المجانية للحساب الجديد</label><input id="s_t" type="tel" dir="ltr" inputmode="numeric" value="${esc(st.trialDays)}"></div>
       <h3>طرق الدفع</h3><p class="muted small">اترك الحقل فاضي لإخفاء طريقة الدفع عن الأهل.</p>
       ${Object.entries(PAY).map(([k,n])=>`<div class="field"><label for="s_${k}">${n}</label><input id="s_${k}" type="text" dir="ltr" value="${esc(st.pay[k]||'')}" placeholder="${k==='sham'?'رقم الحساب أو الموبايل':'09XX XXX XXX'}"></div>`).join('')}
+      <div class="field"><label for="s_sn">اسم صاحب حساب شام كاش</label><input id="s_sn" type="text" value="${esc(st.shamName||'')}"></div>
+      <div class="field"><label>صورة QR شام كاش</label>
+        <div class="qrprev">${st.shamQr?`<img src="${ui.newQr||st.shamQr}" alt="QR شام كاش">`:''}</div>
+        <input id="s_qr" type="file" accept="image/*">
+        <p class="muted small">اختار صورة الـ QR من المعرض. بتظهر للأهل لما يختاروا شام كاش.</p></div>
       <div class="field"><label for="s_w">رقم واتساب لاستقبال الإيصالات</label><input id="s_w" type="text" dir="ltr" value="${esc(st.whatsapp||'')}" placeholder="09XX XXX XXX"></div>
       <button class="btn teal" id="sfb" type="submit">حفظ الإعدادات</button>${msgHTML()}
     </form>`;
+    V.querySelector('#s_qr').addEventListener('change',async e=>{const f=e.target.files[0];if(!f)return;try{ui.newQr=await resizeImage(f,520);const pv=V.querySelector('.qrprev');pv.innerHTML=`<img src="${ui.newQr}" alt="QR شام كاش">`}catch(err){ui.msg={t:'ما قدرنا نقرأ الصورة. جرّب صورة تانية.'}}});
     V.querySelector('#sf').addEventListener('submit',async e=>{e.preventDefault();
       const t=parseInt(normCode(val('s_t')),10);
-      const ns={trialDays:isNaN(t)?APP.set.trialDays:Math.min(t,60),prices:{monthly:val('s_m'),yearly:val('s_y')},pay:Object.fromEntries(Object.keys(PAY).map(k=>[k,val('s_'+k)])),whatsapp:val('s_w')};
+      const ns={trialDays:isNaN(t)?APP.set.trialDays:Math.min(t,60),prices:{monthly:val('s_m'),yearly:val('s_y')},pay:Object.fromEntries(Object.keys(PAY).map(k=>[k,val('s_'+k)])),whatsapp:val('s_w'),shamName:val('s_sn'),shamQr:ui.newQr||APP.set.shamQr};
       busy(V.querySelector('#sfb'),'جارِ الحفظ…');
       try{await API.saveSettings(ns);APP.set=mergeSettings(ns);try{localStorage.setItem('shattoor_set',JSON.stringify(APP.set))}catch(x){}ui.msg={ok:true,t:'تم حفظ الإعدادات. الأهل بيشوفوا الأسعار الجديدة بأول فتح للتطبيق.'}}
       catch(err){ui.msg={t:errMsg(err)}}viewAdmin()});
@@ -804,19 +926,209 @@ async function viewAdmin(){
 }
 async function reloadFound(){if(ui.found)ui.found=await API.findByPhone(ui.found.phone)}
 
+/* ================== ميزات إضافية: الصوت، المتجر، المستويات، الشهادة، التقرير، السور ================== */
+const NATIVE=window.ShattoorNative||null;
+/* ---- القراءة الصوتية ---- */
+const stripEmoji=t=>String(t).replace(/[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{FE0F}\u{200D}]/gu,' ').replace(/\s+/g,' ').trim();
+function speak(text,lang){
+  text=stripEmoji(text);if(!text)return;
+  if(NATIVE&&NATIVE.speak){try{NATIVE.speak(text,lang||'ar');return}catch(e){}}
+  try{const ss=window.speechSynthesis;if(!ss)return;ss.cancel();const u=new SpeechSynthesisUtterance(text);u.lang=lang==='en'?'en-US':'ar-SA';u.rate=.85;
+    const v=ss.getVoices().find(x=>x.lang&&x.lang.toLowerCase().startsWith(lang==='en'?'en':'ar'));if(v)u.voice=v;ss.speak(u)}catch(e){}
+}
+function stopSpeak(){try{if(NATIVE&&NATIVE.stopSpeak)NATIVE.stopSpeak();else if(window.speechSynthesis)speechSynthesis.cancel()}catch(e){}}
+const autoRead=()=>S&&(S.autoRead!=null?S.autoRead:APP.child&&APP.child.grade<=2);
+function speakItem(it){
+  if(it.kind==='spell'){speak(it.lang==='en'?'رتّب الحروف لتكتب الكلمة':'رتّب الحروف لتكتب اسم الصورة');return}
+  const q=it.q.replace(/\n/g,'. ');
+  speak((it.pre&&it.preKind!=='quran'?'قال رسول الله صلى الله عليه وسلم: '+it.pre+'. ':'')+q);
+  if(it.en)setTimeout(()=>speak(it.en,'en'),Math.min(6000,q.length*90));
+}
+const SPK=(act,extra)=>`<button class="spk" data-act="${act}" ${extra||''} aria-label="اسمع">🔊</button>`;
+
+/* ---- الياسمين: الرصيد والمستويات ---- */
+const bal=()=>Math.max(0,S.jas-(S.spent||0));
+const LEVELS=['برعم','وردة صغيرة','ياسمينة','نجمة','نجم لامع','بطل','بطل خارق','عبقري','أسطورة'];
+function levelOf(j){const step=200;const n=Math.min(LEVELS.length-1,Math.floor(j/step));return{n,name:LEVELS[n],cur:j-n*step,need:n===LEVELS.length-1?0:step}}
+const AVATARS=[
+{id:'jas',e:'🌼',n:'الياسمينة',p:0},{id:'cat',e:'🐱',n:'القطة',p:60},{id:'rabbit',e:'🐰',n:'الأرنب',p:100},{id:'lion',e:'🦁',n:'الأسد',p:150},
+{id:'owl',e:'🦉',n:'البومة الحكيمة',p:200},{id:'panda',e:'🐼',n:'الباندا',p:260},{id:'turtle',e:'🐢',n:'السلحفاة',p:300},{id:'fox',e:'🦊',n:'الثعلب',p:360},
+{id:'dolphin',e:'🐬',n:'الدلفين',p:420},{id:'rocket',e:'🚀',n:'الصاروخ',p:500},{id:'unicorn',e:'🦄',n:'الحصان الطائر',p:600},{id:'dino',e:'🦖',n:'الديناصور',p:750},
+{id:'astro',e:'🧑‍🚀',n:'رائد الفضاء',p:900},{id:'crown',e:'👑',n:'التاج الذهبي',p:1200}];
+const avatarOf=()=>(AVATARS.find(a=>a.id===S.avatar)||AVATARS[0]).e;
+const BADGES=[
+{id:'first',e:'🌱',n:'أول تحدي',ok:()=>Object.keys(S.daily).length>=1},
+{id:'s3',e:'🔥',n:'٣ أيام ورا بعض',ok:()=>S.best>=3||S.streak>=3},
+{id:'s7',e:'⭐',n:'أسبوع كامل',ok:()=>S.best>=7||S.streak>=7},
+{id:'s30',e:'🏆',n:'شهر كامل',ok:()=>S.best>=30||S.streak>=30},
+{id:'perfect',e:'💯',n:'علامة كاملة',ok:()=>(S.perfect||0)>=1},
+{id:'math',e:'🧮',n:'بطل الرياضيات',ok:()=>(S.stats.math||{}).c>=50},
+{id:'ar',e:'📚',n:'بطل العربي',ok:()=>(S.stats.ar||{}).c>=50},
+{id:'sci',e:'🔬',n:'العالِم الصغير',ok:()=>(S.stats.sci||{}).c>=50},
+{id:'en',e:'🌍',n:'بطل الإنكليزي',ok:()=>(S.stats.en||{}).c>=50},
+{id:'quran',e:'📖',n:'حافظ ٣ سور',ok:()=>Object.keys(S.memo||{}).length>=3},
+{id:'quran2',e:'🌙',n:'حافظ كل السور',ok:()=>Object.keys(S.memo||{}).length>=SURAHS.length}];
+
+function viewStore(){
+  const lv=levelOf(S.jas),got=BADGES.filter(b=>b.ok());
+  V.innerHTML=`${back('home','متجر الياسمين')}
+  <section class="panel lvl">
+    <div class="row between"><div class="row"><span class="ava big">${avatarOf()}</span><div><b>${esc(APP.child.name)}</b><div class="muted small">المستوى ${ar(lv.n+1)}: ${lv.name}</div></div></div><span class="pill">${JAS()} ${ar(bal())}</span></div>
+    ${lv.need?`<div class="bar" style="--c:var(--sun)"><i style="width:${Math.round(100*lv.cur/lv.need)}%"></i></div><div class="muted small">باقي ${ar(lv.need-lv.cur)} ياسمينة للمستوى الجاي</div>`:'<div class="muted small">وصلت لأعلى مستوى!</div>'}
+  </section>
+  <h2>اختار شخصيتك</h2>
+  <div class="store">${AVATARS.map(a=>{const own=(S.owned||[]).includes(a.id),on=S.avatar===a.id;return`<button class="item ${on?'on':''}" data-act="${own?'wear':'buy'}" data-id="${a.id}" ${!own&&bal()<a.p?'aria-disabled="true"':''}>
+      <span class="e">${a.e}</span><b>${a.n}</b><small>${on?'لابسها هلق':own?'البسها':a.p?`${ar(a.p)} ياسمينة`:'مجانية'}</small></button>`}).join('')}</div>
+  ${msgHTML()}
+  <h2>شاراتي <span class="muted small">${ar(got.length)} من ${ar(BADGES.length)}</span></h2>
+  <div class="badges">${BADGES.map(b=>`<div class="badge ${b.ok()?'got':''}"><span>${b.e}</span><small>${b.n}</small></div>`).join('')}</div>`;
+}
+
+/* ---- قصار السور ---- */
+function viewSurahs(){
+  V.innerHTML=`${back('home','قصار السور')}
+  <p class="muted">اقرأ السورة، وبعدين جرّب «سمّع» لتعرف إذا حفظتها. كل سورة بتحفظها إلها ${ar(30)} ياسمينة.</p>
+  <div class="kids">${SURAHS.map(su=>`<button class="kid" data-act="surah" data-id="${su.id}"><span class="av">${(S.memo||{})[su.id]?'✓':'﴿'}</span><span class="t"><b>سورة ${su.n}</b><small>${ar(su.v.length)} آيات</small></span>${(S.memo||{})[su.id]?'<span class="tag ok">حفظتها</span>':''}</button>`).join('')}</div>
+  <p class="muted small">النص بالرسم الإملائي لتسهيل القراءة على الأطفال.</p>`;
+}
+function viewSurah(){
+  const su=SURAHS.find(x=>x.id===ui.surah);
+  V.innerHTML=`${back('surahs','سورة '+su.n)}
+  <section class="panel quran">${su.v.map((v,i)=>`<p>${esc(v)} <span class="ayah">﴿${ar(i+1)}﴾</span></p>`).join('')}</section>
+  <button class="btn teal" data-act="surahQuiz" data-id="${su.id}">سمّع السورة</button>`;
+}
+
+/* ---- التقرير الأسبوعي ---- */
+const TIPS={math:'تمرين ١٠ دقايق يومياً على العمليات، واستعمل أشيا من البيت للعدّ.',ar:'اقرأ معه قصة قصيرة كل يوم واسأله عن الكلمات الجديدة.',sci:'اسأله عن أشيا بيشوفها حوله: ليش بيغلي الماء؟ شو بتحتاج النبتة؟',en:'كرروا كلمات إنكليزية لأشيا بالبيت، وشوفوا فيديوهات قصيرة سوا.',isl:'احكوا قصة من السيرة قبل النوم، وراجعوا حديث اليوم سوا.'};
+function weekReport(){
+  const d0=today(),days=[...Array(7)].map((_,i)=>d0-i),agg={};let active=0;
+  days.forEach(d=>{const h=(S.hist||{})[d];if(!h)return;active++;Object.entries(h).forEach(([s,x])=>{const a=agg[s]||(agg[s]={c:0,t:0});a.c+=x.c;a.t+=x.t})});
+  const rows=Object.keys(SUBJ).map(s=>{const a=agg[s]||{c:0,t:0};return{s,c:a.c,t:a.t,p:a.t?Math.round(100*a.c/a.t):null}});
+  const rated=rows.filter(r=>r.t>=3).sort((a,b)=>b.p-a.p);
+  return{active,rows,best:rated[0],weak:rated.length>1?rated[rated.length-1]:null};
+}
+function reportHTML(){
+  const r=weekReport();
+  return`<section class="panel">
+    <h3>تقرير آخر ٧ أيام</h3>
+    <div class="week">${[...Array(7)].map((_,i)=>{const d=today()-6+i,h=(S.hist||{})[d];return`<span class="${h?'on':''}" title="${fmtDay(d)}">${fmtDay(d,{weekday:'narrow'})}</span>`}).join('')}</div>
+    <div class="row between"><span>أيام النشاط</span><b>${ar(r.active)} من ${ar(7)}</b></div>
+    ${r.rows.map(x=>`<div class="stat" style="--c:${SUBJ[x.s].c}"><div class="row"><span>${SUBJ[x.s].n}</span><span class="muted">${x.t?ar(x.c)+' من '+ar(x.t)+' · '+ar(x.p)+'٪':'ما تمرّن هالأسبوع'}</span></div><div class="bar"><i style="width:${x.p||0}%"></i></div></div>`).join('')}
+    ${r.best?`<p>💪 <b>أقوى مادة:</b> ${SUBJ[r.best.s].n} (${ar(r.best.p)}٪)</p>`:''}
+    ${r.weak&&r.weak.p<80?`<p>🎯 <b>بدها اهتمام:</b> ${SUBJ[r.weak.s].n} (${ar(r.weak.p)}٪)</p><p class="tip">${TIPS[r.weak.s]}</p>`:''}
+    ${!r.active?'<p class="muted">لسا ما في نشاط هالأسبوع. شجّعوه يحل تحدي اليوم!</p>':''}
+  </section>`;
+}
+
+/* ---- الشهادة الشهرية ---- */
+async function makeCertificate(){
+  try{await document.fonts.ready}catch(e){}
+  const W=1080,H=1350,cv=document.createElement('canvas');cv.width=W;cv.height=H;const x=cv.getContext('2d');
+  x.fillStyle='#E6F3F1';x.fillRect(0,0,W,H);
+  x.fillStyle='#0E7C77';x.fillRect(40,40,W-80,H-80);x.fillStyle='#FFFFFF';x.fillRect(64,64,W-128,H-128);
+  x.strokeStyle='#FFC83D';x.lineWidth=6;x.strokeRect(92,92,W-184,H-184);
+  const flower=(cx,cy,r)=>{for(let k=0;k<5;k++){x.save();x.translate(cx,cy);x.rotate(k*Math.PI*2/5);x.beginPath();x.ellipse(0,-r*.55,r*.32,r*.55,0,0,Math.PI*2);x.fillStyle='#FFFFFF';x.fill();x.strokeStyle='#E6C96A';x.lineWidth=3;x.stroke();x.restore()}x.beginPath();x.arc(cx,cy,r*.22,0,Math.PI*2);x.fillStyle='#FFC83D';x.fill()};
+  flower(W/2,230,90);flower(170,170,40);flower(W-170,170,40);flower(170,H-170,40);flower(W-170,H-170,40);
+  x.textAlign='center';x.direction='rtl';
+  const T=(t,y,size,font,color)=>{x.font=`${size}px ${font}`;x.fillStyle=color;x.fillText(t,W/2,y)};
+  const D="'Lalezar','Tajawal',sans-serif",B="'Tajawal',sans-serif";
+  T('شهادة تقدير',420,96,D,'#0E7C77');
+  T('تُمنح هذه الشهادة للبطل',510,40,B,'#55697A');
+  T(APP.child.name,620,110,D,'#15283A');
+  const now=new Date(),mStart=dayIdx(new Date(now.getFullYear(),now.getMonth(),1));
+  const mDays=Object.keys(S.daily).filter(d=>+d>=mStart).length;
+  const month=new Intl.DateTimeFormat('ar-SY',{month:'long',year:'numeric'}).format(now);
+  T(`لاجتهاده في شهر ${month}`,710,44,B,'#15283A');
+  const lv=levelOf(S.jas);
+  const stats=[[ar(mDays),'يوم تحدي'],[ar(S.jas),'ياسمينة'],[lv.name,'المستوى']];
+  stats.forEach((s,i)=>{const cx=W/2+(1-i)*290;x.fillStyle='#E6F3F1';x.beginPath();x.roundRect?x.roundRect(cx-125,790,250,170,28):x.rect(cx-125,790,250,170);x.fill();
+    x.font=`60px ${D}`;x.fillStyle='#0E7C77';x.fillText(s[0],cx,880);x.font=`32px ${B}`;x.fillStyle='#55697A';x.fillText(s[1],cx,930)});
+  T(`الصف ${GRADES[APP.child.grade-1]}`,1040,40,B,'#55697A');
+  T('شطّور',1150,64,D,'#0E7C77');
+  x.font=`24px ${B}`;x.fillStyle='#55697A';x.fillText('© 2026 جميع الحقوق محفوظة · mohamedfayzyasenalsabagh@gmail.com',W/2,1215);
+  return cv.toDataURL('image/png');
+}
+async function viewCert(){
+  V.innerHTML=`${back('parent','شهادة الشهر')}<p class="muted">جارِ تجهيز الشهادة…</p>`;
+  const url=await makeCertificate();ui.cert=url;
+  V.innerHTML=`${back('parent','شهادة الشهر')}
+  <img class="cert" src="${url}" alt="شهادة تقدير ${esc(APP.child.name)}">
+  ${NATIVE&&NATIVE.shareImage?`<div class="links"><button class="btn teal" data-act="certShare">مشاركة</button><button class="btn ghost" data-act="certSave">حفظ بالمعرض</button></div>`
+    :`<p class="muted center">اضغط مطوّل على الشهادة لتحفظها أو تشاركها.</p>`}`;
+}
+
+/* ---- التذكير اليومي (تطبيق الأندرويد) ---- */
+function remindHTML(){
+  if(!NATIVE||!NATIVE.setDailyReminder)return'';
+  const r=S.remind||{on:false,h:17,m:0};
+  return`<div class="field"><label for="rmt">تذكير يومي بتحدي اليوم</label>
+    <div class="row"><input id="rmt" type="time" value="${String(r.h).padStart(2,'0')}:${String(r.m).padStart(2,'0')}" dir="ltr">
+    <button class="btn ${r.on?'ghost':'teal'} sm" data-act="remind">${r.on?'إيقاف التذكير':'تشغيل التذكير'}</button></div></div>`;
+}
+window.__notifyChanged=()=>{if(ui.wantRemind){ui.wantRemind=false;const st=NATIVE.notifyState();if(st==='granted')applyRemind(true);else{ui.msg={t:'لازم تسمح بالإشعارات من إعدادات الموبايل لحتى يوصل التذكير.'};viewParent()}}};
+function applyRemind(on){const t=(ui.rmt||'17:00').split(':');S.remind={on,h:+t[0]||17,m:+t[1]||0};save();try{NATIVE.setDailyReminder(on,S.remind.h,S.remind.m)}catch(e){}ui.msg={ok:true,t:on?`رح يوصل التذكير كل يوم الساعة ${ar(ui.rmt||'17:00')}`:'وقّفنا التذكير اليومي.'};viewParent()}
+
+/* ---- صورة QR لشام كاش ---- */
+function shamHTML(){
+  const st=APP.set,code=st.pay.sham;
+  return`<div class="sham">
+    ${st.shamQr?`<img src="${st.shamQr}" alt="رمز QR لحساب شام كاش">`:''}
+    ${st.shamName?`<b>${esc(st.shamName)}</b>`:''}
+    ${code?`<div class="codebox"><span>رمز الحساب</span><b class="code small-code sel" id="shamcode">${esc(code)}</b><button class="btn ghost sm" data-act="copyText" data-t="${esc(code)}">نسخ رمز الحساب</button></div>`:''}
+    ${st.shamQr&&NATIVE&&NATIVE.saveImage?`<button class="btn ghost sm" data-act="saveQr">حفظ صورة الـ QR بالمعرض</button>`:''}
+    <p class="muted small">افتح تطبيق شام كاش ← تحويل ← امسح الـ QR من صورة المعرض، أو الصق رمز الحساب.</p>
+  </div>`;
+}
+function resizeImage(file,max){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{const k=Math.min(1,max/Math.max(im.width,im.height));const c=document.createElement('canvas');c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);x.drawImage(im,0,0,c.width,c.height);res(c.toDataURL('image/png'))};im.onerror=rej;im.src=r.result};r.onerror=rej;r.readAsDataURL(file)})}
+
+/* ---- إحصائيات الإدارة ---- */
+const amountOf=a=>{const n=parseInt(AR2EN(a||'').replace(/[^\d]/g,''),10);return isNaN(n)?0:n};
+const fmtNum=n=>ar(Number(n).toLocaleString('en-US')).replace(/,/g,'٬');
+const waLink=(phone,text)=>`https://wa.me/963${String(phone).replace(/^0/,'')}?text=${encodeURIComponent(text)}`;
+async function adminStatsHTML(){
+  const st=await API.stats(),t=today();
+  const kids=st.kids,parentName=p=>(st.parents.find(x=>x.phone===p)||{}).name||'';
+  const activeSubs=[];kids.forEach(k=>Object.entries(k.subs||{}).forEach(([g,s])=>{if(s.until>=t)activeSubs.push({k,g:+g,s})}));
+  const activeKids=new Set(activeSubs.map(a=>a.k.phone+'/'+a.k.id)).size;
+  const byGrade=GRADES.map((_,i)=>activeSubs.filter(a=>a.g===i+1).length),maxG=Math.max(1,...byGrade);
+  const now=new Date(),mStart=dayIdx(new Date(now.getFullYear(),now.getMonth(),1));
+  const monthAppr=st.approved.filter(r=>tsDay(r.done||r.created)>=mStart);
+  const revenue=monthAppr.reduce((s,r)=>s+amountOf(r.amount),0);
+  const expiring=activeSubs.filter(a=>a.s.until-t<=7).sort((a,b)=>a.s.until-b.s.until);
+  const expired=[];kids.forEach(k=>Object.entries(k.subs||{}).forEach(([g,s])=>{if(s.until<t&&t-s.until<=30)expired.push({k,g:+g,s})}));
+  const month=new Intl.DateTimeFormat('ar-SY',{month:'long'}).format(now);
+  const rowHTML=(a,soon)=>{const left=a.s.until-t,pn=parentName(a.k.phone);
+    const msg=soon?`مرحباً ${pn} 🌼\nاشتراك ${a.k.name} بتطبيق شطّور (الصف ${GRADES[a.g-1]}) ${left<=0?'بينتهي اليوم':'بينتهي بعد '+left+' أيام'}.\nللتجديد افتح التطبيق ← الاشتراك ← أرسل طلب التفعيل.\nشكراً لثقتكم 🙏`
+      :`مرحباً ${pn} 🌼\nاشتقنا لـ ${a.k.name} بتطبيق شطّور! انتهى اشتراك الصف ${GRADES[a.g-1]}.\nللتجديد افتح التطبيق ← الاشتراك ← أرسل طلب التفعيل.`;
+    return`<div class="exp"><div><b>${esc(a.k.name)}</b> · الصف ${GRADES[a.g-1]}<div class="muted small">${esc(pn)} · <span dir="ltr">${esc(a.k.phone)}</span> · ${soon?(left<=0?'بينتهي اليوم':'باقي '+ar(left)+' أيام'):'انتهى '+fmtDay(a.s.until)}</div></div>
+      <a class="btn sun sm" href="${waLink(a.k.phone,msg)}" target="_blank" rel="noopener">ذكّر بواتساب</a></div>`};
+  return`<div class="tiles">
+      <div class="tile"><b>${fmtNum(st.parents.length)}</b><span>حساب أهل</span></div>
+      <div class="tile"><b>${fmtNum(kids.length)}</b><span>طفل</span></div>
+      <div class="tile ok"><b>${fmtNum(activeKids)}</b><span>طفل مشترك</span></div>
+      <div class="tile"><b>${fmtNum(revenue)}</b><span>إيرادات ${month}</span></div>
+    </div>
+    <section class="panel"><h3>الاشتراكات الفعّالة حسب الصف</h3>
+      ${byGrade.map((n,i)=>`<div class="gbar"><span>${GRADES[i]}</span><div class="bar" style="--c:var(--teal)"><i style="width:${Math.round(100*n/maxG)}%"></i></div><b>${ar(n)}</b></div>`).join('')}
+      <p class="muted small">تفعيلات ${month}: ${ar(monthAppr.length)}</p></section>
+    <section class="panel"><h3>بينتهوا خلال أسبوع (${ar(expiring.length)})</h3>${expiring.length?expiring.map(a=>rowHTML(a,true)).join(''):'<p class="muted">ما في اشتراكات رح تنتهي قريباً.</p>'}</section>
+    <section class="panel"><h3>انتهوا آخر ٣٠ يوم (${ar(expired.length)})</h3>${expired.length?expired.map(a=>rowHTML(a,false)).join(''):'<p class="muted">ما في.</p>'}</section>`;
+}
+
 /* ---- التنقّل وزر الرجوع في تطبيق الأندرويد ---- */
 const IN_APP=/ShattoorApp/.test(navigator.userAgent)||location.protocol==='file:';
 function push(v){if(!IN_APP)return;try{if(history.state)history.replaceState({v},'','#'+v);else history.pushState({v},'','#'+v)}catch(e){}}
 const rootView=()=>!APP.user?'auth':APP.child?'home':isAdmin()?'admin':'kids';
 window.addEventListener('popstate',()=>{Q=null;go(rootView(),true)});
-const VIEWS={auth:viewAuth,kids:viewKids,kidForm:viewKidForm,home:viewHome,parent:viewParent,sub:viewSub,admin:viewAdmin};
+const VIEWS={auth:viewAuth,kids:viewKids,kidForm:viewKidForm,home:viewHome,parent:viewParent,sub:viewSub,admin:viewAdmin,store:viewStore,surahs:viewSurahs,surah:viewSurah,cert:viewCert};
 function go(v,fromPop){
   v=v||rootView();
   if(!APP.user)v='auth';
-  if((v==='home'||v==='parent'||v==='sub')&&!APP.child)v=isAdmin()?'admin':'kids';
+  stopSpeak();
+  if(['home','parent','sub','store','surahs','surah','cert'].includes(v)&&!APP.child)v=isAdmin()?'admin':'kids';
   if(v==='admin'&&!isAdmin())v='kids';
   if(v==='kids'){APP.child=null;S=null}
-  const keep=ui.keep;ui={tab:ui.tab,mode:ui.mode};if(keep)Object.assign(ui,keep);
+  const keep=ui.keep;ui={tab:ui.tab,mode:ui.mode,surah:ui.surah};if(keep)Object.assign(ui,keep);
   if(v!==rootView())push(v);else if(IN_APP&&!fromPop&&history.state){history.back();return}
   VIEWS[v]();window.scrollTo(0,0);
 }
@@ -832,7 +1144,21 @@ document.addEventListener('click',async e=>{
   else if(a==='daily'){if(!hasAccess())return go('sub');Q={mode:'daily',list:buildDaily(APP.child.grade),i:0,c:0,res:[]};push('quiz');viewQuiz();window.scrollTo(0,0)}
   else if(a==='practice'){if(!hasAccess())return go('sub');const s=b.dataset.s;Q={mode:'practice',s,list:buildPractice(s,APP.child.grade),i:0,c:0,res:[]};push('quiz');viewQuiz();window.scrollTo(0,0)}
   else if(a==='ans')answer(+b.dataset.i);
-  else if(a==='next'){Q.i++;if(Q.i>=Q.list.length)finish();else{viewQuiz();window.scrollTo(0,0)}}
+  else if(a==='tile')tileTap(+b.dataset.i);
+  else if(a==='untile')untile();
+  else if(a==='spkQ')speakItem(Q.list[Q.i]);
+  else if(a==='spkHadith'){const h=todayHadith();speak('قال رسول الله صلى الله عليه وسلم: '+h[0]+'. '+h[2])}
+  else if(a==='buy'){const it=AVATARS.find(x=>x.id===b.dataset.id);if(bal()<it.p){ui.msg={t:`بدك ${ar(it.p-bal())} ياسمينة كمان لتشتري ${it.n}. حل تحدي اليوم والتمارين لتجمع أكتر!`}}else{S.spent=(S.spent||0)+it.p;S.owned=[...new Set([...(S.owned||['jas']),it.id])];S.avatar=it.id;save();tone(true);ui.msg={ok:true,t:`مبروك! صار عندك ${it.n} ${it.e}`}}viewStore()}
+  else if(a==='wear'){S.avatar=b.dataset.id;save();ui.msg=null;viewStore()}
+  else if(a==='surah'){ui.keep={surah:b.dataset.id};go('surah')}
+  else if(a==='surahQuiz'){const su=SURAHS.find(x=>x.id===b.dataset.id);Q={mode:'surah',surah:su.id,list:surahQuiz(su),i:0,c:0,res:[]};push('quiz');viewQuiz();window.scrollTo(0,0)}
+  else if(a==='autoread'){S.autoRead=!autoRead();save();viewParent()}
+  else if(a==='remind'){ui.rmt=val('rmt')||'17:00';const on=!(S.remind&&S.remind.on);if(on&&NATIVE.notifyState&&NATIVE.notifyState()!=='granted'){ui.wantRemind=true;NATIVE.requestNotify()}else applyRemind(on)}
+  else if(a==='certShare'){try{NATIVE.shareImage(ui.cert,'shattoor-certificate','شهادة تقدير من تطبيق شطّور 🌼')}catch(err){}}
+  else if(a==='certSave'){try{NATIVE.saveImage(ui.cert,'shattoor-certificate')}catch(err){}}
+  else if(a==='saveQr'){try{const im=V.querySelector('.sham img');const c=document.createElement('canvas');c.width=im.naturalWidth;c.height=im.naturalHeight;c.getContext('2d').drawImage(im,0,0);NATIVE.saveImage(c.toDataURL('image/png'),'shamcash-qr')}catch(err){}}
+  else if(a==='copyText'){const t=b.dataset.t;const el=V.querySelector('#shamcode');const sel=()=>{if(!el)return;const r=document.createRange();r.selectNodeContents(el);const g=getSelection();g.removeAllRanges();g.addRange(r)};try{navigator.clipboard.writeText(t).then(()=>{b.textContent='تم النسخ ✓'},sel)}catch(err){sel()}}
+  else if(a==='next'){Q.i++;Q.built=[];Q.usedT=[];Q.read=false;if(Q.i>=Q.list.length)finish();else{viewQuiz();window.scrollTo(0,0)}}
   else if(a==='quit'){Q=null;go('home')}
   else if(a==='sound'){S.sound=!S.sound;save();viewParent()}
   else if(a==='delKid'){ui.confirmDel=true;viewParent()}
@@ -843,7 +1169,7 @@ document.addEventListener('click',async e=>{
   else if(a==='mkReset'){busy(b);try{const k=await API.makeReset(ui.found.phone);ui.found.reset=k;ui.msg=null}catch(err){ui.msg={t:errMsg(err)}}viewAdmin()}
   else if(a==='copyCode'){const t=ui.found.reset;const el=V.querySelector('.codebox .code');const sel=()=>{const r=document.createRange();r.selectNodeContents(el);const g=getSelection();g.removeAllRanges();g.addRange(r)};try{navigator.clipboard.writeText(t).then(()=>{b.textContent='تم النسخ'},sel)}catch(err){sel()}}
   else if(a==='request'){const c=APP.child;busy(b,'جارِ الإرسال…');
-    try{await API.requestSub({phone:APP.user.phone,parentName:APP.user.name,childId:c.id,childName:c.name,grade:c.grade,plan:ui.plan||'monthly',method:b.dataset.m||''});await refreshReqs();ui.msg={ok:true,t:'وصل طلبك. رح يتفعّل الاشتراك بعد التأكد من الدفع.'}}
+    try{await API.requestSub({phone:APP.user.phone,parentName:APP.user.name,childId:c.id,childName:c.name,grade:c.grade,plan:ui.plan||'monthly',method:b.dataset.m||'',amount:price(ui.plan||'monthly')});await refreshReqs();ui.msg={ok:true,t:'وصل طلبك. رح يتفعّل الاشتراك بعد التأكد من الدفع.'}}
     catch(err){ui.msg={t:errMsg(err)}}viewSub()}
   else if(a==='recheck'){busy(b,'جارِ التحقق…');
     try{APP.kids=await API.listChildren();APP.child=APP.kids.find(k=>k.id===APP.child.id)||APP.child;await refreshReqs();
@@ -858,7 +1184,8 @@ document.addEventListener('click',async e=>{
   else if(a==='admP'){ui['p'+b.dataset.i]=b.dataset.p;viewAdmin()}
   else if(a==='admAct'){const i=+b.dataset.i,k=ui.found.children[i],g=ui['g'+i]||k.grade,p=ui['p'+i]||'monthly';busy(b);
     try{const s=await API.activate(ui.found.phone,k.id,g,p);
-      const pr=(await API.pending()).filter(r=>r.childId===k.id&&r.grade===g);for(const r of pr)await API.resolve(r.id,'approved');
+      API.logActivation({phone:ui.found.phone,parentName:ui.found.name,childId:k.id,childName:k.name,grade:g,plan:p,amount:price(p),status:'approved',source:'admin'}).catch(()=>{});
+      const pr=(await API.pending()).filter(r=>r.childId===k.id&&r.grade===g);for(const r of pr)await API.resolve(r.id,'merged');
       ui.msg={ok:true,t:`تفعّل اشتراك ${esc(k.name)} للصف ${GRADES[g-1]} حتى ${fmtDay(s.until)}`};await reloadFound()}
     catch(err){ui.msg={t:errMsg(err)}}viewAdmin()}
   else if(a==='cancelSub'){const k=ui.found.children[+b.dataset.i];busy(b);try{await API.cancelSub(ui.found.phone,k.id,b.dataset.g);ui.msg={ok:true,t:'تم إلغاء الاشتراك.'};await reloadFound()}catch(err){ui.msg={t:errMsg(err)}}viewAdmin()}
