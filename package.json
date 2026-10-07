@@ -1,14 +1,14 @@
 {
   "name": "shattoor",
-  "version": "0.3.0",
+  "version": "0.5.0",
   "private": true,
   "description": "شطّور: تطبيق تعليمي تفاعلي للأطفال من الصف الأول إلى السادس",
-  "scripts": { "build": "bash build-tools/build.sh" },
+  "scripts": {
+    "build": "python3 build-tools/make_page.py app/index.html docs"
+  },
   "devDependencies": {
     "@fontsource/lalezar": "^5.0.0",
     "@fontsource/tajawal": "^5.0.0",
-    "aaptjs3": "^2.0.0",
-    "apk_sign_ts": "^1.0.1",
     "firebase": "^10.14.0"
   }
 }

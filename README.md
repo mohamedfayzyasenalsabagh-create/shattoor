@@ -21,25 +21,20 @@
 ## الملفات
 | المسار | المحتوى |
 |---|---|
-| `app/index.html` | التطبيق كامل (الواجهة + المحتوى + الحسابات) |
-| `android/` | غلاف أندرويد (WebView) والأيقونات |
+| `app/index.html` | مصدر التطبيق (الواجهة + المحتوى + الحسابات) |
+| `docs/` | نسخة الموقع المنشورة على GitHub Pages، والتطبيق بيفتحها |
+| `android/` | مشروع أندرويد (WebView) يبنيه GitHub Actions |
 | `firebase/firestore.rules` | قواعد حماية قاعدة البيانات |
-| `build-tools/` | أدوات بناء الـ APK بدون Android Studio |
-| `dist/` | ملفات APK الجاهزة |
 
-## تشغيل السيرفر (Firebase)
-1. أنشئ مشروع على console.firebase.google.com.
-2. **Authentication**: فعّل Email/Password.
-3. **Firestore**: أنشئ قاعدة البيانات، والصق محتوى `firebase/firestore.rules` بقسم Rules.
-4. **Project settings**: ضيف Web app وانسخ الـ config، وحطه مكان `firebase: null` بأول `app/index.html`.
-5. سجّل حساب الإدارة من التطبيق (حساب جديد بالرقم 0986411114) **قبل** ما تنشر التطبيق.
+## كيف بيشتغل
+- الموقع: https://mohamedfayzyasenalsabagh-create.github.io/shattoor/
+- تطبيق الأندرويد بيفتح الموقع، فأي تعديل على `docs/` بيوصل لكل المستخدمين بدون تحديث التطبيق.
+- عند تعديل `android/` بيبني GitHub Actions ملف APK وبينشره بـ Releases.
+- أسرار التوقيع (اختيارية، متل تطبيق نبض): `ANDROID_KEYSTORE_B64` و `ANDROID_KEYSTORE_PASSWORD`. بدونها بتنبنى نسخة تجريبية.
+- `FIREBASE_SERVICE_ACCOUNT` (اختياري) لنشر قواعد الحماية تلقائياً.
 
-إذا بقي `firebase: null`، التطبيق بيشتغل بوضع تجريبي والحسابات بتنحفظ على نفس الجهاز بس.
-
-## البناء
+## تحديث الموقع
 ```bash
 npm install
-bash build-tools/build.sh <versionCode> <versionName>   # مثال: 3 0.3
+python3 build-tools/make_page.py app/index.html docs
 ```
-بيحتاج Java 11+ و Node 18+ و Python 3، ومفتاح التوقيع بمجلد `keys/` (`key.pem` و `cert.pem`).
-**المفتاح مو موجود بالمستودع عن قصد.** خلّيه محفوظ عندك، لأن أي تحديث للتطبيق لازم يتوقّع بنفس المفتاح.

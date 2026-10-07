@@ -1,4 +1,10 @@
-import sys
+import sys,os,shutil,glob
+# الاستخدام: python3 build-tools/make_page.py app/index.html docs
+out=sys.argv[2]; os.makedirs(out+'/fonts',exist_ok=True)
+for f in glob.glob('node_modules/@fontsource/tajawal/files/tajawal-*-normal.woff2')+glob.glob('node_modules/@fontsource/lalezar/files/lalezar-*-normal.woff2'):
+    b=os.path.basename(f)
+    if any(x in b for x in ('-arabic-','-latin-')) and '-latin-ext-' not in b: shutil.copy(f,out+'/fonts/'+b)
+open(out+'/.nojekyll','w').close()
 import re
 s=open(sys.argv[1]).read()
 s=re.sub(r'<link rel="preconnect"[^>]*>\s*<link rel="stylesheet"[^>]*>','',s)
