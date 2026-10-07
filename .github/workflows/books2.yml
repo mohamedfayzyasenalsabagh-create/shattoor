@@ -1,0 +1,25 @@
+name: جلب كتب المنهاج (إكمال + OCR)
+on:
+  push:
+    branches: [main]
+    paths: [".github/workflows/books2.yml", "build-tools/fetch_more.py"]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  more:
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo apt-get update -qq && sudo apt-get install -y -qq poppler-utils tesseract-ocr tesseract-ocr-ara >/dev/null
+      - run: python3 -m pip install -q --user gdown
+      - run: git fetch origin books && mkdir -p out && git archive origin/books | tar x -C out
+      - run: timeout 15000 python3 build-tools/fetch_more.py || echo FAILED >> out/LOG2.txt
+      - name: حفظ
+        if: always()
+        run: |
+          mkdir -p /tmp/books && cp -r out/* /tmp/books/
+          git config user.name "shattoor-ci"; git config user.email "ci@shattoor.app"
+          git checkout --orphan books-tmp2 && git rm -rqf . && git clean -fdq
+          cp -r /tmp/books/* . && git add -A && git commit -qm "نصوص كتب المنهاج (إكمال)" && git push -f origin books-tmp2:books
