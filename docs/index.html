@@ -177,6 +177,10 @@ input:focus{border-color:var(--teal);outline:none}
 .req{gap:8px}
 .copyright{color:var(--muted);font-size:.75rem;text-align:center;opacity:.85;padding-inline:16px;padding-block:0 24px;max-width:520px;margin:0 auto}
 .copyright span{direction:ltr;unicode-bidi:isolate}
+.lessons{display:flex;flex-direction:column;gap:8px}
+.unit{font-size:1rem;color:var(--muted);margin-top:8px}
+.lesson{background:var(--card);border:1.5px solid var(--line);border-radius:16px;padding:12px 14px;display:flex;justify-content:space-between;align-items:center;gap:8px;text-align:start;font-weight:700}
+.lesson.now{border-color:var(--leaf);background:#EEF9F1}
 .four-t{grid-template-columns:repeat(4,1fr)}.four-t button{font-size:.85rem;padding:10px 2px}
 .spk{width:40px;height:40px;border-radius:12px;background:var(--ground);font-size:1.2rem;flex:none}
 .hadith .label .spk{width:34px;height:34px;font-size:1rem;margin-inline-start:6px;vertical-align:middle}
@@ -228,6 +232,7 @@ a.btn{text-decoration:none;white-space:nowrap}
 </head>
 <body>
 
+<script src="curriculum.js"></script>
 <div class="app" id="view"></div>
 <footer class="copyright">© 2026 جميع الحقوق محفوظة · <span>mohamedfayzyasenalsabagh@gmail.com</span></footer>
 
@@ -447,17 +452,27 @@ function surahQuiz(su){const out=[];const all=SURAHS.flatMap(x=>x.v);for(let i=0
 
 const GEN_FOR={math:g=>pick(MATH[g])(),ar:g=>pick(ARB[g])(),sci:g=>gSci(g),en:g=>pick(ENB[g])(),isl:()=>gIsl()};
 
+/* ---- ربط الأسئلة بدروس المنهاج (curriculum.js) ---- */
+// تقويم العام الدراسي: بداية كل فصل وعدد أسابيعه
+const CAL={s1:Date.UTC(2026,8,13),w1:17,s2:Date.UTC(2027,1,7),w2:15};
+function schoolPos(){const t=Date.now();if(t<CAL.s2-14*864e5){return{sem:1,week:Math.max(0,Math.floor((t-CAL.s1)/(7*864e5)))}}return{sem:2,week:Math.max(0,Math.floor((t-CAL.s2)/(7*864e5)))}}
+const curOf=(g,s)=>(window.CUR&&CUR[g]&&CUR[g][s])||[];
+const semLessons=(g,s,sem)=>curOf(g,s).map((l,i)=>Object.assign({i},l)).filter(l=>l.sem===sem);
+function currentLesson(g,s){const p=schoolPos(),L=semLessons(g,s,p.sem);if(!L.length)return null;const W=p.sem===1?CAL.w1:CAL.w2;const k=Math.min(L.length-1,Math.floor(Math.min(p.week,W-1)/W*L.length));return{lesson:L[k],k,L}}
+function lessonQ(g,s,l){
+  let q=null;
+  if(l.gen&&l.gen.length&&window.MATHG){const f=MATHG[pick(l.gen)];if(f)q=f(g)}
+  if(!q&&l.q&&l.q.length){const e=pick(l.q);if(e.kind)q=Object.assign({},e);else{const[qq,en]=String(e[0]).split('||');q=mc(qq,e[1],e.slice(2),Object.assign({m:/^[0-9٠-٩٫.,/ ]+$/.test(e[1])},en?{en}:{}))}}
+  if(!q)q=GEN_FOR[s](g);
+  return Object.assign({s,lt:l.t},q);
+}
 function buildDaily(g){
   const d=dayIdx(),old=R;R=mulberry32(hash('daily|'+d+'|'+g));
-  try{return[
-    Object.assign({s:'math'},GEN_FOR.math(g)),
-    Object.assign({s:'ar'},GEN_FOR.ar(g)),
-    Object.assign({s:'sci'},GEN_FOR.sci(g)),
-    Object.assign({s:'en'},GEN_FOR.en(g)),
-    Object.assign({s:'isl'},hadithQ(todayHadith()))
-  ]}finally{R=old}
+  try{return['math','ar','sci','en'].map(s=>{const c=currentLesson(g,s);if(c){const pool=c.L.slice(Math.max(0,c.k-2),c.k+1);return lessonQ(g,s,pick(pool))}return Object.assign({s},GEN_FOR[s](g))}).concat([Object.assign({s:'isl'},hadithQ(todayHadith()))])}finally{R=old}
 }
-function buildPractice(s,g){const out=[],seen=new Set();let k=0;while(out.length<8&&k++<60){const q=Object.assign({s},GEN_FOR[s](g)),key=q.q+'|'+(q.en||'')+'|'+(q.pre||'');if(!seen.has(key)){seen.add(key);out.push(q)}}return out}
+function buildPractice(s,g,li){const out=[],seen=new Set();let k=0;const L=li!=null?curOf(g,s)[li]:null;
+  while(out.length<8&&k++<80){const q=L?lessonQ(g,s,L):Object.assign({s},GEN_FOR[s](g)),key=q.q+'|'+(q.en||'')+'|'+(q.pre||'')+'|'+(q.a||'');if(!seen.has(key)){seen.add(key);out.push(q)}else if(k>40&&L&&out.length<4){out.push(q)}}
+  return out}
 
 /* ================== الحسابات والبيانات ================== */
 const AR2EN=s=>String(s).replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace(/[۰-۹]/g,d=>'۰۱۲۳۴۵۶۷۸۹'.indexOf(d));
@@ -728,8 +743,8 @@ function viewHome(){
   </section>
   <div class="sec-title"><h2>تمرّن على راحتك</h2><span class="muted" style="font-size:.9rem">${ar(8)} أسئلة لكل تمرين</span></div>
   <div class="lockveil ${acc?'':'locked'}"><div class="grid">
-    ${['math','ar','sci','en'].map(s=>`<button class="subj" style="--c:${SUBJ[s].c}" data-act="${acc?'practice':'go'}" data-s="${s}" data-v="sub"><span class="ico">${SUBJ[s].i}</span><b>${SUBJ[s].n}</b><small>${st(s)}</small></button>`).join('')}
-    <button class="subj wide" style="--c:${SUBJ.isl.c}" data-act="${acc?'practice':'go'}" data-s="isl" data-v="sub"><span class="ico">${SUBJ.isl.i}</span><span class="t"><b>${SUBJ.isl.n} والأحاديث</b><small>${st('isl')}</small></span></button>
+    ${['math','ar','sci','en'].map(s=>`<button class="subj" style="--c:${SUBJ[s].c}" data-act="${acc?(curOf(c.grade,s).length?'lessons':'practice'):'go'}" data-s="${s}" data-v="sub"><span class="ico">${SUBJ[s].i}</span><b>${SUBJ[s].n}</b><small>${st(s)}</small></button>`).join('')}
+    <button class="subj wide" style="--c:${SUBJ.isl.c}" data-act="${acc?(curOf(c.grade,'isl').length?'lessons':'practice'):'go'}" data-s="isl" data-v="sub"><span class="ico">${SUBJ.isl.i}</span><span class="t"><b>${SUBJ.isl.n} والأحاديث</b><small>${st('isl')}</small></span></button>
   </div></div>
   <div class="grid">
     <button class="subj" style="--c:var(--isl)" data-act="go" data-v="surahs"><span class="ico">﴿</span><b>قصار السور</b><small>${ar(Object.keys(S.memo||{}).length)} من ${ar(SURAHS.length)} محفوظة</small></button>
@@ -745,7 +760,7 @@ function viewQuiz(){
     <div class="prog">${Q.list.map((_,i)=>`<i class="${Q.res[i]===true?'ok':Q.res[i]===false?'no':i===Q.i?'cur':''}"></i>`).join('')}</div>
     <span class="pill">${JAS()} ${ar(bal())}</span></div>
   <div class="qcard" style="--c:${sj.c}">
-    <div class="row between"><div class="tag">${Q.mode==='surah'?'سورة '+SURAHS.find(x=>x.id===Q.surah).n:sj.n} · سؤال ${ar(Q.i+1)} من ${ar(Q.list.length)}</div>${it.preKind==='quran'?'':SPK('spkQ')}</div>
+    <div class="row between"><div class="tag">${Q.mode==='surah'?'سورة '+SURAHS.find(x=>x.id===Q.surah).n:sj.n}${it.lt?' · '+esc(it.lt):''} · سؤال ${ar(Q.i+1)} من ${ar(Q.list.length)}</div>${it.preKind==='quran'?'':SPK('spkQ')}</div>
     ${it.pre?(it.preKind==='quran'?`<div class="pre quranpre">قال تعالى: ﴿${esc(it.pre)}﴾</div>`:`<div class="pre">قال رسول الله ﷺ: «${it.pre}»</div>`):''}
     <div class="q">${esc(f(it.q))}</div>
     ${it.kind==='spell'?`<div class="pic">${it.pic}</div><div class="slot" dir="${it.lang==='en'?'ltr':'rtl'}" id="slot">${esc((Q.built||[]).join(''))||'&nbsp;'}</div>`:''}
@@ -802,7 +817,7 @@ function finish(){
     <div class="score">${ar(Q.c)} / ${ar(Q.list.length)}</div>
     ${Q.mode==='surah'?`<p><b>${memoMsg}</b></p>`:`<p>جمعت <b>${ar(Q.c*POINTS())}</b> ياسمينة${Q.mode==='daily'?` · سلسلة الأيام: <b>${ar(S.streak)}</b>`:''}</p>`}
     <div style="display:flex;flex-direction:column;gap:10px;width:100%">
-      ${Q.mode==='practice'?`<button class="btn teal wide" data-act="practice" data-s="${Q.s}">تمرين جديد</button>`:''}
+      ${Q.mode==='practice'?(Q.li!=null?`<button class="btn teal wide" data-act="practiceL" data-s="${Q.s}" data-i="${Q.li}">تمرين جديد على نفس الدرس</button>`:`<button class="btn teal wide" data-act="practice" data-s="${Q.s}">تمرين جديد</button>`):''}
       ${Q.mode==='surah'?`<button class="btn teal wide" data-act="go" data-v="surahs">قصار السور</button>`:''}
       <button class="btn ${Q.mode==='practice'?'ghost':'teal'} wide" data-act="go" data-v="home">الرجوع للرئيسية</button>
     </div></div>`;
@@ -1005,6 +1020,17 @@ function viewStore(){
   <div class="badges">${BADGES.map(b=>`<div class="badge ${b.ok()?'got':''}"><span>${b.e}</span><small>${b.n}</small></div>`).join('')}</div>`;
 }
 
+/* ---- دروس المنهاج ---- */
+function viewLessons(){
+  const g=APP.child.grade,s=ui.subj,p=schoolPos(),sem=ui.sem||p.sem,all=curOf(g,s),cur=currentLesson(g,s);
+  const L=semLessons(g,s,sem);let lastUnit='';
+  V.innerHTML=`${back('home',SUBJ[s].n+' · الصف '+GRADES[g-1])}
+  <div class="tabs"><button data-act="sem" data-n="1" class="${sem===1?'on':''}">الفصل الأول</button><button data-act="sem" data-n="2" class="${sem===2?'on':''}">الفصل الثاني</button></div>
+  <button class="btn teal" data-act="practice" data-s="${s}">تمرين منوّع على كل الدروس</button>
+  <div class="lessons">${L.length?L.map(l=>{const now=cur&&cur.lesson.i===l.i;const u=l.unit&&l.unit!==lastUnit?`<h3 class="unit">${esc(l.unit)}</h3>`:'';lastUnit=l.unit||lastUnit;
+    return u+`<button class="lesson ${now?'now':''}" data-act="practiceL" data-s="${s}" data-i="${l.i}"><span>${esc(l.t)}</span>${now?'<span class="tag ok">هالأسبوع</span>':''}</button>`}).join(''):'<p class="muted">دروس هالفصل رح تنضاف قريباً.</p>'}</div>`;
+}
+
 /* ---- قصار السور ---- */
 function viewSurahs(){
   V.innerHTML=`${back('home','قصار السور')}
@@ -1141,15 +1167,15 @@ const IN_APP=/ShattoorApp/.test(navigator.userAgent)||location.protocol==='file:
 function push(v){if(!IN_APP)return;try{if(history.state)history.replaceState({v},'','#'+v);else history.pushState({v},'','#'+v)}catch(e){}}
 const rootView=()=>!APP.user?'auth':APP.child?'home':isAdmin()?'admin':'kids';
 window.addEventListener('popstate',()=>{Q=null;go(rootView(),true)});
-const VIEWS={auth:viewAuth,kids:viewKids,kidForm:viewKidForm,home:viewHome,parent:viewParent,sub:viewSub,admin:viewAdmin,store:viewStore,surahs:viewSurahs,surah:viewSurah,cert:viewCert};
+const VIEWS={lessons:viewLessons,auth:viewAuth,kids:viewKids,kidForm:viewKidForm,home:viewHome,parent:viewParent,sub:viewSub,admin:viewAdmin,store:viewStore,surahs:viewSurahs,surah:viewSurah,cert:viewCert};
 function go(v,fromPop){
   v=v||rootView();
   if(!APP.user)v='auth';
   stopSpeak();
-  if(['home','parent','sub','store','surahs','surah','cert'].includes(v)&&!APP.child)v=isAdmin()?'admin':'kids';
+  if(['home','parent','sub','store','surahs','surah','cert','lessons'].includes(v)&&!APP.child)v=isAdmin()?'admin':'kids';
   if(v==='admin'&&!isAdmin())v='kids';
   if(v==='kids'){APP.child=null;S=null}
-  const keep=ui.keep;ui={tab:ui.tab,mode:ui.mode,surah:ui.surah};if(keep)Object.assign(ui,keep);
+  const keep=ui.keep;ui={tab:ui.tab,mode:ui.mode,surah:ui.surah,subj:ui.subj,sem:v==='lessons'?ui.sem:null};if(keep)Object.assign(ui,keep);
   if(v!==rootView())push(v);else if(IN_APP&&!fromPop&&history.state){history.back();return}
   VIEWS[v]();window.scrollTo(0,0);
 }
@@ -1166,6 +1192,9 @@ document.addEventListener('click',async e=>{
   else if(a==='practice'){if(!hasAccess())return go('sub');const s=b.dataset.s;Q={mode:'practice',s,list:buildPractice(s,APP.child.grade),i:0,c:0,res:[]};push('quiz');viewQuiz();window.scrollTo(0,0)}
   else if(a==='ans')answer(+b.dataset.i);
   else if(a==='tile')tileTap(+b.dataset.i);
+  else if(a==='lessons'){ui.keep={subj:b.dataset.s};go('lessons')}
+  else if(a==='sem'){ui.sem=+b.dataset.n;viewLessons()}
+  else if(a==='practiceL'){if(!hasAccess())return go('sub');const s=b.dataset.s,li=+b.dataset.i;Q={mode:'practice',s,li,list:buildPractice(s,APP.child.grade,li),i:0,c:0,res:[]};push('quiz');viewQuiz();window.scrollTo(0,0)}
   else if(a==='untile')untile();
   else if(a==='spkQ')speakItem(Q.list[Q.i]);
   else if(a==='spkHadith'){const h=todayHadith();speak('قال رسول الله صلى الله عليه وسلم: '+h[0]+'. '+h[2])}
