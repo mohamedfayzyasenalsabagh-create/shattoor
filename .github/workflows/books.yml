@@ -1,0 +1,22 @@
+# يجلب كتب المنهاج (الصف ١–٦) من موقع الوزارة ويستخرج نصوصها لبناء الأسئلة
+name: جلب كتب المنهاج
+on:
+  push:
+    branches: [main]
+    paths: [".github/workflows/books.yml", "build-tools/fetch_books.py"]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  books:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo apt-get update -qq && sudo apt-get install -y -qq poppler-utils >/dev/null
+      - run: python3 build-tools/fetch_books.py
+      - name: حفظ النصوص في فرع books
+        run: |
+          mkdir -p /tmp/books && cp -r out/* /tmp/books/
+          git config user.name "shattoor-ci"; git config user.email "ci@shattoor.app"
+          git checkout --orphan books-tmp && git rm -rqf . && git clean -fdq
+          cp -r /tmp/books/* . && git add -A && git commit -qm "نصوص كتب المنهاج" && git push -f origin books-tmp:books
