@@ -50,6 +50,95 @@ var MATHG = {
 /* ---- دروس المنهاج حسب الصف والمادة ---- */
 var CUR = {};
 
+/* الإنكليزي · سلسلة إيمار · الصفوف ١–٣ (٢٥ وحدة: ١–١٣ الفصل الأول، ١٤–٢٥ الفصل الثاني) */
+// مساعد: سؤال معنى كلمة
+function V(en, ar, w1, w2, w3) { return ['ما معنى الكلمة؟||' + en, ar, w1, w2, w3] }
+function P(emoji, en, w1, w2, w3) { return [`ما الكلمة الإنكليزية لـ ${emoji}؟`, en, w1, w2, w3] }
+function C(sentence, ok, w1, w2) { return ['اختر الكلمة المناسبة:||' + sentence, ok, w1, w2] }
+function enUnits(list) { return list.map((u, i) => ({ sem: i < 13 ? 1 : 2, unit: 'Unit ' + (i + 1), t: u[0], q: u[1] })) }
+CUR[1] = CUR[1] || {}; CUR[2] = CUR[2] || {}; CUR[3] = CUR[3] || {};
+CUR[1].en = enUnits([
+ ['Hello!', [['اختر الرد المناسب:||Hello!', 'Hello!', 'Bye!', 'Thank you.'], C('My ___ is Sami.', 'name', 'book', 'red'), V('Goodbye', 'مع السلامة', 'مرحباً', 'شكراً', 'نعم')]],
+ ['My Classroom', [P('📖', 'book', 'pen', 'bag', 'desk'), P('✏️', 'pencil', 'book', 'chair', 'door'), C('What’s ___? It’s a pen.', 'this', 'he', 'she'), V('bag', 'حقيبة', 'كتاب', 'قلم', 'كرسي')]],
+ ['In the Classroom', [V('Stand up', 'قف', 'اجلس', 'افتح', 'أغلق'), V('Sit down', 'اجلس', 'قف', 'اكتب', 'اقرأ'), ['كيف نكتب ٣ بالإنكليزي؟', 'three', 'two', 'five', 'one'], V('Open your book', 'افتح كتابك', 'أغلق كتابك', 'اقرأ', 'ارسم')]],
+ ['A Boy and a Girl', [C('This is Sami. ___ is a boy.', 'He', 'She', 'It'), C('This is Hala. ___ is a girl.', 'She', 'He', 'It'), V('girl', 'بنت', 'ولد', 'رجل', 'امرأة'), V('boy', 'ولد', 'بنت', 'أم', 'أخت')]],
+ ['Revision 1', [P('🎒', 'bag', 'book', 'pen', 'cat'), C('___ is a girl.', 'She', 'He', 'I'), ['كيف نكتب ٥ بالإنكليزي؟', 'five', 'four', 'three', 'two'], V('pen', 'قلم حبر', 'كتاب', 'باب', 'نافذة')]],
+ ['Colours', [P('🍎 (لون)', 'red', 'blue', 'green', 'yellow'), P('🍌 (لون)', 'yellow', 'red', 'black', 'blue'), P('🌿 (لون)', 'green', 'red', 'white', 'pink'), C('What ___ is this? It’s blue.', 'colour', 'name', 'time')]],
+ ['My Body', [P('👁️', 'eye', 'ear', 'nose', 'hand'), P('👂', 'ear', 'eye', 'leg', 'head'), P('✋', 'hand', 'foot', 'nose', 'mouth'), V('head', 'رأس', 'يد', 'قدم', 'أذن')]],
+ ['My Family', [V('mother', 'أم', 'أب', 'أخ', 'أخت'), V('father', 'أب', 'أم', 'جد', 'أخت'), C('Who’s ___? He’s my brother.', 'he', 'she', 'it'), V('sister', 'أخت', 'أخ', 'أم', 'أب')]],
+ ['My Birthday', [C('How ___ are you? I’m six.', 'old', 'are', 'is'), ['كيف نكتب ٧ بالإنكليزي؟', 'seven', 'six', 'eight', 'nine'], ['كيف نكتب ١٠ بالإنكليزي؟', 'ten', 'nine', 'six', 'one'], P('🎂', 'cake', 'ball', 'car', 'book')]],
+ ['Revision 2', [P('🔵 (لون)', 'blue', 'red', 'green', 'white'), V('brother', 'أخ', 'أخت', 'أب', 'أم'), P('👃', 'nose', 'ear', 'eye', 'mouth'), ['كيف نكتب ٨ بالإنكليزي؟', 'eight', 'eleven', 'six', 'three']]],
+ ['My House', [V('kitchen', 'مطبخ', 'حمام', 'غرفة نوم', 'حديقة'), C('The cat is ___ the box. (فوق)', 'on', 'in', 'under'), C('The ball is ___ the bag. (داخل)', 'in', 'on', 'at'), P('🛏️', 'bed', 'door', 'table', 'window')]],
+ ['Clothes', [P('👕', 'shirt', 'hat', 'shoes', 'dress'), P('👗', 'dress', 'shirt', 'socks', 'cap'), P('👟', 'shoes', 'hat', 'skirt', 'coat'), C('Who’s ___? She’s my mum.', 'that', 'this is', 'they')]],
+ ['My Food', [P('🍞', 'bread', 'milk', 'egg', 'rice'), P('🥛', 'milk', 'water', 'juice', 'tea'), P('🥚', 'egg', 'apple', 'cake', 'bread'), C('Do you like apples? Yes, I ___.', 'do', 'am', 'is')]],
+ ['Seasons', [V('summer', 'الصيف', 'الشتاء', 'الربيع', 'الخريف'), V('winter', 'الشتاء', 'الصيف', 'الربيع', 'الخريف'), C('It’s hot in ___.', 'summer', 'winter', 'snow'), V('spring', 'الربيع', 'الخريف', 'الصيف', 'الشتاء')]],
+ ['Revision 3', [P('🚪', 'door', 'window', 'bed', 'chair'), C('The book is ___ the table. (فوق)', 'on', 'in', 'is'), P('🧢', 'cap', 'shoe', 'shirt', 'sock'), V('autumn', 'الخريف', 'الربيع', 'الصيف', 'الشتاء')]],
+ ['Animals', [P('🐱', 'cat', 'dog', 'cow', 'duck'), P('🐶', 'dog', 'cat', 'horse', 'fish'), C('There ___ three ducks.', 'are', 'is', 'am'), P('🐄', 'cow', 'cat', 'bird', 'lion')]],
+ ['Vehicles', [P('🚗', 'car', 'bus', 'bike', 'train'), P('🚌', 'bus', 'car', 'plane', 'boat'), P('✈️', 'plane', 'train', 'ship', 'bike'), V('fast', 'سريع', 'بطيء', 'كبير', 'صغير')]],
+ ['Jobs', [V('doctor', 'طبيب', 'معلم', 'شرطي', 'فلاح'), V('teacher', 'معلم', 'طبيب', 'طباخ', 'سائق'), C('___ a farmer.', 'He’s', 'He', 'Is'), V('nurse', 'ممرضة', 'معلمة', 'طبيبة أسنان', 'بائعة')]],
+ ['In the Park', [P('🌳', 'tree', 'flower', 'ball', 'bird'), P('🌸', 'flower', 'tree', 'grass', 'sun'), C('Where ___ the ball? It’s under the tree.', 'is', 'are', 'am'), V('under', 'تحت', 'فوق', 'جانب', 'داخل')]],
+ ['Revision 4', [P('🐴', 'horse', 'cow', 'dog', 'goat'), P('🚲', 'bike', 'car', 'bus', 'boat'), V('next to', 'بجانب', 'تحت', 'فوق', 'داخل'), V('police officer', 'شرطي', 'طبيب', 'طيار', 'فلاح')]],
+ ['Music', [P('🎸', 'guitar', 'drum', 'piano', 'flute'), P('🥁', 'drum', 'guitar', 'piano', 'violin'), C('I can ___ the piano.', 'play', 'eat', 'swim'), V('song', 'أغنية', 'لعبة', 'قصة', 'رقصة')]],
+ ['At the Beach', [C('I ___ swim. (أستطيع)', 'can', 'can’t', 'is'), V('sea', 'البحر', 'الشاطئ', 'الشمس', 'الرمل'), P('☀️', 'sun', 'moon', 'star', 'cloud'), V('sand', 'رمل', 'ماء', 'صدف', 'سمك')]],
+ ['Sports', [P('⚽', 'football', 'tennis', 'basketball', 'swimming'), C('I like football. I ___ like tennis.', 'don’t', 'am', 'is'), V('run', 'يركض', 'يسبح', 'يقفز', 'ينام'), V('jump', 'يقفز', 'يركض', 'يأكل', 'يرسم')]],
+ ['Look at Me', [V('tall', 'طويل', 'قصير', 'سمين', 'صغير'), V('short', 'قصير', 'طويل', 'كبير', 'قوي'), C('She ___ long hair.', 'has', 'have', 'is'), V('hair', 'شعر', 'عين', 'أذن', 'يد')]],
+ ['Revision 5', [C('He ___ tall.', 'is', 'are', 'am'), C('I ___ play football.', 'can', 'is', 'are'), P('🎹', 'piano', 'drum', 'guitar', 'ball'), V('happy', 'سعيد', 'حزين', 'متعب', 'جائع')]]
+]);
+CUR[2].en = enUnits([
+ ['Welcome Back', [['اختر الرد المناسب:||How are you?', 'I’m fine, thank you.', 'I’m seven.', 'It’s red.'], C('My name ___ Rami.', 'is', 'are', 'am'), V('friend', 'صديق', 'أخ', 'معلم', 'جار')]],
+ ['Our New Classroom', [C('These are ___. (أقلام)', 'pens', 'pen', 'a pen'), P('🪑', 'chair', 'table', 'board', 'door'), C('How many books? ___ books.', 'Four', 'Is', 'Are'), V('board', 'السبورة', 'المقعد', 'النافذة', 'الحقيبة')]],
+ ['New Friends', [C('___ are my friends. (أولئك)', 'Those', 'This', 'That'), C('___ are my books. (هذه)', 'These', 'This', 'That'), V('kind', 'لطيف', 'طويل', 'سريع', 'غاضب'), V('funny', 'مضحك', 'حزين', 'هادئ', 'خائف')]],
+ ['Follow the Rules', [C('___ run in the classroom!', 'Don’t', 'Do', 'Is'), V('Be quiet', 'كن هادئاً', 'اركض', 'اصرخ', 'نَم'), C('___ your hand.', 'Raise', 'Eat', 'Jump'), V('rules', 'القواعد', 'الألعاب', 'الكتب', 'الأصدقاء')]],
+ ['Revision 1', [C('This ___ my bag.', 'is', 'are', 'am'), C('___ shout in class!', 'Don’t', 'Do', 'Can'), V('classroom', 'الصف', 'المطبخ', 'الحديقة', 'الملعب'), C('Those ___ my pencils.', 'are', 'is', 'am')]],
+ ['In the Park', [P('🛝', 'slide', 'swing', 'tree', 'bench'), V('swing', 'أرجوحة', 'زحليقة', 'مقعد', 'شجرة'), C('Is there a bird? Yes, there ___.', 'is', 'are', 'am'), V('bench', 'مقعد', 'شجرة', 'زهرة', 'كرة')]],
+ ['Where Is It?', [C('The cat is ___ the chair. (تحت)', 'under', 'on', 'in'), C('The ball is ___ the box. (داخل)', 'in', 'on', 'under'), V('behind', 'خلف', 'أمام', 'فوق', 'تحت'), C('Where ___ my shoes?', 'are', 'is', 'am')]],
+ ['I Like Food', [C('Can I have some water, ___?', 'please', 'thanks', 'sorry'), P('🍕', 'pizza', 'bread', 'rice', 'soup'), P('🍇', 'grapes', 'apples', 'bananas', 'oranges'), ['اختر الرد المناسب:||Here you are.', 'Thank you.', 'Hello.', 'Goodbye.']]],
+ ['Computer Games', [V('computer', 'حاسوب', 'تلفاز', 'هاتف', 'راديو'), C('Can you play this game? Yes, I ___.', 'can', 'do', 'am'), V('game', 'لعبة', 'كتاب', 'قلم', 'درس'), V('win', 'يفوز', 'يخسر', 'يلعب', 'ينام')]],
+ ['Revision 2', [P('🍉', 'watermelon', 'apple', 'orange', 'pear'), C('The bag is ___ the desk. (فوق)', 'on', 'in', 'under'), V('slide', 'زحليقة', 'أرجوحة', 'شجرة', 'كرة'), C('Can I have an apple, ___?', 'please', 'sorry', 'yes')]],
+ ['Baby Animals', [V('kitten', 'قطة صغيرة', 'جرو', 'خروف صغير', 'كتكوت'), V('puppy', 'جرو (كلب صغير)', 'قطة صغيرة', 'عجل', 'مهر'), C('Birds can ___.', 'fly', 'swim', 'read'), C('Fish can ___.', 'swim', 'fly', 'climb')]],
+ ['Helping at Home', [C('What are you ___? I’m cleaning.', 'doing', 'do', 'does'), C('I’m ___ the dishes.', 'washing', 'wash', 'washes'), V('help', 'يساعد', 'يلعب', 'ينام', 'يأكل'), C('She is ___ her room.', 'tidying', 'tidy', 'tidies')]],
+ ['On Holiday', [V('holiday', 'عطلة', 'مدرسة', 'درس', 'واجب'), C('They are ___ in the sea.', 'swimming', 'swim', 'swims'), V('beach', 'الشاطئ', 'الجبل', 'المدينة', 'الصحراء'), C('We ___ having fun.', 'are', 'is', 'am')]],
+ ['Happy New Year', [C('Here ___ some cakes.', 'are', 'is', 'am'), C('I’ve got ___ sweets.', 'some', 'a', 'an'), V('party', 'حفلة', 'رحلة', 'مدرسة', 'سوق'), V('present', 'هدية', 'شمعة', 'كعكة', 'بالون')]],
+ ['Revision 3', [C('What is he ___? He’s reading.', 'doing', 'do', 'does'), V('kitten', 'قطة صغيرة', 'دب', 'أرنب', 'حصان'), C('Here ___ your pen.', 'is', 'are', 'am'), C('They are ___ football.', 'playing', 'play', 'plays')]],
+ ['Daily Routine', [C('I get up ___ seven o’clock.', 'at', 'on', 'in'), V('Monday', 'الاثنين', 'الأحد', 'الجمعة', 'السبت'), C('I ___ my teeth.', 'brush', 'brushes', 'brushing'), V('breakfast', 'الفطور', 'العشاء', 'الغداء', 'الحلوى')]],
+ ['Telling the Time', [C('What ___ is it?', 'time', 'colour', 'name'), ['الساعة ٣:٠٠ نقولها:||It’s ___ .', 'three o’clock', 'half past three', 'two o’clock'], ['كيف نكتب ١٢ بالإنكليزي؟', 'twelve', 'twenty', 'eleven', 'two'], V('clock', 'ساعة حائط', 'قلم', 'هاتف', 'باب')]],
+ ['Meet My Family', [V('grandfather', 'الجد', 'الأب', 'العم', 'الأخ'), C('My mother ___ a teacher.', 'is', 'are', 'am'), V('hospital', 'مستشفى', 'مدرسة', 'مزرعة', 'مخبز'), V('farmer', 'فلاح', 'طبيب', 'طيار', 'شرطي')]],
+ ['At the Weekend', [C('What do you ___ at the weekend?', 'do', 'does', 'doing'), V('weekend', 'عطلة نهاية الأسبوع', 'يوم المدرسة', 'الصباح', 'المساء'), C('I ___ my grandma on Friday.', 'visit', 'visits', 'visiting'), V('Friday', 'الجمعة', 'الخميس', 'السبت', 'الأحد')]],
+ ['Revision 4', [C('I go to school ___ Sunday.', 'on', 'at', 'in'), ['كيف نكتب ١١ بالإنكليزي؟', 'eleven', 'twelve', 'one', 'seven'], V('uncle', 'العم أو الخال', 'الجد', 'الأخ', 'الأب'), C('She ___ up at six.', 'gets', 'get', 'getting')]],
+ ['Fun Time', [P('🟣 (لون)', 'purple', 'pink', 'brown', 'grey'), P('🩷 (لون)', 'pink', 'purple', 'orange', 'red'), C('She’s ___ a red dress.', 'wearing', 'wear', 'wears'), V('curly hair', 'شعر مجعد', 'شعر طويل', 'شعر أسود', 'شعر قصير')]],
+ ['Get Well Soon', [V('cold', 'زكام', 'صداع', 'ألم ضرس', 'حمى'), C('I’ve got a ___. (ألم رأس)', 'headache', 'toothache', 'cold'), ['ماذا نقول للمريض؟||', 'Get well soon!', 'Happy birthday!', 'Good night!'], V('medicine', 'دواء', 'طعام', 'ماء', 'لعبة')]],
+ ['What’s the Weather Like?', [V('rainy', 'ماطر', 'مشمس', 'حار', 'مثلج'), V('cloudy', 'غائم', 'مشمس', 'عاصف', 'حار'), C('It’s ___ today. (مشمس)', 'sunny', 'snowy', 'rainy'), V('windy', 'عاصف', 'ماطر', 'بارد', 'مثلج')]],
+ ['Hobbies', [C('Do you like drawing? Yes, I ___.', 'do', 'am', 'can'), V('reading', 'القراءة', 'الكتابة', 'الرسم', 'السباحة'), V('dancing', 'الرقص', 'الغناء', 'الطبخ', 'الركض'), C('He likes ___ football.', 'playing', 'play', 'plays')]],
+ ['Revision 5', [V('hot', 'حار', 'بارد', 'ماطر', 'غائم'), C('I’ve got a ___. (زكام)', 'cold', 'cake', 'cat'), C('She has ___ hair.', 'long', 'tall', 'old'), V('hobby', 'هواية', 'وظيفة', 'مدرسة', 'بيت')]]
+]);
+CUR[3].en = enUnits([
+ ['Back to School', [C('I have ___ a new bag.', 'got', 'get', 'go'), C('This is my friend. ___ name is Sara.', 'Her', 'His', 'Its'), ['اختر الرد المناسب:||Nice to meet you.', 'Nice to meet you, too.', 'I’m eight.', 'Goodbye.']]],
+ ['School Subjects', [V('Science', 'العلوم', 'الرياضيات', 'الرسم', 'العربي'), C('I have Maths ___ Monday.', 'on', 'in', 'at'), C('My favourite subject ___ Art.', 'is', 'are', 'am'), V('Music', 'الموسيقا', 'الرياضة', 'العلوم', 'الرسم')]],
+ ['My Lovely School', [V('library', 'المكتبة', 'المختبر', 'الملعب', 'المقصف'), C('The library is ___ the first floor.', 'on', 'in', 'at'), V('playground', 'ساحة اللعب', 'المكتبة', 'الصف', 'المكتب'), V('canteen', 'المقصف', 'الصف', 'الحديقة', 'المسرح')]],
+ ['My Five Senses', [C('I ___ with my eyes.', 'see', 'hear', 'smell'), C('I hear with my ___.', 'ears', 'eyes', 'nose'), C('A dog ___ smell very well.', 'can', 'can’t', 'is'), V('touch', 'يلمس', 'يرى', 'يسمع', 'يتذوق')]],
+ ['Revision 1', [V('Art', 'الرسم', 'العلوم', 'الرياضيات', 'الرياضة'), C('I taste with my ___.', 'tongue', 'ears', 'eyes'), C('She has ___ a cat.', 'got', 'get', 'go'), V('office', 'المكتب', 'الصف', 'المكتبة', 'المطبخ')]],
+ ['My Daily Routine', [C('What time ___ you get up?', 'do', 'does', 'are'), C('He ___ breakfast at seven.', 'has', 'have', 'having'), V('lunch', 'الغداء', 'الفطور', 'العشاء', 'الوجبة الخفيفة'), C('I go to bed ___ nine o’clock.', 'at', 'on', 'in')]],
+ ['I Love Cartoons', [V('cartoons', 'رسوم متحركة', 'أخبار', 'رياضة', 'أفلام'), C('I watch TV ___ the evening.', 'in', 'on', 'at'), ['الساعة ٤:٣٠ نقولها:', 'half past four', 'four o’clock', 'half past three'], V('programme', 'برنامج', 'لعبة', 'كتاب', 'قصة')]],
+ ['Let’s Have Fun', [C('Let’s ___ football!', 'play', 'plays', 'playing'), ['اختر الرد المناسب:||Let’s go to the park!', 'Good idea!', 'I’m eight.', 'It’s blue.'], V('fly a kite', 'يطيّر طائرة ورقية', 'يركب دراجة', 'يسبح', 'يرسم'), V('ride a bike', 'يركب دراجة', 'يقود سيارة', 'يطير', 'يركض')]],
+ ['Fun at Home', [C('Is he ___ TV? Yes, he is.', 'watching', 'watch', 'watches'), C('Are they ___ the garden?', 'cleaning', 'clean', 'cleans'), C('Is she ___ a book?', 'reading', 'read', 'reads'), C('Is Sara ___ the car?', 'washing', 'wash', 'washes')]],
+ ['Revision 2', [C('What time ___ she go to school?', 'does', 'do', 'is'), C('They ___ playing chess.', 'are', 'is', 'am'), V('evening', 'المساء', 'الصباح', 'الظهر', 'الليل'), C('Let’s ___ a kite!', 'fly', 'flies', 'flying')]],
+ ['Friendly Neighbours', [V('neighbour', 'جار', 'صديق', 'أخ', 'معلم'), C('What is he doing? He ___ painting.', 'is', 'are', 'am'), C('They are ___ to music.', 'listening', 'listen', 'listens'), V('watering', 'يسقي', 'يأكل', 'يكتب', 'يركض')]],
+ ['A Different Day', [V('always', 'دائماً', 'أبداً', 'أحياناً', 'غالباً'), V('sometimes', 'أحياناً', 'دائماً', 'أبداً', 'اليوم'), C('I ___ go to school on Friday. (أبداً)', 'never', 'always', 'usually'), C('She usually ___ milk.', 'drinks', 'drink', 'drinking')]],
+ ['Give Me a Hand', [C('___ you help me, please?', 'Can', 'Is', 'Are'), ['اختر الرد المناسب:||Can you open the door, please?', 'Sure!', 'I’m nine.', 'It’s Monday.'], V('carry', 'يحمل', 'يرمي', 'يأكل', 'يكسر'), V('Give me a hand', 'ساعدني', 'أعطني يدك فقط', 'صافحني', 'اتركني')]],
+ ['Months and Seasons', [V('January', 'كانون الثاني', 'شباط', 'آذار', 'نيسان'), C('It’s cold in ___.', 'winter', 'summer', 'spring'), V('August', 'آب', 'أيار', 'أيلول', 'حزيران'), C('What’s the weather ___ in spring?', 'like', 'is', 'do')]],
+ ['Revision 3', [C('Can you ___ me, please?', 'help', 'helps', 'helping'), V('December', 'كانون الأول', 'تشرين الأول', 'تشرين الثاني', 'تموز'), C('He always ___ his homework.', 'does', 'do', 'doing'), C('She ___ sleeping now.', 'is', 'are', 'am')]],
+ ['Save the Baby Bird', [V('nest', 'عش', 'قفص', 'شجرة', 'ريشة'), C('I ___ we should help it. (أعتقد)', 'think', 'thinks', 'thinking'), V('baby bird', 'فرخ العصفور', 'دجاجة', 'نسر', 'بيضة'), V('careful', 'حذر', 'سريع', 'غاضب', 'مضحك')]],
+ ['A Visit to the Zoo', [C('How ___ is the giraffe? It’s 5 metres.', 'tall', 'long', 'old'), C('How ___ is the snake?', 'long', 'tall', 'many'), P('🦒', 'giraffe', 'elephant', 'zebra', 'monkey'), P('🐒', 'monkey', 'lion', 'bear', 'tiger')]],
+ ['Let’s Go Shopping', [C('How ___ is the T-shirt?', 'much', 'many', 'old'), V('shop', 'متجر', 'مدرسة', 'حديقة', 'بيت'), C('The bakery is ___ to the bank.', 'next', 'under', 'on'), V('money', 'نقود', 'هدية', 'حقيبة', 'طعام')]],
+ ['My Favourite Meal', [C('I’d ___ some rice, please.', 'like', 'likes', 'liking'), C('Can I ___ some juice?', 'have', 'has', 'having'), V('meal', 'وجبة', 'كوب', 'صحن', 'ملعقة'), V('menu', 'قائمة الطعام', 'المطبخ', 'الطاولة', 'النادل')]],
+ ['Revision 4', [C('How ___ is your brother? He’s 1.5 metres.', 'tall', 'long', 'much'), C('I’d like ___ apple.', 'an', 'a', 'some'), P('🦁', 'lion', 'tiger', 'bear', 'wolf'), C('The shop is ___ the bank and the school.', 'between', 'on', 'in')]],
+ ['When I Was Five', [C('When I was five I ___ small.', 'was', 'were', 'am'), C('My friends ___ funny.', 'were', 'was', 'is'), V('young', 'صغير السن', 'كبير السن', 'طويل', 'قوي'), C('I ___ happy yesterday.', 'was', 'were', 'am')]],
+ ['My Town', [C('There ___ a big park in my town.', 'was', 'were', 'is'), C('There ___ many shops.', 'were', 'was', 'is'), V('town', 'بلدة', 'قرية', 'غابة', 'بحر'), V('old', 'قديم', 'جديد', 'كبير', 'صغير')]],
+ ['On the Farm', [C('Yesterday I ___ the animals. (أطعم)', 'fed', 'feed', 'feeds'), C('We ___ the cows yesterday.', 'milked', 'milk', 'milks'), P('🐓', 'hen', 'cow', 'sheep', 'goat'), C('He ___ the farm last week.', 'visited', 'visit', 'visits')]],
+ ['The Treasure', [V('treasure', 'كنز', 'خريطة', 'جزيرة', 'سفينة'), V('map', 'خريطة', 'كنز', 'صندوق', 'مفتاح'), C('They ___ a box under the tree.', 'found', 'find', 'finds'), V('exciting', 'مثير', 'ممل', 'حزين', 'مخيف')]],
+ ['Revision 5', [C('I ___ my grandma last Friday.', 'visited', 'visit', 'visits'), C('There ___ a lot of children at the party.', 'were', 'was', 'is'), C('How ___ is the elephant?', 'tall', 'many', 'much'), V('island', 'جزيرة', 'بحر', 'نهر', 'جبل')]]
+]);
+
 /* الإنكليزي · سلسلة إيمار · الصفوف ٤–٦ (الوحدات ١–١٠ الفصل الأول، ١١–٢٠ الفصل الثاني) */
 CUR[4] = CUR[4] || {};
 CUR[4].en = [
@@ -119,6 +208,51 @@ CUR[6].en = [
  {sem:2,unit:'Unit 18',t:'Technology',q:[['ما معنى الكلمة؟||download','ينزّل (تحميل)','يطبع','يحذف','يشحن'],['ما معنى الكلمة؟||password','كلمة السر','اسم المستخدم','رسالة','موقع'],['اختر الكلمة المناسبة:||Robots ___ help people in the future.','will','was','did'],['ما معنى الكلمة؟||website','موقع إلكتروني','بريد','تطبيق','شاشة']]},
  {sem:2,unit:'Unit 19',t:'Holidays',q:[['ما معنى الكلمة؟||holiday','عطلة','مدرسة','واجب','امتحان'],['اختر الكلمة المناسبة:||Next summer I am going ___ visit my uncle.','to','for','at'],['ما معنى الكلمة؟||abroad','خارج البلاد','في البيت','في المدرسة','في الحديقة'],['ما الماضي من الفعل؟||fly','flew','flied','flown']]},
  {sem:2,unit:'Unit 20',t:'Review',q:[['ما الماضي من الفعل؟||write','wrote','writed','written'],['اختر الكلمة المناسبة:||She ___ already finished.','has','have','is'],['اختر الكلمة المناسبة:||If it rains, we ___ stay home.','will','would','did'],['اختر الكلمة المناسبة:||This is the ___ book I have ever read.','best','good','better']]}
+];
+
+/* الصف الأول والثاني: العربية لغتي (الفصل الثاني) — من فهرس كتاب ٢٠٢٥–٢٠٢٦ */
+function letterQ(letters, words) {
+  // سؤال: أيّ كلمة فيها الحرف؟ / بأيّ حرف تبدأ؟
+  const out = [];
+  words.forEach(w => {
+    const l = letters.find(x => w[0].includes(x)) || letters[0];
+    out.push([`بأيّ حرف تبدأ كلمة «${w[0]}»؟ ${w[1] || ''}`, w[0][0], ...['ب', 'م', 'ن', 'ر', 'س', 'ل', 'ك', 'د'].filter(x => x !== w[0][0]).slice(0, 3)]);
+  });
+  letters.forEach(l => {
+    const has = words.filter(w => w[0].includes(l)).map(w => w[0]);
+    if (has.length) out.push([`أيّ كلمة فيها حرف «${l}»؟`, has[0], ...['بيت', 'قلم', 'وردة', 'نمر', 'مدرسة', 'كتاب'].filter(x => !x.includes(l)).slice(0, 3)]);
+  });
+  return out;
+}
+CUR[1] = CUR[1] || {};
+CUR[1].ar = [
+ {sem:2,unit:'البيئة',t:'الشجرة (ط - ظ)',q:letterQ(['ط','ظ'],[['طائرة','✈️'],['ظرف','✉️'],['بطة','🦆'],['ظل','🌳']]).concat([['الحرف الأول في «طبل» هو:','ط','ظ','ت','د'],['الشجرة تعطينا:','الثمار والظل','الحليب','البيض','الصوف']])},
+ {sem:2,unit:'البيئة',t:'العصفورة (ص - ض)',q:letterQ(['ص','ض'],[['صقر','🦅'],['ضفدع','🐸'],['صابون','🧼'],['بيض','🥚']]).concat([['العصفورة تبني:','عشّاً','بيتاً من حجر','نفقاً'],['الحرف الأول في «ضوء» هو:','ض','ص','د','ظ']])},
+ {sem:2,unit:'البيئة',t:'صديقتي المياه (ث)',q:letterQ(['ث'],[['ثعلب','🦊'],['ثوم','🧄'],['ثلج','❄️']]).concat([['نحافظ على الماء بأن:','نغلق الصنبور بعد الاستعمال','نترك الصنبور مفتوحاً','نرمي فيه النفايات'],['الحرف الأول في «ثمار» هو:','ث','ت','س','ش']])},
+ {sem:2,unit:'البيئة',t:'الشتاء (ح - خ)',q:letterQ(['ح','خ'],[['حصان','🐴'],['خروف','🐑'],['حليب','🥛'],['خبز','🍞']]).concat([['في الشتاء نلبس:','الملابس الصوفية','ملابس السباحة','القبعة الصيفية فقط'],['يتساقط في الشتاء:','المطر والثلج','أوراق الربيع','الثمار']])},
+ {sem:2,unit:'الصحة والتوعية',t:'أنظّف مدرستي (ة)',q:[['أيّ كلمة تنتهي بتاء مربوطة؟','مدرسة','كتاب','قلم','باب'],['أيّ كلمة تنتهي بتاء مربوطة؟','وردة','شمس','بيت','نور'],['أضع الورق المهمل في:','سلة المهملات','الأرض','الدرج'],['التاء المربوطة نكتبها في آخر:','الكلمة','أول الكلمة','وسط الكلمة']]},
+ {sem:2,unit:'الصحة والتوعية',t:'صحة الأسنان (ء)',q:[['أيّ كلمة فيها همزة؟','سماء','بيت','قلم','وردة'],['أنظّف أسناني:','صباحاً ومساءً','مرة في الشهر','لا أنظفها'],['من الأطعمة التي تضر الأسنان:','الحلويات الكثيرة','الجزر','الحليب','التفاح'],['أيّ كلمة فيها همزة؟','ماء','نار','باب','دار']]},
+ {sem:2,unit:'الصحة والتوعية',t:'غذائي (المدّ ~)',q:[['أيّ كلمة فيها مدّ (آ)؟','آمنة','أمل','إبرة','أسد'],['الغذاء الصحي:','الخضار والفواكه','الحلوى فقط','المشروبات الغازية'],['أيّ كلمة فيها مدّ؟','قرآن','قرأ','سأل','فأر'],['نشرب كل يوم:','الحليب والماء','العصير الغازي فقط','لا شيء']]},
+ {sem:2,unit:'الصحة والتوعية',t:'الحواس الخمس (الشدّة)',q:[['بأيّ عضو نرى؟','العين','الأذن','الأنف','اليد'],['بأيّ عضو نسمع؟','الأذن','العين','اللسان','اليد'],['أيّ كلمة فيها شدّة؟','مُعلّم','كتاب','بيت','قلم'],['بأيّ عضو نتذوّق الطعام؟','اللسان','الأنف','الأذن','العين'],['بأيّ عضو نشمّ الوردة؟','الأنف','الأذن','اليد','العين']]},
+ {sem:2,unit:'قيم اجتماعية',t:'في قلبي',q:[['أحبّ أمي وأبي لأنهما:','يرعيانني ويحبانني','يعطيانني الحلوى فقط','لا شيء'],['أطيع والديّ و:','أساعدهما','أغضب منهما','أصرخ عليهما'],['جمع «قلب»:','قلوب','قلبان','قالب'],['مفرد «أصدقاء»:','صديق','صدق','صديقة']]},
+ {sem:2,unit:'قيم اجتماعية',t:'التعاون',q:[['التعاون يعني:','أن نعمل معاً ونساعد بعضنا','أن يعمل كل واحد وحده','أن نتشاجر'],['أساعد زميلي إذا:','احتاج للمساعدة','كان يلعب','كان نائماً'],['عكس «قوي»:','ضعيف','كبير','سريع'],['«يدٌ واحدة لا تصفّق» معناها:','نحتاج للتعاون','اليد ضعيفة','لا نصفّق']]},
+ {sem:2,unit:'قيم اجتماعية',t:'العازفة الصغيرة',q:[['العازفة تعزف على:','آلة موسيقية','الكرة','الورق'],['من الآلات الموسيقية:','العود','الكرسي','القلم','الصحن'],['عكس «صغيرة»:','كبيرة','قصيرة','جميلة'],['جمع «آلة»:','آلات','آلون','أوائل']]},
+ {sem:2,unit:'قيم اجتماعية',t:'صانعو السعادة',q:[['أصنع السعادة عندما:','أساعد الآخرين وأبتسم لهم','أحزن الآخرين','أبكي'],['عكس «سعيد»:','حزين','فرحان','نشيط'],['الابتسامة في وجه أخيك:','صدقة','عيب','كسل'],['جمع «طفل»:','أطفال','طفلون','طفلات']]}
+];
+CUR[2] = CUR[2] || {};
+CUR[2].ar = [
+ {sem:2,unit:'الوحدة الرابعة: البيئة',t:'العاشق الصغير',q:[['«العاشق الصغير» يحبّ:','الطبيعة وبلده','النوم','اللعب فقط'],['عكس «صغير»:','كبير','قصير','قليل'],['جمع «زهرة»:','زهرات أو أزهار','زهرون','زهار'],['أيّ كلمة فيها «ال» شمسية (لا تُلفظ اللام)؟','الشمس','القمر','الكتاب','البيت']]},
+ {sem:2,unit:'الوحدة الرابعة: البيئة',t:'تتكيّف لتعيش',q:[['الجمل يعيش في:','الصحراء','القطب','البحر'],['يغطي جسم الدب القطبي:','فرو كثيف','ريش','حراشف'],['معنى «تتكيّف»:','تتأقلم مع المكان','تهرب','تنام'],['أيّ كلمة فيها «ال» قمرية (تُلفظ اللام)؟','القمر','الشمس','النهر','السماء']]},
+ {sem:2,unit:'الوحدة الرابعة: البيئة',t:'الفلّاح',q:[['الفلّاح يعمل في:','الحقل','المستشفى','المدرسة'],['يزرع الفلاح:','القمح والخضار','الحديد','البلاستيك'],['جمع «فلّاح»:','فلّاحون','فلّحات','أفلاح'],['عكس «يزرع»:','يحصد','يسقي','يحرث']]},
+ {sem:2,unit:'الوحدة الرابعة: البيئة',t:'نزهة في الطبيعة',q:[['في النزهة نحافظ على المكان بأن:','نجمع النفايات','نكسر الأغصان','نترك النار مشتعلة'],['«ذهبنا إلى النهرِ» حرف الجرّ:','إلى','ذهبنا','النهر'],['معنى «نزهة»:','رحلة للمتعة','درس','عمل'],['أيّ كلمة تنتهي بتاء مربوطة؟','نزهة','بيت','شجر','نهر']]},
+ {sem:2,unit:'الوحدة الخامسة: هوايات واهتمامات',t:'خير جليس',q:[['«خير جليس في الزمان»:','كتاب','هاتف','تلفاز'],['نحافظ على الكتاب بأن:','نغلّفه ولا نمزّقه','نرسم عليه','نرميه'],['جمع «كتاب»:','كتب','كتابات فقط','كاتبون'],['المكتبة مكان:','للقراءة والكتب','للطعام','للعب الكرة']]},
+ {sem:2,unit:'الوحدة الخامسة: هوايات واهتمامات',t:'هذي لغتي',q:[['لغتنا هي:','اللغة العربية','اللغة الإنكليزية','اللغة الفرنسية'],['عدد حروف اللغة العربية:','٢٨','٢٦','٣٠','٢٠'],['«هذه لغتي» كلمة «هذه»:','اسم إشارة للمؤنث','اسم إشارة للمذكر','فعل'],['اسم الإشارة للمذكر القريب:','هذا','هذه','هؤلاء','تلك']]},
+ {sem:2,unit:'الوحدة الخامسة: هوايات واهتمامات',t:'المكتشفة الصغيرة',q:[['المكتشف يحب:','الملاحظة والسؤال','النوم','الكسل'],['اخترع توماس أديسون:','المصباح الكهربائي','الطائرة','الهاتف المحمول'],['معنى «الملاحظة»:','النظر والمشاهدة بانتباه','النسيان','الركض'],['عكس «تعلّم»:','جهل','قرأ','فهم']]},
+ {sem:2,unit:'الوحدة الخامسة: هوايات واهتمامات',t:'هوايات متعدّدة',q:[['من الهوايات المفيدة:','الرسم والقراءة والرياضة','السهر الطويل','إزعاج الآخرين'],['جمع «هواية»:','هوايات','هوايون','أهوية'],['«أنا أحبّ الرسمَ» الضمير المنفصل:','أنا','أحبّ','الرسم'],['اسم الإشارة للجمع:','هؤلاء','هذا','هذه','ذلك']]},
+ {sem:2,unit:'الوحدة السادسة: قيم اجتماعية',t:'العدد صفر',q:[['الصفر وحده قيمته:','لا شيء','عشرة','واحد'],['إذا وضعنا صفراً على يمين ١ صار:','١٠','١','٠١','١٠٠'],['اخترع العرب والمسلمون استعمال:','الصفر','الحاسوب','الهاتف'],['عكس «كثير»:','قليل','كبير','طويل']]},
+ {sem:2,unit:'الوحدة السادسة: قيم اجتماعية',t:'وتبقى نبضة الحب',q:[['الحبّ بين الناس يجعلهم:','متعاونين وسعداء','متخاصمين','حزانى'],['معنى «نبضة»:','دقة القلب','ضربة الكرة','صوت الرعد'],['جمع «قلب»:','قلوب','قلبات','أقلاب'],['عكس «يحبّ»:','يكره','يساعد','يبتسم']]},
+ {sem:2,unit:'الوحدة السادسة: قيم اجتماعية',t:'عطاء بلا حدود',q:[['العطاء يعني:','أن نقدّم الخير للآخرين','أن نأخذ فقط','أن نبخل'],['من صور العطاء:','مساعدة المحتاج','الأنانية','الغضب'],['عكس «يعطي»:','يأخذ','يمنح','يهدي'],['الأم مثال على:','العطاء','البخل','الكسل']]},
+ {sem:2,unit:'الوحدة السادسة: قيم اجتماعية',t:'اليد الواحدة لا تصفّق',q:[['معنى المثل:','التعاون يحقق النجاح','اليد ضعيفة','لا تصفق أبداً'],['عكس «تعاون»:','تخاصم','تفاهم','مساعدة'],['«العملُ الجماعيُّ مفيدٌ» نوع الجملة:','اسمية','فعلية'],['نتعاون في:','تنظيف الصف وترتيبه','الشجار','الغش']]}
 ];
 
 /* الصف الرابع: العربية لغتي (الفصلان) + العلوم (الفصل الثاني) — من فهارس كتب ٢٠٢٥–٢٠٢٦ */
