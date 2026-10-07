@@ -173,7 +173,7 @@ input:focus{border-color:var(--teal);outline:none}
 /* ================== الإعدادات (عدّلها قبل الإطلاق) ================== */
 const CONFIG = {
   // إعدادات مشروع Firebase (من Project settings > Your apps > Web app). إذا تُركت null يعمل التطبيق بالوضع التجريبي على هذا الجهاز فقط
-  firebase: null,
+  firebase: {apiKey:'AIzaSyBa61Kb358ytBM-Mrwi7dzj3If326WMs2g',authDomain:'shattoor-d7699.firebaseapp.com',projectId:'shattoor-d7699',storageBucket:'shattoor-d7699.firebasestorage.app',messagingSenderId:'558585954229',appId:'1:558585954229:web:c566d18be631ac6fd023fc'},
   adminPhone: '0986411114',             // رقم موبايل حساب الأدمن (نفس الرقم في قواعد Firestore)
   emailDomain: 'shattoor.app',          // لا تغيّره بعد الإطلاق
   // القيم الافتراضية فقط: الأدمن يعدّل الأسعار وأرقام الدفع من «الإعدادات» داخل التطبيق
@@ -186,7 +186,7 @@ const CONFIG = {
 };
 const PLANS = { monthly: { name: 'شهري', days: 30 }, yearly: { name: 'سنوي', days: 365 } };
 const PAY = { syriatel: 'سيريتل كاش', mtn: 'MTN كاش', sham: 'شام كاش' };
-const VERSION = '0.3';
+const VERSION = '0.4';
 
 /* ================== أدوات ================== */
 const AD='٠١٢٣٤٥٦٧٨٩';
