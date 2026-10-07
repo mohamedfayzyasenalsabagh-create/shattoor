@@ -13,8 +13,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: sudo apt-get update -qq && sudo apt-get install -y -qq poppler-utils >/dev/null
-      - run: python3 build-tools/fetch_books.py
+      - run: timeout 2400 python3 build-tools/fetch_books.py || echo FAILED >> out/LOG.txt
       - name: حفظ النصوص في فرع books
+        if: always()
         run: |
           mkdir -p /tmp/books && cp -r out/* /tmp/books/
           git config user.name "shattoor-ci"; git config user.email "ci@shattoor.app"

@@ -51,6 +51,11 @@ for i, it in enumerate(items):
     seen_ids.add(m.group(1)); jobs.append((i, it, m.group(1)))
 log.write(f'JOBS {len(jobs)}\n'); log.flush()
 def work(job):
+  try:
+    return work2(job)
+  except Exception as e:
+    return ('MISS', job[1], job[2], 'EXC '+repr(e)[:150])
+def work2(job):
     i, it, fid = job; pdf = f'/tmp/b{i}.pdf'
     try:
         r = subprocess.run(['python3', '-m', 'gdown', fid, '-O', pdf], capture_output=True, text=True, timeout=240)
