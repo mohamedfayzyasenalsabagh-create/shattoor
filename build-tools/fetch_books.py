@@ -40,24 +40,39 @@ for g, url in sorted(PAGES.items()):
 json.dump(items, open('out/links.json', 'w'), ensure_ascii=False, indent=1)
 subprocess.run(['python3', '-m', 'pip', 'install', '-q', '--user', 'gdown'])
 index = []
+from concurrent.futures import ThreadPoolExecutor
+seen_ids = set()
+jobs = []
 for i, it in enumerate(items):
     if not it['subj']: continue
-    href = it['href']; pdf = f'/tmp/b{i}.pdf'
-    m = re.search(r'/d/([\w-]{20,})', href) or re.search(r'id=([\w-]{20,})', href)
-    if m:
-        r = subprocess.run(['python3', '-m', 'gdown', '--fuzzy', f'https://drive.google.com/uc?id={m.group(1)}', '-O', pdf], capture_output=True, text=True, timeout=900)
-        if r.returncode: log.write(f'GDOWN-ERR {m.group(1)} {r.stderr[-300:]}\n')
-    else:
-        open(pdf, 'wb').write(get(href, True, 300))
+    m = re.search(r'/file/d/([\w-]{20,})', it['href'])
+    if not m: continue
+    if m.group(1) in seen_ids: continue
+    seen_ids.add(m.group(1)); jobs.append((i, it, m.group(1)))
+log.write(f'JOBS {len(jobs)}\n'); log.flush()
+def work(job):
+    i, it, fid = job; pdf = f'/tmp/b{i}.pdf'
+    try:
+        r = subprocess.run(['python3', '-m', 'gdown', '--fuzzy', f'https://drive.google.com/uc?id={fid}', '-O', pdf], capture_output=True, text=True, timeout=240)
+        err = r.stderr[-200:].replace('\n', ' ')
+    except Exception as e:
+        err = 'TIMEOUT ' + str(e)[:80]
     if not os.path.exists(pdf) or open(pdf, 'rb').read(4) != b'%PDF':
-        log.write(f'MISS {it["grade"]} {it["subj"]} {href}\n'); continue
+        return ('MISS', it, fid, err)
     name = f'{it["grade"]}-{it["subj"]}-{i}'
     os.makedirs(f'out/{it["grade"]}', exist_ok=True)
     subprocess.run(['pdftotext', '-layout', pdf, f'out/{it["grade"]}/{name}.txt'])
     info = subprocess.run(['pdfinfo', pdf], capture_output=True, text=True).stdout
     np = re.search(r'Pages:\s+(\d+)', info)
     chars = os.path.getsize(f'out/{it["grade"]}/{name}.txt')
-    index.append(dict(it, file=f'{it["grade"]}/{name}.txt', pages=int(np.group(1)) if np else None, chars=chars))
-    log.write(f'OK {name} pages={np.group(1) if np else "?"} chars={chars} {it["label"][-80:]}\n')
+    os.remove(pdf)
+    return ('OK', dict(it, file=f'{it["grade"]}/{name}.txt', pages=int(np.group(1)) if np else None, chars=chars), fid, '')
+with ThreadPoolExecutor(8) as ex:
+    for st, it, fid, err in ex.map(work, jobs):
+        if st == 'OK':
+            index.append(it); log.write(f'OK {it["file"]} pages={it["pages"]} chars={it["chars"]} {it["label"][-90:]}\n')
+        else:
+            log.write(f'MISS {it["grade"]} {it["subj"]} {fid} {err}\n')
+        log.flush()
 json.dump(index, open('out/index.json', 'w'), ensure_ascii=False, indent=1)
 log.close()
