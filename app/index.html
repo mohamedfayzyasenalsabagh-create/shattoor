@@ -566,7 +566,10 @@ function markSeen(q){if(!S)return;S.seen=S.seen||[];const k=qKey(q);const i=S.se
 function bankItem(e){if(e.kind)return Object.assign({},e);const[qq,en]=String(e[0]).split('||');return mc(qq,e[1],e.slice(2),Object.assign({m:/^[0-9٠-٩٫.,/ ]+$/.test(e[1])},en?{en}:{}))}
 function lessonQ(g,s,l,avoid){
   let q=null;avoid=avoid||seenSet();
-  if(l.gen&&l.gen.length&&window.MATHG){for(let t=0;t<12;t++){const f=MATHG[pick(l.gen)];if(!f)break;q=f(g);if(!avoid.has(qKey(q)))break}}
+  const fresh=(l.q||[]).map(bankItem).filter(x=>!avoid.has(qKey(x)));
+  const hasGen=(l.gen&&l.gen.length&&window.MATHG)||(l.fx&&l.fx.length);
+  if(fresh.length&&(!hasGen||R()<.6))q=pick(fresh);   // أسئلة الكتاب أولاً
+  if(!q&&l.gen&&l.gen.length&&window.MATHG){for(let t=0;t<12;t++){const f=MATHG[pick(l.gen)];if(!f)break;q=f(g);if(!avoid.has(qKey(q)))break}}
   if(!q&&l.fx&&l.fx.length){const bankFresh=(l.q||[]).some(e=>!avoid.has(qKey(bankItem(e))));if(!bankFresh||R()<.55){for(let t=0;t<15;t++){q=pick(l.fx)();if(!avoid.has(qKey(q)))break}}}
   if(!q&&l.q&&l.q.length){const items=shuf(l.q).map(bankItem);q=items.find(x=>!avoid.has(qKey(x)))||items[0]}
   if(!q)q=GEN_FOR[s](g);
@@ -583,7 +586,7 @@ function setDiff(s){if(window.DIFF!==undefined)window.DIFF=lvlOf(s)}
 function buildPractice(s,g,li){setDiff(s);
   const N=8,out=[],used=new Set(),old=seenSet(),all=curOf(g,s),L=li!=null?all[li]:null;
   const add=q=>{const k=qKey(q);if(used.has(k))return false;used.add(k);out.push(q);return true};
-  const fromLesson=(l,fresh)=>{if(l.fx&&l.fx.length){shuf(l.q||[]).map(bankItem).forEach(x=>{if(out.length>=Math.ceil(N/2))return;if(fresh&&old.has(qKey(x)))return;add(Object.assign({s,lt:l.t},x))});for(let t=0;t<40&&out.length<N;t++){const q=Object.assign({s,lt:l.t},pick(l.fx)());if(fresh&&old.has(qKey(q)))continue;add(q)}}else if(l.gen&&l.gen.length){for(let t=0;t<30&&out.length<N;t++){const q=lessonQ(g,s,l,new Set([...old,...used]));if(fresh&&old.has(qKey(q)))continue;add(q)}}else{shuf(l.q||[]).map(bankItem).forEach(x=>{if(out.length>=N)return;if(fresh&&old.has(qKey(x)))return;add(Object.assign({s,lt:l.t},x))})}};
+  const fromLesson=(l,fresh)=>{if((l.fx&&l.fx.length)||(l.gen&&l.gen.length&&!(l.fx&&l.fx.length))){shuf(l.q||[]).map(bankItem).forEach(x=>{if(out.length>=Math.ceil(N/2))return;if(fresh&&old.has(qKey(x)))return;add(Object.assign({s,lt:l.t},x))});for(let t=0;t<40&&out.length<N;t++){const q=(l.fx&&l.fx.length)?Object.assign({s,lt:l.t},pick(l.fx)()):lessonQ(g,s,l,new Set([...old,...used]));if(fresh&&old.has(qKey(q)))continue;add(q)}}else if(l.gen&&l.gen.length){for(let t=0;t<30&&out.length<N;t++){const q=lessonQ(g,s,l,new Set([...old,...used]));if(fresh&&old.has(qKey(q)))continue;add(q)}}else{shuf(l.q||[]).map(bankItem).forEach(x=>{if(out.length>=N)return;if(fresh&&old.has(qKey(x)))return;add(Object.assign({s,lt:l.t},x))})}};
   if(L){
     fromLesson(L,true);                                   // أسئلة الدرس الجديدة أولاً
     if(out.length<N){const sib=shuf(all.filter(x=>x!==L&&x.sem===L.sem&&x.unit===L.unit));sib.forEach(x=>fromLesson(x,true))}   // دروس نفس الوحدة
@@ -916,6 +919,7 @@ function viewHome(){
     <button class="fcard" style="--c:var(--isl)" data-act="go" data-v="surahs"><span class="sicon">${ICON('quran')}</span><b>قصار السور</b><small>${ar(Object.keys(S.memo||{}).length)} من ${ar(SURAHS.length)} محفوظة</small></button>
     <button class="fcard" style="--c:#C99410" data-act="go" data-v="store"><span class="sicon">${ICON('store')}</span><b>متجر الياسمين</b><small>شخصيات وشارات</small></button>
   </div>
+  <button class="fcard" style="--c:#2E7DB8;width:100%;margin-top:10px" data-act="go" data-v="books"><span class="sicon">📚</span><b>كتبي المدرسية</b><small>كتب الوزارة للصف ${GRADES[c.grade-1]} · PDF</small></button>
   ${tabbar('home')}`;
 }
 
@@ -1216,6 +1220,15 @@ function viewLessons(){
 }
 
 /* ---- قصار السور ---- */
+const BOOKS={"1":{"ar":"1Ry2t7D2G13KslTZoX2TbE9hDz0Yyj7Bw","math":"1Blj8hRL-FFOtRsxwYOsKLsrV6LF2j3LE","sci":"1sBY-0phEGJ-a7DghsZ5pulMVua3XRyVx","isl":"1OS3t9ODJ2tGkhksvN4d202MNyFEaY9HI","enw":"1jhrekpCQVXOcqTCXsExZEyZ-VR4OIcDQ","en":"1zmemMf5IJZia-W16IUbz5bXisEoIai4d"},"2":{"ar":"1eTHC3nwTd11om_W_pRlMLbLxZ37WdsQa","math":"1wLgNb3Dil5MclKuxZKfaqr_kBB_Z8GxJ","sci":"1RnBbtBiWOuGYt1uzNaaCzXzBzeB-4i3K","isl":"16dEOm5Q2cr_0Inb8aGUStWQD5Nvk9TlI","enw":"17LzuFMYoItK5W84bnkIFkOtJJ_Wt10B9","en":"1H6iRvb6UAZNccdEmnb6-brbExLK37Cu4"},"3":{"ar":"1N-zAHY0luuHyeOfIsj0FdqY0E9kEfRx9","math":"1z9SWeTX6m22o1VZxp8c83v5Ml_SpwecL","sci":"1q2bwUHP8Ur8Iik8CbKXtWT_7xWGtILzY","enw":"1OQLzVmkchJW5fIc9MA44FZ3PA6vojF1x","en":"1ulyThOpkalwbZO-VBgFh_srDmgx7rBBB"},"4":{"ar":"1PH6bUpbnRz44DlZJWifk2r2GJqmfpnKz","math":"1W3xpr5kqVg2-VbyK8EFy1OiD3aWwqEmG","sci":"11h2jonsyA1YebRw0EcRgheGQqSgKF04H","isl":"14fLMHpwPyXXJzV4tmQUB6GQVRhr1B8Hu","enw":"1XsmpHAj-dbH8ngIY5BMgHiBtc-PcLrkP","en":"1q0V0G5-1ZSlTyzfPpgJP__bdbXUgPEnt"},"5":{"ar":"1SUKqVHDUJ7qaWjRZEzezzjZ5cmqfk4cn","math":"1Bs9zEFWJKeSopGyaHHuyhONL-r9GnXxY","sci":"1eg3Pmv5oEsny-oKaT_2nmJpOlpzuHbWv","isl":"1ngVYSQkM8ZIn8j2Pz_Pft1_SE7EFVF7k","enw":"1LjEEew73k77lirUMGy8TK1DiyYYWvRR5","en":"1UVOkvLgQxPYEhAC4SWPEfxdo-yHENWNF"},"6":{"ar":"1yPZVdQASL3hpifRf76VKHlO1kdGkzbIY","math":"1iZjTjcNN4xHGV_WeBWllCOYC_qtx8FBA","sci":"1H0N84ue_RUQ7jclGqS_Dl6dOSABl3Csx","isl":"1GgtZJiz3McdVK5vv92mrz5JSLi39Wuwq","enw":"1fAlyZkNndlaRaCQQgX-yG_FBraUzSTw0","en":"1mBcxxFvvEvlKiKlJ-ZHnxctXqW1HN2P9"}};
+const BOOKN={ar:['العربية لغتي','ar'],math:['الرياضيات','math'],sci:['العلوم','sci'],isl:['التربية الإسلامية','isl'],en:['English · كتاب الطالب','en'],enw:['English · كتاب الأنشطة','en']};
+function viewBooks(){
+  const g=APP.child.grade,b=BOOKS[g]||{};
+  V.innerHTML=`${back('home','كتبي المدرسية')}
+  <p class="muted">كتب وزارة التربية للصف ${GRADES[g-1]} (٢٠٢٥–٢٠٢٦). اكبس على الكتاب بيفتح بملف PDF، وفيك تنزّله على الموبايل.</p>
+  <div class="kids">${Object.keys(BOOKN).filter(k=>b[k]).map(k=>{const sj=SUBJ[BOOKN[k][1]]||{c:'#888',k:'ar'};return `<a class="kid" style="text-decoration:none;color:inherit" href="https://drive.google.com/file/d/${b[k]}/view" target="_blank" rel="noopener"><span class="av" style="background:${sj.c};color:#fff">${ICON(sj.k)}</span><span class="t"><b>${BOOKN[k][0]}</b><small>اكبس للفتح ↗</small></span></a>`}).join('')}</div>
+  <p class="muted small">الكتب محفوظة على Google Drive من مكتبة المرحلة الابتدائية. بتحتاج إنترنت لتفتح.</p>${tabbar('home')}`;
+}
 function viewSurahs(){
   V.innerHTML=`<h1 class="ptitle">قصار السور</h1>
   <p class="muted">اقرأ السورة، وبعدين جرّب «سمّع» لتعرف إذا حفظتها. كل سورة بتحفظها إلها ${ar(30)} ياسمينة.</p>
@@ -1351,7 +1364,7 @@ const IN_APP=/ShattoorApp/.test(navigator.userAgent)||location.protocol==='file:
 function push(v){if(!IN_APP)return;try{if(history.state)history.replaceState({v},'','#'+v);else history.pushState({v},'','#'+v)}catch(e){}}
 const rootView=()=>!APP.user?'auth':APP.child?'home':isAdmin()?'admin':'kids';
 window.addEventListener('popstate',()=>{Q=null;go(rootView(),true)});
-const VIEWS={lessons:viewLessons,auth:viewAuth,kids:viewKids,kidForm:viewKidForm,home:viewHome,parent:viewParent,sub:viewSub,admin:viewAdmin,store:viewStore,surahs:viewSurahs,surah:viewSurah,cert:viewCert};
+const VIEWS={lessons:viewLessons,auth:viewAuth,kids:viewKids,kidForm:viewKidForm,home:viewHome,parent:viewParent,sub:viewSub,admin:viewAdmin,store:viewStore,surahs:viewSurahs,books:viewBooks,surah:viewSurah,cert:viewCert};
 function go(v,fromPop){
   v=v||rootView();
   if(!APP.user)v='auth';
