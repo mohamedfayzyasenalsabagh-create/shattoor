@@ -69,5 +69,29 @@ service cloud.firestore {
       allow read: if isAdmin() || (signedIn() && resource.data.uid == request.auth.uid);
       allow update, delete: if isAdmin();
     }
+
+    // مسابقة الأسبوع والشهر: الاسم الأول والنقاط فقط
+    function validBoard() { let d = request.resource.data; return d.p is int && d.p >= 0 && d.p <= 200000 && d.n is string && d.n.size() <= 24 && d.per is string; }
+    match /board/{id} {
+      allow read: if signedIn();
+      allow create: if signedIn() && request.resource.data.uid == request.auth.uid && validBoard();
+      allow update: if signedIn() && resource.data.uid == request.auth.uid && request.resource.data.uid == request.auth.uid && validBoard();
+      allow delete: if isAdmin() || (signedIn() && resource.data.uid == request.auth.uid);
+    }
+
+    // صفوف الأساتذة: الأستاذ بيشوف ملخص تقدّم طلابه فقط
+    function classOwner(code) { return signedIn() && get(/databases/$(database)/documents/classes/$(code)).data.uid == request.auth.uid; }
+    match /classes/{code} {
+      allow get: if signedIn();
+      allow list: if signedIn() && resource.data.uid == request.auth.uid;
+      allow create: if signedIn() && request.resource.data.uid == request.auth.uid && code.matches('[0-9]{6}');
+      allow update, delete: if (signedIn() && resource.data.uid == request.auth.uid) || isAdmin();
+      match /members/{cid} {
+        allow read: if classOwner(code) || isAdmin();
+        allow create: if signedIn() && request.resource.data.uid == request.auth.uid && exists(/databases/$(database)/documents/classes/$(code));
+        allow update: if signedIn() && resource.data.uid == request.auth.uid && request.resource.data.uid == request.auth.uid;
+        allow delete: if signedIn() && (resource.data.uid == request.auth.uid || classOwner(code)) || isAdmin();
+      }
+    }
   }
 }

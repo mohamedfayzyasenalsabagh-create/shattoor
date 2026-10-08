@@ -29,4 +29,21 @@ if re.search(r'firebase:\s*\{',s):
     s=s.replace('<script>',tags+'<script>',1)
     print('firebase: ON')
 else: print('firebase: demo mode')
+feat=''
+for f in sorted(glob.glob('app/feat_*.js')):
+    shutil.copy(f,sys.argv[2]+'/'+os.path.basename(f)); feat+=f'<script src="{os.path.basename(f)}"></script>\n'
+s=s.replace('\n</body>','\n'+feat+'</body>',1)
 open(sys.argv[2]+'/index.html','w').write(s)
+# service worker: يخزّن ملفات التطبيق للتشغيل بلا إنترنت
+import hashlib,json
+o=sys.argv[2];files=[]
+for root,_,fs in os.walk(o):
+    for f in fs:
+        rel=os.path.relpath(os.path.join(root,f),o)
+        if rel in ('sw.js','.nojekyll'): continue
+        files.append(rel.replace(os.sep,'/'))
+files.sort();h=hashlib.sha1()
+for f in files: h.update(open(os.path.join(o,f),'rb').read())
+pre=['./']+[f for f in files if f!='index.html']
+sw=open('build-tools/sw_template.js').read().replace('__VERSION__','shattoor-'+h.hexdigest()[:10]).replace('__FILES__',json.dumps(pre))
+open(o+'/sw.js','w').write(sw)

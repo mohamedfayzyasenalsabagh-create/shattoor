@@ -291,7 +291,7 @@ a.btn{text-decoration:none;white-space:nowrap}
 .duo{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .fcard{background:var(--card);border-radius:20px;padding:14px;border:1.5px solid var(--line);box-shadow:0 4px 0 var(--line);display:flex;flex-direction:column;gap:6px;text-align:start}
 .fcard small{color:var(--muted);font-size:.8rem}
-.tabbar{position:fixed;inset-inline:0;bottom:0;z-index:20;display:grid;grid-template-columns:repeat(4,1fr);background:var(--card);border-top:1.5px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px);max-width:520px;margin:0 auto;box-shadow:0 -6px 20px -14px #0006}
+.tabbar{position:fixed;inset-inline:0;bottom:0;z-index:20;display:grid;grid-template-columns:repeat(5,1fr);background:var(--card);border-top:1.5px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px);max-width:520px;margin:0 auto;box-shadow:0 -6px 20px -14px #0006}
 .tabbar button{display:flex;flex-direction:column;align-items:center;gap:2px;padding:9px 0 8px;color:var(--muted);font-weight:800;font-size:.75rem}
 .tabbar button.on{color:var(--teal)}
 .tabbar button.on .ic{background:#DFF1EF;border-radius:10px;padding:3px;width:34px;height:28px}
@@ -347,6 +347,11 @@ a.btn{text-decoration:none;white-space:nowrap}
 .rstats b{font-family:var(--display);font-size:1.5rem;font-weight:400;color:var(--teal);display:flex;align-items:center;justify-content:center;gap:4px}
 .rstats b .ic,.rstats b .jas{width:20px;height:20px}
 .rstats span{color:var(--muted);font-size:.8rem;font-weight:700}
+.examcard{display:flex;align-items:center;gap:12px;background:linear-gradient(135deg,#F1EAFE,#fff);border:2px solid #CDB8F5;border-radius:22px;padding:14px;box-shadow:0 4px 0 #CDB8F5;text-align:start}
+.examcard .sicon{background:#7A4FD1}.examcard .go{font-size:1.4rem;color:#7A4FD1;font-weight:800}
+.helpmsg{display:block;margin-top:4px;font-weight:700;opacity:.9}
+.extime{color:#7A4FD1}.extime.low{color:var(--pom);animation:pulse 1s infinite}
+.offbar{position:sticky;top:0;z-index:25;background:#FFF3C4;color:#7A5A00;text-align:center;font-weight:800;font-size:.85rem;padding:6px;border-radius:0 0 12px 12px}
 @media (prefers-reduced-motion:reduce){.m-body,.pnode.now,.bigstars i,.sheet{animation:none}}
 
 </style>
@@ -631,13 +636,14 @@ function newCode(){let s='';const a=new Uint32Array(8);(window.crypto||{}).getRa
 const ERR={'auth/email-already-in-use':'هذا الرقم مسجّل من قبل. سجّل الدخول بدلاً من ذلك.','auth/invalid-credential':'الرقم أو كلمة السر غير صحيحة.','auth/wrong-password':'الرقم أو كلمة السر غير صحيحة.','auth/invalid-login-credentials':'الرقم أو كلمة السر غير صحيحة.','auth/user-not-found':'لا يوجد حساب بهذا الرقم. أنشئ حساباً جديداً.','auth/weak-password':'كلمة السر قصيرة. اكتب ٦ أحرف أو أرقام على الأقل.','auth/network-request-failed':'لا يوجد اتصال بالإنترنت. اتصل وحاول مرة ثانية.','auth/too-many-requests':'محاولات كثيرة. انتظر قليلاً ثم حاول.','permission-denied':'ليس لديك صلاحية لهذه العملية.','unavailable':'لا يوجد اتصال بالإنترنت. اتصل وحاول مرة ثانية.','bad-code':'رمز إعادة التعيين غير صحيح. تأكد منه أو اطلب رمزاً جديداً من الإدارة.','no-reset':'لا يوجد طلب إعادة تعيين لهذا الرقم. راسل الإدارة على واتساب.'};
 const errMsg=e=>ERR[e&&(e.code||e.message)]||'حدث خطأ. حاول مرة ثانية.';
 const fail=(code)=>{const e=new Error(code);e.code=code;return e};
-const mergeSettings=s=>{const d=CONFIG.defaults;s=s||{};const pay=Object.assign({},d.pay,s.pay);if(!pay.sham)pay.sham=d.pay.sham;return{trialDays:s.trialDays!=null?+s.trialDays:d.trialDays,prices:Object.assign({},d.prices,s.prices),pay,shamName:s.shamName||d.shamName,shamQr:s.shamQr||d.shamQr,whatsapp:s.whatsapp!=null?s.whatsapp:d.whatsapp}};
+const mergeSettings=s=>{const d=CONFIG.defaults;s=s||{};const pay=Object.assign({},d.pay,s.pay);if(!pay.sham)pay.sham=d.pay.sham;return{trialDays:s.trialDays!=null?+s.trialDays:d.trialDays,prices:Object.assign({},d.prices,s.prices),pay,shamName:s.shamName||d.shamName,shamQr:s.shamQr||d.shamQr,whatsapp:s.whatsapp!=null?s.whatsapp:d.whatsapp,family:s.family!=null?+s.family:20,school:s.school||'',prize:s.prize||''}};
 
 /* ---- الوضع التجريبي: كل البيانات على هذا الجهاز ---- */
 function DemoBackend(){
   const K='shattoor_demo_db2';
   let D;try{D=JSON.parse(localStorage.getItem(K))}catch(e){}
   if(!D)D={parents:{},children:{},requests:{},resets:{},settings:null,session:null,n:1};
+  D.board=D.board||{};D.classes=D.classes||{};
   const adm=normPhone(CONFIG.adminPhone);
   if(adm&&!D.parents[adm]){D.parents[adm]={name:'الإدارة',pass:'123456',created:today()-30};D.children[adm]={}}
   const save=()=>{try{localStorage.setItem(K,JSON.stringify(D))}catch(e){}};save();
@@ -667,6 +673,15 @@ function DemoBackend(){
     async resolve(rid,status){D.requests[rid].status=status;D.requests[rid].done=today();save();return wait()},
     async makeReset(phone){const key=newCode();D.resets[phone]={key,created:today()};save();return wait(key)},
     async logActivation(r){const k=id();D.requests[k]=Object.assign({created:today(),done:today()},r);save();return wait(k)},
+    async boardPut(id,v){D.board[id]=Object.assign({},v,{uid:D.session});save();return wait()},
+    async boardGet(per){return wait(Object.values(D.board).filter(x=>x.per===per))},
+    async classGet(code){const c=D.classes[code];return wait(c?Object.assign({code},c,{members:undefined}):null)},
+    async classCreate(c){let code;do{code=String(100000+Math.floor(Math.random()*900000))}while(D.classes[code]);D.classes[code]=Object.assign({},c,{uid:D.session,members:{}});save();return wait(code)},
+    async myClasses(){return wait(Object.entries(D.classes).filter(([k,c])=>c.uid===D.session).map(([k,c])=>Object.assign({code:k},c,{members:undefined})))},
+    async classDel(code){delete D.classes[code];save();return wait()},
+    async memberPut(code,cid,v){const c=D.classes[code];if(!c)throw fail('not-found');c.members[cid]=Object.assign({},v,{uid:D.session});save();return wait()},
+    async memberDel(code,cid){const c=D.classes[code];if(c)delete c.members[cid];save();return wait()},
+    async members(code){const c=D.classes[code];return wait(c?Object.entries(c.members).map(([k,v])=>Object.assign({id:k},v)):[])},
     async stats(){return wait({parents:Object.entries(D.parents).map(([phone,u])=>({phone,name:u.name})),kids:Object.entries(D.children).flatMap(([phone,o])=>Object.entries(o).map(([id,c])=>Object.assign({phone,id},c))),approved:Object.values(D.requests).filter(r=>r.status==='approved')})}
   };
 }
@@ -680,9 +695,11 @@ function FirebaseBackend(cfg){
   const emailOf=(p,key)=>key?`${p}.${key}${dom}`:p+dom;
   let U=null;
   const P=p=>db.collection('parents').doc(p);
-  const load=async fu=>{if(!fu)return U=null;const phone=fu.email.split('@')[0].split('.')[0];const s=await P(phone).get();const d=s.exists?s.data():{};
+  const load=async fu=>{if(!fu)return U=null;const phone=fu.email.split('@')[0].split('.')[0];
+    let s;try{s=await P(phone).get()}catch(e){let c=null;try{c=JSON.parse(localStorage.getItem('shattoor_u'))}catch(x){}if(c&&c.uid===fu.uid)return U=c;throw e}
+    const d=s.exists?s.data():{};
     if(s.exists&&d.uid!==fu.uid){await auth.signOut();return U=null}
-    U={uid:fu.uid,phone,name:d.name||'',created:tsDay(d.created)};return U};
+    U={uid:fu.uid,phone,name:d.name||'',created:tsDay(d.created)};try{localStorage.setItem('shattoor_u',JSON.stringify(U))}catch(x){}return U};
   const kidsCol=p=>P(p).collection('children');
   const kids=async p=>(await kidsCol(p).get()).docs.map(d=>Object.assign({id:d.id},d.data()));
   return{
@@ -719,6 +736,15 @@ function FirebaseBackend(cfg){
     resolve(rid,status){return db.collection('requests').doc(rid).update({status,done:FV.serverTimestamp()})},
     async makeReset(phone){const key=newCode();await db.collection('resets').doc(phone).set({key,created:FV.serverTimestamp()});return key},
     async logActivation(r){await db.collection('requests').add(Object.assign({uid:U.uid,created:FV.serverTimestamp(),done:FV.serverTimestamp()},r))},
+    boardPut(id,v){return db.collection('board').doc(id).set(Object.assign({},v,{uid:U.uid}))},
+    async boardGet(per){return(await db.collection('board').where('per','==',per).limit(400).get()).docs.map(d=>d.data())},
+    async classGet(code){const s=await db.collection('classes').doc(code).get();return s.exists?Object.assign({code},s.data()):null},
+    async classCreate(c){for(let i=0;i<6;i++){const code=String(100000+Math.floor(Math.random()*900000));const ref=db.collection('classes').doc(code);if((await ref.get()).exists)continue;await ref.set(Object.assign({},c,{uid:U.uid,phone:U.phone,created:FV.serverTimestamp()}));return code}throw fail('unavailable')},
+    async myClasses(){return(await db.collection('classes').where('uid','==',U.uid).get()).docs.map(d=>Object.assign({code:d.id},d.data()))},
+    classDel(code){return db.collection('classes').doc(code).delete()},
+    memberPut(code,cid,v){return db.collection('classes').doc(code).collection('members').doc(cid).set(Object.assign({},v,{uid:U.uid}))},
+    memberDel(code,cid){return db.collection('classes').doc(code).collection('members').doc(cid).delete()},
+    async members(code){return(await db.collection('classes').doc(code).collection('members').get()).docs.map(d=>Object.assign({id:d.id},d.data()))},
     async stats(){const[ps,cs,rq]=await Promise.all([db.collection('parents').get(),db.collectionGroup('children').get(),db.collection('requests').where('status','==','approved').get()]);
       return{parents:ps.docs.map(d=>({phone:d.id,name:d.data().name})),kids:cs.docs.map(d=>Object.assign({phone:d.ref.parent.parent.id,id:d.id},d.data())),approved:rq.docs.map(d=>d.data())}}
   };
@@ -736,7 +762,9 @@ function freshP(){return{jas:0,spent:0,streak:0,best:0,lastDaily:null,daily:{},s
 let S=null;
 function loadP(cid){try{const t=localStorage.getItem('shattoor_p_'+cid);if(t)return Object.assign(freshP(),JSON.parse(t))}catch(e){}return freshP()}
 function save(){if(!APP.child||!S)return;try{localStorage.setItem('shattoor_p_'+APP.child.id,JSON.stringify(S))}catch(e){}}
-function syncSummary(){if(!APP.child)return;const p={jas:S.jas,streak:S.streak,stats:S.stats,lastActive:today()};Object.assign(APP.child,p);API.updateChild(APP.child.id,p).catch(()=>{})}
+function syncSummary(){if(!APP.child)return;const p={jas:S.jas,streak:S.streak,stats:S.stats,lastActive:today()};Object.assign(APP.child,p);API.updateChild(APP.child.id,p).catch(()=>{});(window.HOOKS||[]).forEach(h=>{try{h.sync&&h.sync()}catch(e){}})}
+window.HOOKS=window.HOOKS||[];
+const hook=(n,...a)=>HOOKS.forEach(h=>{try{h[n]&&h[n](...a)}catch(e){console.error(e)}});
 try{localStorage.removeItem('shattoor_v1');localStorage.removeItem('shattoor_demo_db')}catch(e){}
 
 const subOf=(c,g)=>(c&&c.subs&&c.subs[g])||null;
@@ -784,6 +812,8 @@ const IC={
   fire:'<path d="M12 21c4 0 7-2.7 7-6.6 0-3.3-2.2-5.4-3.6-7.4-.5 2-1.5 3-2.6 3.4.3-3-1-6-3.8-7.4.3 3.2-1.6 5.3-3 7.2C4.8 11.6 5 13 5 14.4 5 18.3 8 21 12 21z"/>',
   play:'<path d="M8 5.5v13l10-6.5z"/>',
   check:'<path d="M5 12.5l4.5 4.5L19 7.5"/>',
+  trophy:'<path d="M8 4h8v5a4 4 0 0 1-8 0z"/><path d="M8 6H5a3 3 0 0 0 3 4M16 6h3a3 3 0 0 1-3 4M12 13v4M8.5 20h7M10 17h4v3h-4z"/>',
+  exam:'<rect x="5" y="3.5" width="14" height="17" rx="2"/><path d="M9 3.5h6v3H9zM8.5 11l1.5 1.5 3-3M8.5 16h7"/>',
   lock:'<rect x="5" y="10.5" width="14" height="10" rx="2"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5"/>'
 };
 const ICON=(k,cls)=>`<svg class="${cls||'ic'}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${IC[k]||''}</svg>`;
@@ -792,7 +822,7 @@ const lsKey=(s,i)=>`${APP.child.grade}:${s}:${i}`;
 const starsOf=(s,i)=>((S.ls||{})[lsKey(s,i)]||0);
 function semProgress(s){const g=APP.child.grade,p=schoolPos(),L=semLessons(g,s,p.sem);if(!L.length)return 0;return L.filter(l=>starsOf(s,l.i)>0).length/L.length}
 function tabbar(active){
-  const t=[['home','home','الرئيسية'],['surahs','quran','السور'],['store','store','المتجر'],['parent','parent','الأهل']];
+  const t=[['home','home','الرئيسية'],['league','trophy','المسابقة'],['surahs','quran','السور'],['store','store','المتجر'],['parent','parent','الأهل']];
   return `<nav class="tabbar">${t.map(([v,ic,n])=>`<button data-act="go" data-v="${v}" class="${active===v?'on':''}" aria-label="${n}">${ICON(ic)}<span>${n}</span></button>`).join('')}</nav>`;
 }
 
@@ -805,7 +835,9 @@ const back=(v,t)=>`<div class="qbar"><button class="x" data-act="go" data-v="${v
 const msgHTML=()=>ui.msg?`<p class="msg ${ui.msg.ok?'ok':'no'}" role="status">${ui.msg.t}</p>`:'';
 const gradeBtns=(sel,act)=>`<div class="grades">${GRADES.map((n,i)=>`<button type="button" data-act="${act}" data-g="${i+1}" class="${sel===i+1?'on':''}"><span>${ar(i+1)}</span>${n}</button>`).join('')}</div>`;
 const planName=p=>(PLANS[p]||{}).name||p;
-const price=p=>APP.set.prices[p]||'يُحدَّد لاحقاً';
+const famOn=()=>APP.child&&APP.set.family>0&&APP.kids.some(k=>k.id!==APP.child.id&&Object.values(k.subs||{}).some(x=>x.until>=today()));
+const basePrice=p=>APP.set.prices[p]||'يُحدَّد لاحقاً';
+const price=p=>{const b=basePrice(p),n=amountOf(b);if(famOn()&&n>0){const v=Math.round(n*(100-APP.set.family)/100/100)*100;return fmtNum(v)+' ل.س'}return b};
 const waHTML=()=>APP.set.whatsapp?`<b dir="ltr" class="sel">${esc(APP.set.whatsapp)}</b>`:'المعلن من الإدارة';
 const demoNote=()=>API.demo?`<div class="status trial" style="font-size:.85rem">وضع تجريبي: الحسابات محفوظة على هذا الجهاز فقط. حساب الأدمن التجريبي: ${ar(normPhone(CONFIG.adminPhone)||'')} وكلمة السر ${ar('123456')}</div>`:'';
 function busy(b,t){if(b){b.disabled=true;b.dataset.t=b.textContent;b.textContent=t||'لحظة…'}}
@@ -845,7 +877,8 @@ function viewAuth(){
 async function afterLogin(){
   viewLoading();
   await loadSettings();
-  try{APP.kids=await API.listChildren()}catch(e){APP.kids=[]}
+  const KK='shattoor_kids_'+APP.user.phone;
+  try{APP.kids=await API.listChildren();try{localStorage.setItem(KK,JSON.stringify(APP.kids))}catch(x){}}catch(e){try{APP.kids=JSON.parse(localStorage.getItem(KK))||[]}catch(x){APP.kids=[]}}
   await refreshReqs();
   APP.child=null;S=null;
   if(isAdmin())return go('admin',true);
@@ -866,6 +899,7 @@ function viewKids(){
       <span class="tag ${s?'ok':trialLeft()>0?'trial':'off'}">${s?'مشترك':trialLeft()>0?'تجربة':'غير مشترك'}</span></button>`}).join('')}
     <button class="kid add" data-act="go" data-v="kidForm"><span class="av">+</span><b>إضافة طفل</b></button>
   </div>
+  <button class="btn ghost" data-act="go" data-v="teacher">🧑‍🏫 أنا أستاذ/ة: لوحة صفّي</button>
   <button class="btn ghost" data-act="logout">تسجيل الخروج</button>`;
 }
 
@@ -921,7 +955,7 @@ function viewHome(){
   <section class="hero ${done?'done':''}">
     <div class="htext">
       <span class="kicker">${fmtDay(d,{weekday:'long',day:'numeric',month:'long'})}</span>
-      <h1>${done?'أحسنت! خلّصت تحدي اليوم':'تحدّي اليوم'}</h1>
+      <h1>${done?'أحسنت! خلّصت تحدي اليوم':new Date().getHours()>=17?'لسا ما حليت تحدي اليوم ⏰':'تحدّي اليوم'}</h1>
       <p>${done?`جاوبت ${ar(done.c)} من ${ar(done.t)}. نلتقي بكرا بتحدٍّ جديد 🌙`:`٥ أسئلة من دروس هالأسبوع · كل جواب صح = ${ar(10)} ياسمينات`}</p>
       <div class="dots">${['math','ar','sci','en','isl'].map(s=>`<span style="--c:${SUBJ[s].c}" title="${SUBJ[s].n}">${ICON(SUBJ[s].k)}</span>`).join('')}</div>
       ${done?'':acc?`<button class="btn sun big" data-act="daily">${ICON('play')} ابدأ التحدي</button>`:`<button class="btn sun big" data-act="go" data-v="sub">اشترك لتكمل التحديات</button>`}
@@ -934,12 +968,15 @@ function viewHome(){
     <div class="hsrc">قال رسول الله ﷺ · ${h[1]}</div>
     <p class="hex">${h[2]}</p>
   </section>
+  ${acc?`<button class="examcard" data-act="go" data-v="exams"><span class="sicon" style="--c:#7A4FD1">${ICON('exam')}</span><span class="st"><b>تحضير المذاكرات والامتحانات</b><small>امتحان تجريبي بعلامة من ١٠٠ متل المدرسة</small></span><span class="go">←</span></button>`:''}
   <h2 class="sech">موادّي</h2>
   <div class="stiles ${acc?'':'locked'}">${['math','ar','sci','en','isl'].map(subjBtn).join('')}</div>
   <div class="duo">
     <button class="fcard" style="--c:var(--isl)" data-act="go" data-v="surahs"><span class="sicon">${ICON('quran')}</span><b>قصار السور</b><small>${ar(Object.keys(S.memo||{}).length)} من ${ar(SURAHS.length)} محفوظة</small></button>
     <button class="fcard" style="--c:#C99410" data-act="go" data-v="store"><span class="sicon">${ICON('store')}</span><b>متجر الياسمين</b><small>شخصيات وشارات</small></button>
   </div>
+  <h2 class="sech">أنشطة وألعاب</h2>
+  <div class="duo">${[c.grade<=2&&window.lettersCardHTML?lettersCardHTML():'',window.storiesCardHTML?storiesCardHTML():'',window.duelCardHTML?duelCardHTML():'',`<button class="fcard" style="--c:#C99410" data-act="go" data-v="league"><span class="sicon">${ICON('trophy')}</span><b>مسابقة الشهر</b><small>${APP.set.prize?esc(APP.set.prize):'نافس رفقاتك بصفّك'}</small></button>`,c.grade>2&&window.lettersCardHTML?lettersCardHTML():''].filter(Boolean).join('')}</div>
   <button class="fcard" style="--c:#2E7DB8;width:100%;margin-top:10px" data-act="go" data-v="books"><span class="sicon">📚</span><b>كتبي المدرسية</b><small>كتب الوزارة للصف ${GRADES[c.grade-1]} · PDF</small></button>
   ${tabbar('home')}`;
 }
@@ -950,8 +987,8 @@ function viewQuiz(){
   V.innerHTML=`
   <div class="qtop"><button class="x" data-act="quit" aria-label="خروج">×</button>
     <div class="qprog"><i style="width:${pct}%;--c:${sj.c}"></i></div>
-    <span class="chip2 jas">${JAS()}${ar(bal())}</span></div>
-  <div class="qmeta" style="--c:${sj.c}"><span class="sicon sm">${ICON(sj.k)}</span><span>${Q.mode==='surah'?'سورة '+SURAHS.find(x=>x.id===Q.surah).n:sj.n}${it.lt?' · '+esc(it.lt):''}</span>${Q.mode==='practice'?`<span class="lvl l${lvlOf(Q.s)}">${LVL[lvlOf(Q.s)]}</span>`:''}<span class="spacer"></span>${it.preKind==='quran'?'':SPK('spkQ')}</div>
+    ${Q.mode==='exam'?`<span class="chip2 extime" id="extime">⏱ ${window.examClock?examClock():''}</span>`:`<span class="chip2 jas">${JAS()}${ar(bal())}</span>`}</div>
+  <div class="qmeta" style="--c:${sj.c}"><span class="sicon sm">${ICON(sj.k)}</span><span>${Q.mode==='exam'?esc(Q.title)+' · '+ar(Q.i+1)+'/'+ar(Q.list.length):Q.mode==='surah'?'سورة '+SURAHS.find(x=>x.id===Q.surah).n:sj.n}${it.lt?' · '+esc(it.lt):''}</span>${Q.mode==='exam'?'':it.lt?'':''}${Q.mode==='practice'?`<span class="lvl l${lvlOf(Q.s)}">${LVL[lvlOf(Q.s)]}</span>`:''}<span class="spacer"></span>${it.preKind==='quran'?'':SPK('spkQ')}</div>
   <section class="qbody">
     ${it.pre?(it.preKind==='quran'?`<div class="pre quranpre">قال تعالى: ﴿${esc(it.pre)}﴾</div>`:`<div class="pre">قال رسول الله ﷺ: «${it.pre}»</div>`):''}
     <h2 class="qq">${esc(f(it.q))}</h2>
@@ -970,6 +1007,7 @@ function untile(){if(!Q.built||!Q.built.length||Q.res[Q.i]!==undefined)return;Q.
 
 function answer(i){
   const it=Q.list[Q.i];if(Q.res[Q.i]!==undefined)return;
+  if(Q.mode==='exam'&&window.examAnswer)return examAnswer(i);
   const ok=it.opts[i]===it.a;
   const btns=[...V.querySelectorAll('.opt2,.opt')];
   btns.forEach((b,j)=>{b.disabled=true;if(it.opts[j]===it.a)b.classList.add('right');else if(j===i)b.classList.add('wrong')});
@@ -981,7 +1019,11 @@ function grade(ok,answerText){
   if(Q.mode!=='surah'){const st=S.stats[it.s]||(S.stats[it.s]={c:0,t:0});st.t++;if(ok)st.c++;
     S.hist=S.hist||{};const d=today(),hd=S.hist[d]||(S.hist[d]={}),hs=hd[it.s]||(hd[it.s]={c:0,t:0});hs.t++;if(ok)hs.c++;
     const keys=Object.keys(S.hist).map(Number).sort((a,b)=>a-b);while(keys.length>60)delete S.hist[keys.shift()];}
-  if(ok)S.jas+=POINTS();
+  if(ok){S.jas+=POINTS();hook('points',POINTS())}
+  let help='';
+  if(Q.mode==='practice'){Q.wrun=ok?0:(Q.wrun||0)+1;
+    if(!ok&&!it.retry&&it.kind!=='spell'&&Q.list.length<14){Q.list.push(Object.assign({},it,{retry:true,opts:shuf(it.opts)}));help='رح نرجع لهالسؤال بآخر التمرين 🔁'}
+    if(Q.wrun>=3){S.lvl=S.lvl||{};const cur=S.lvl[Q.s]||0;Q.wrun=0;if(cur>0){S.lvl[Q.s]=cur-1;setDiff(Q.s);help='خففنا الصعوبة شوي، ونحنا معك خطوة خطوة 💪'}else help='ولا يهمك! اقرأ السؤال على مهل، وجرّب تستبعد الأجوبة الغلط أول شي 💡'}}
   save();tone(ok);
   if(it.kind==='spell'){const sl=V.querySelector('#slot');if(sl)sl.classList.add(ok?'right':'wrong')}
   const pg=V.querySelector('.qprog i');if(pg)pg.style.width=Math.round(100*(Q.i+1)/Q.list.length)+'%';
@@ -989,7 +1031,7 @@ function grade(ok,answerText){
   try{if(navigator.vibrate)navigator.vibrate(ok?18:[30,40,30])}catch(e){}
   const f=it.m?ar:(x=>x),praise=['أحسنت!','ممتاز!','برافو عليك!','رائع يا شطّور!'];
   const last=Q.i===Q.list.length-1;
-  V.querySelector('#fb').innerHTML=`<div class="sheet ${ok?'good':'bad'}"><div class="shead">${MASCOT(ok?'wow':'sad','mascot sm')}<div><b>${ok?pick(praise):'ولا يهمك!'}</b><span>${ok?(POINTS()?'+'+ar(POINTS())+' ياسمينات':'جواب صحيح'):'الجواب الصحيح: '+esc(f(it.a))}</span></div></div><button class="btn ${ok?'teal':'red'} wide big" data-act="next">${last?'شوف النتيجة':'متابعة'}</button></div>`;
+  V.querySelector('#fb').innerHTML=`<div class="sheet ${ok?'good':'bad'}"><div class="shead">${MASCOT(ok?'wow':'sad','mascot sm')}<div><b>${ok?pick(praise):'ولا يهمك!'}</b><span>${ok?(POINTS()?'+'+ar(POINTS())+' ياسمينات':'جواب صحيح'):'الجواب الصحيح: '+esc(f(it.a))}</span>${help?`<small class="helpmsg">${help}</small>`:''}</div></div><button class="btn ${ok?'teal':'red'} wide big" data-act="next">${last?'شوف النتيجة':'متابعة'}</button></div>`;
   V.querySelector('#fb .btn').focus({preventScroll:true});
 }
 
@@ -1004,7 +1046,7 @@ function finish(){
   if(Q.mode==='practice'){S.lvl=S.lvl||{};const cur=S.lvl[Q.s]||0,r0=Q.c/Q.list.length;if(r0>=.8&&cur<2){S.lvl[Q.s]=cur+1;lvlMsg=`🎉 انتقلت لمستوى «${LVL[cur+1]}» بـ${SUBJ[Q.s].n}!`}else if(r0<.4&&cur>0){S.lvl[Q.s]=cur-1;lvlMsg=`رجعنا لمستوى «${LVL[cur-1]}» لنتدرّب أكتر.`}}
   let memoMsg='';
   if(Q.mode==='surah'){S.memo=S.memo||{};if(Q.c===Q.list.length){if(!S.memo[Q.surah]){S.memo[Q.surah]=today();S.jas+=30;memoMsg=`حفظت سورة ${SURAHS.find(x=>x.id===Q.surah).n}! +${ar(30)} ياسمينة 🌼`}else memoMsg='ما شاء الله! لسا حافظها.'}else memoMsg='راجع السورة وجرّب مرة تانية، قرّبت!'}
-  save();syncSummary();
+  hook('finish',Q);save();syncSummary();
   const r=Q.c/Q.list.length,msg=r===1?'علامة كاملة!':r>=.6?'شغل حلو!':'كل يوم أحسن من اللي قبله';
   const stars=r>=.9?3:r>=.7?2:r>=.4?1:0;
   if(Q.mode==='practice'&&Q.li!=null){S.ls=S.ls||{};const k=lsKey(Q.s,Q.li);S.ls[k]=Math.max(S.ls[k]||0,stars);save()}
@@ -1028,6 +1070,7 @@ function viewParent(){
   const c=APP.child,days=Object.keys(S.daily).length;
   const subs=Object.entries(c.subs||{}).sort((a,b)=>a[0]-b[0]);
   V.innerHTML=`<h1 class="ptitle">ركن الأهل</h1>
+  ${window.reportBannerHTML?reportBannerHTML():''}
   <section class="panel">
     <h3>تقدّم ${esc(c.name)}</h3>
     <div class="row between"><span>أيام التحدي المنجزة</span><b>${ar(days)}</b></div>
@@ -1038,11 +1081,13 @@ function viewParent(){
     <div class="row between"><span>السور المحفوظة</span><b>${ar(Object.keys(S.memo||{}).length)} من ${ar(SURAHS.length)}</b></div>
   </section>
   ${reportHTML()}
+  <button class="btn teal wide" data-act="go" data-v="report" style="margin-top:8px">📤 شارك تقرير الأسبوع على واتساب</button>
+  ${window.classPanelHTML?classPanelHTML():''}
   <button class="fcard" style="--c:#2E7DB8;width:100%;margin:12px 0" data-act="go" data-v="guides"><span class="sicon">📘</span><b>دليل المعلم والحلول</b><small>أدلة المعلم للصف ${GRADES[c.grade-1]} · PDF</small></button>
   <section class="panel">
     <h3>شهادة الشهر 🏅</h3>
     <p class="muted">شهادة تقدير باسم ${esc(c.name)} فيها أيام التحدي والياسمينات، بتقدروا تشاركوها مع العيلة.</p>
-    <button class="btn sun" data-act="go" data-v="cert">اعرض الشهادة</button>
+    <div class="row"><button class="btn sun" data-act="go" data-v="cert">شهادة الشهر</button><button class="btn ghost" data-act="go" data-v="semcert">شهادة نهاية الفصل 🎓</button></div>
   </section>
   <section class="panel">
     <h3>اشتراكات ${esc(c.name)}</h3>
@@ -1075,7 +1120,8 @@ function viewSub(){
   <section class="panel">
     <h3>اشتراك ${esc(c.name)} · الصف ${GRADES[g-1]}</h3>
     <p class="muted">كل صف إله اشتراك لحاله. بيفتح التحديات اليومية والتمارين لكل المواد، والحديث اليومي مجاني دائماً.</p>
-    <div class="plans">${Object.entries(PLANS).map(([k,p])=>`<button class="plan ${plan===k?'on':''}" data-act="plan" data-p="${k}" ${pend?'disabled':''}><b>${p.name}</b><span class="price">${esc(price(k))}</span><small>${ar(p.days)} يوم</small></button>`).join('')}</div>
+    ${famOn()?`<div class="status ok"><span>🎁 خصم الإخوة ${ar(APP.set.family)}٪ مطبّق، لأن عندك ولد تاني مشترك</span></div>`:''}
+    <div class="plans">${Object.entries(PLANS).map(([k,p])=>`<button class="plan ${plan===k?'on':''}" data-act="plan" data-p="${k}" ${pend?'disabled':''}><b>${p.name}</b>${famOn()&&amountOf(basePrice(k))?`<s class="muted small">${esc(basePrice(k))}</s>`:''}<span class="price">${esc(price(k))}</span><small>${ar(p.days)} يوم</small></button>`).join('')}</div>
   </section>
   ${pend?`<section class="panel"><h3>طلبك قيد المراجعة</h3><p>طلبت اشتراك ${planName(pend.plan)}${pend.method?' ودفعت عبر '+PAY[pend.method]:''}. بعد ما نتأكد من وصول المبلغ بيتفعّل الاشتراك.</p><button class="btn teal" data-act="recheck">تحقّق من التفعيل</button>${msgHTML()}</section>`
   :`<section class="panel">
@@ -1094,7 +1140,12 @@ function viewSub(){
     </ol>
     <button class="btn teal" data-act="request" data-m="">دفعت، أرسل طلب التفعيل</button>`}
     ${msgHTML()}
-  </section>`}`;
+  </section>`}
+  ${APP.set.family>0&&!famOn()?`<section class="panel"><h3>👨‍👩‍👧‍👦 عندك أكتر من ولد؟</h3><p class="muted">اشتراك الولد التاني وكل ولد بعده بخصم ${ar(APP.set.family)}٪. ضيف إخوته من «تبديل الطفل أو إضافة طفل».</p></section>`:''}
+  <section class="panel"><h3>🏫 للمدارس والأساتذة</h3>
+    <p class="muted">${APP.set.school?esc(APP.set.school):'عندنا باقات خاصة للصفوف والمدارس، مع لوحة متابعة للأستاذ بيشوف فيها تقدّم كل طلابه.'}</p>
+    <div class="row">${APP.set.whatsapp?`<a class="btn sun sm" href="${waLink(normPhone(APP.set.whatsapp)||APP.set.whatsapp,'مرحباً، بدي استفسر عن باقة المدارس والأساتذة بتطبيق شطّور')}" target="_blank" rel="noopener">راسلنا على واتساب</a>`:''}<button class="btn ghost sm" data-act="go" data-v="teacher">لوحة الأستاذ</button></div>
+  </section>`;
 }
 
 /* ---- لوحة الأدمن ---- */
@@ -1112,7 +1163,7 @@ async function viewAdmin(){
     box.innerHTML=msgHTML()+(ui.reqs.length?ui.reqs.map((r,i)=>`<section class="panel req">
       <div class="row between"><b>${esc(r.childName)} · الصف ${GRADES[r.grade-1]}</b><span class="tag trial">${planName(r.plan)}</span></div>
       <div class="row between"><span>${esc(r.parentName||'')}</span><b dir="ltr" class="sel">${esc(r.phone)}</b></div>
-      <div class="muted small">${r.method?'الدفع عبر '+PAY[r.method]+' · ':''}${r.amount?esc(r.amount)+' · ':''}${fmtDay(tsDay(r.created))}</div>
+      <div class="muted small">${r.method?'الدفع عبر '+PAY[r.method]+' · ':''}${r.amount?esc(r.amount)+' · ':''}${r.family?'خصم إخوة · ':''}${fmtDay(tsDay(r.created))}</div>
       <div class="row"><button class="btn teal" data-act="approve" data-i="${i}">تأكد الدفع، فعّل</button><button class="btn ghost" data-act="reject" data-i="${i}">رفض</button></div>
     </section>`).join(''):`<section class="panel"><p>ما في طلبات جديدة.</p><button class="btn ghost" data-act="tab" data-t="req">تحديث</button></section>`);
   }else if(tab==='set'){
@@ -1130,12 +1181,16 @@ async function viewAdmin(){
         <input id="s_qr" type="file" accept="image/*">
         <p class="muted small">اختار صورة الـ QR من المعرض. بتظهر للأهل لما يختاروا شام كاش.</p></div>
       <div class="field"><label for="s_w">رقم واتساب لاستقبال الإيصالات</label><input id="s_w" type="text" dir="ltr" value="${esc(st.whatsapp||'')}" placeholder="09XX XXX XXX"></div>
+      <h3>العروض والمسابقة</h3>
+      <div class="field"><label for="s_fd">خصم الإخوة ٪ (للطفل التاني وما بعد)</label><input id="s_fd" type="tel" dir="ltr" inputmode="numeric" value="${esc(st.family)}"></div>
+      <div class="field"><label for="s_sc">عرض المدارس والأساتذة (بيظهر بصفحة الاشتراك)</label><textarea id="s_sc" rows="3" placeholder="مثلاً: باقة صف كامل (٣٠ طالب) بسعر مخفّض ٥٠٪ — تواصل معنا">${esc(st.school||'')}</textarea></div>
+      <div class="field"><label for="s_pz">جائزة مسابقة الشهر</label><input id="s_pz" type="text" value="${esc(st.prize||'')}" placeholder="مثلاً: الأول بكل صف بياخد شهر اشتراك مجاني"></div>
       <button class="btn teal" id="sfb" type="submit">حفظ الإعدادات</button>${msgHTML()}
     </form>`;
     V.querySelector('#s_qr').addEventListener('change',async e=>{const f=e.target.files[0];if(!f)return;try{ui.newQr=await resizeImage(f,520);const pv=V.querySelector('.qrprev');pv.innerHTML=`<img src="${ui.newQr}" alt="QR شام كاش">`}catch(err){ui.msg={t:'ما قدرنا نقرأ الصورة. جرّب صورة تانية.'}}});
     V.querySelector('#sf').addEventListener('submit',async e=>{e.preventDefault();
       const t=parseInt(normCode(val('s_t')),10);
-      const ns={trialDays:isNaN(t)?APP.set.trialDays:Math.min(t,60),prices:{monthly:val('s_m'),yearly:val('s_y')},pay:Object.fromEntries(Object.keys(PAY).map(k=>[k,val('s_'+k)])),whatsapp:val('s_w'),shamName:val('s_sn'),shamQr:ui.newQr||APP.set.shamQr};
+      const ns={trialDays:isNaN(t)?APP.set.trialDays:Math.min(t,60),prices:{monthly:val('s_m'),yearly:val('s_y')},pay:Object.fromEntries(Object.keys(PAY).map(k=>[k,val('s_'+k)])),whatsapp:val('s_w'),shamName:val('s_sn'),shamQr:ui.newQr||APP.set.shamQr,family:Math.max(0,Math.min(90,parseInt(normCode(val('s_fd')),10)||0)),school:val('s_sc'),prize:val('s_pz')};
       busy(V.querySelector('#sfb'),'جارِ الحفظ…');
       try{await API.saveSettings(ns);APP.set=mergeSettings(ns);try{localStorage.setItem('shattoor_set',JSON.stringify(APP.set))}catch(x){}ui.msg={ok:true,t:'تم حفظ الإعدادات. الأهل بيشوفوا الأسعار الجديدة بأول فتح للتطبيق.'}}
       catch(err){ui.msg={t:errMsg(err)}}viewAdmin()});
@@ -1395,6 +1450,9 @@ async function adminStatsHTML(){
     <section class="panel"><h3>الاشتراكات الفعّالة حسب الصف</h3>
       ${byGrade.map((n,i)=>`<div class="gbar"><span>${GRADES[i]}</span><div class="bar" style="--c:var(--teal)"><i style="width:${Math.round(100*n/maxG)}%"></i></div><b>${ar(n)}</b></div>`).join('')}
       <p class="muted small">تفعيلات ${month}: ${ar(monthAppr.length)}</p></section>
+    ${(()=>{const ina=kids.filter(k=>hasSubFor(k,k.grade)&&k.lastActive!=null&&t-k.lastActive>=3).sort((a,b)=>a.lastActive-b.lastActive);
+      return`<section class="panel"><h3>مشتركين غايبين ٣ أيام+ (${ar(ina.length)})</h3>${ina.length?ina.map(k=>{const pn=parentName(k.phone),d=t-k.lastActive;
+        return`<div class="exp"><div><b>${esc(k.name)}</b> · الصف ${GRADES[k.grade-1]}<div class="muted small">${esc(pn)} · <span dir="ltr">${esc(k.phone)}</span> · آخر نشاط من ${ar(d)} أيام</div></div><a class="btn sun sm" href="${waLink(k.phone,`مرحباً ${pn} 🌼\nاشتقنا لـ ${k.name} بتطبيق شطّور! صرلو ${d} أيام ما حلّ تحدي اليوم.\nتحدي اليوم بياخد ٥ دقايق بس، وكل يوم في حديث جديد 🌙`)}" target="_blank" rel="noopener">ذكّر بواتساب</a></div>`}).join(''):'<p class="muted">كل المشتركين نشيطين 👏</p>'}</section>`})()}
     <section class="panel"><h3>بينتهوا خلال أسبوع (${ar(expiring.length)})</h3>${expiring.length?expiring.map(a=>rowHTML(a,true)).join(''):'<p class="muted">ما في اشتراكات رح تنتهي قريباً.</p>'}</section>
     <section class="panel"><h3>انتهوا آخر ٣٠ يوم (${ar(expired.length)})</h3>${expired.length?expired.map(a=>rowHTML(a,false)).join(''):'<p class="muted">ما في.</p>'}</section>`;
 }
@@ -1456,7 +1514,7 @@ document.addEventListener('click',async e=>{
   else if(a==='mkReset'){busy(b);try{const k=await API.makeReset(ui.found.phone);ui.found.reset=k;ui.msg=null}catch(err){ui.msg={t:errMsg(err)}}viewAdmin()}
   else if(a==='copyCode'){const t=ui.found.reset;const el=V.querySelector('.codebox .code');const sel=()=>{const r=document.createRange();r.selectNodeContents(el);const g=getSelection();g.removeAllRanges();g.addRange(r)};try{navigator.clipboard.writeText(t).then(()=>{b.textContent='تم النسخ'},sel)}catch(err){sel()}}
   else if(a==='request'){const c=APP.child;busy(b,'جارِ الإرسال…');
-    try{await API.requestSub({phone:APP.user.phone,parentName:APP.user.name,childId:c.id,childName:c.name,grade:c.grade,plan:ui.plan||'monthly',method:b.dataset.m||'',amount:price(ui.plan||'monthly')});await refreshReqs();ui.msg={ok:true,t:'وصل طلبك. رح يتفعّل الاشتراك بعد التأكد من الدفع.'}}
+    try{await API.requestSub({phone:APP.user.phone,parentName:APP.user.name,childId:c.id,childName:c.name,grade:c.grade,plan:ui.plan||'monthly',method:b.dataset.m||'',amount:price(ui.plan||'monthly'),family:!!famOn()});await refreshReqs();ui.msg={ok:true,t:'وصل طلبك. رح يتفعّل الاشتراك بعد التأكد من الدفع.'}}
     catch(err){ui.msg={t:errMsg(err)}}viewSub()}
   else if(a==='recheck'){busy(b,'جارِ التحقق…');
     try{APP.kids=await API.listChildren();APP.child=APP.kids.find(k=>k.id===APP.child.id)||APP.child;await refreshReqs();
@@ -1478,6 +1536,10 @@ document.addEventListener('click',async e=>{
   else if(a==='cancelSub'){const k=ui.found.children[+b.dataset.i];busy(b);try{await API.cancelSub(ui.found.phone,k.id,b.dataset.g);ui.msg={ok:true,t:'تم إلغاء الاشتراك.'};await reloadFound()}catch(err){ui.msg={t:errMsg(err)}}viewAdmin()}
 });
 
+/* ---- بلا إنترنت ---- */
+if('serviceWorker' in navigator&&location.protocol==='https:'){window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}
+function offBar(){let b=document.getElementById('offbar');if(navigator.onLine){if(b)b.remove();return}if(!b){b=document.createElement('div');b.id='offbar';b.className='offbar';b.textContent='📴 بدون إنترنت: فيك تكمل التمارين، والنتائج بتنرفع لما يرجع النت';document.body.prepend(b)}}
+window.addEventListener('online',()=>{offBar();if(APP.child)syncSummary()});window.addEventListener('offline',offBar);offBar();
 (async()=>{
   try{if(IN_APP&&history.state)history.replaceState(null,'',location.pathname)}catch(e){}
   viewLoading();
@@ -1494,5 +1556,11 @@ document.addEventListener('click',async e=>{
 
 </script>
 
+<script src="feat_duel.js"></script>
+<script src="feat_exams.js"></script>
+<script src="feat_league.js"></script>
+<script src="feat_letters.js"></script>
+<script src="feat_report.js"></script>
+<script src="feat_stories.js"></script>
 </body>
 </html>
