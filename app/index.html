@@ -1017,6 +1017,7 @@ function viewParent(){
     <div class="row between"><span>السور المحفوظة</span><b>${ar(Object.keys(S.memo||{}).length)} من ${ar(SURAHS.length)}</b></div>
   </section>
   ${reportHTML()}
+  <button class="fcard" style="--c:#2E7DB8;width:100%;margin:12px 0" data-act="go" data-v="guides"><span class="sicon">📘</span><b>دليل المعلم والحلول</b><small>أدلة المعلم للصف ${GRADES[c.grade-1]} · PDF</small></button>
   <section class="panel">
     <h3>شهادة الشهر 🏅</h3>
     <p class="muted">شهادة تقدير باسم ${esc(c.name)} فيها أيام التحدي والياسمينات، بتقدروا تشاركوها مع العيلة.</p>
@@ -1229,6 +1230,24 @@ function viewBooks(){
   <div class="kids">${Object.keys(BOOKN).filter(k=>b[k]).map(k=>{const sj=SUBJ[BOOKN[k][1]]||{c:'#888',k:'ar'};return `<a class="kid" style="text-decoration:none;color:inherit" href="https://drive.google.com/file/d/${b[k]}/view" target="_blank" rel="noopener"><span class="av" style="background:${sj.c};color:#fff">${ICON(sj.k)}</span><span class="t"><b>${BOOKN[k][0]}</b><small>اكبس للفتح ↗</small></span></a>`}).join('')}</div>
   <p class="muted small">الكتب محفوظة على Google Drive من مكتبة المرحلة الابتدائية. بتحتاج إنترنت لتفتح.</p>${tabbar('home')}`;
 }
+const GUIDES=[
+ {g:[1,2,3,4],s:'ar',t:'دليل الأنشطة والتقويم · العربية لغتي',d:'للصفوف ١–٤',id:'1K12pAvS3IzbLoRb-5WI9VRrxDQmWRewN'},
+ {g:[1,2,3,4],s:'ar',t:'دليل المعلم · العربية لغتي',d:'الحلقة الأولى',id:'1W-oEwcJJPjtJa75o2lnSuaNATI9C5YFk'},
+ {g:[1,2,3,4,5,6],s:'sci',t:'دليل المعلم · العلوم',d:'الحلقة الأولى (الصفوف ١–٦)',id:'1d5G_jMFK1TOk9Cn_w0D6ajx0dXrzEUWS'},
+ {g:[6],s:'math',t:'دليل المعلم · الرياضيات',d:'الصف السادس',id:'1JlT_fP3LUcoGSGNYM1mUQ4CkwPDaWB5p'},
+ {g:[1],s:'en',t:"Teacher's Guide · English",d:'دليل المعلم مع الحلول — الصف الأول',id:'1XmUpRK4lEyHrxt1uhRVLblwewtAwa6q_'},
+ {g:[2],s:'en',t:"Teacher's Guide · English",d:'دليل المعلم مع الحلول — الصف الثاني',id:'1cVi1REF0EXVULmIxEtFtbaDR7X3LiIf0'},
+ {g:[3],s:'en',t:"Teacher's Guide · English",d:'دليل المعلم مع الحلول — الصف الثالث',id:'1KIAmWRi5f4S2TO7ClxqYuQX8KyaXan5k'},
+ {g:[4],s:'en',t:'Answers Key · English',d:'حلول كتاب الطالب والأنشطة — الصف الرابع',id:'1TZNQYFyryG9HGyI1R9TPyPRWGD_RAJ6c'},
+ {g:[5],s:'en',t:'Answers Key · English',d:'حلول كتاب الطالب والأنشطة — الصف الخامس',id:'1TbVJtADBoe4PG3niQwrswMIWDggrFw_6'},
+ {g:[6],s:'en',t:'Answers Key · English',d:'حلول كتاب الطالب والأنشطة — الصف السادس',id:'1TjGCJgeleZrShs2658CdXGCXkmED23dq'}];
+function viewGuides(){
+  const g=APP.child.grade,L=GUIDES.filter(x=>x.g.includes(g));
+  V.innerHTML=`${back('parent','دليل المعلم')}
+  <p class="muted">أدلة المعلم والحلول للصف ${GRADES[g-1]}، لتساعدك تتابع مع ابنك بالبيت. اكبس على الدليل بيفتح PDF.</p>
+  <div class="kids">${L.map(x=>{const sj=SUBJ[x.s];return `<a class="kid" style="text-decoration:none;color:inherit" href="https://drive.google.com/file/d/${x.id}/view" target="_blank" rel="noopener"><span class="av" style="background:${sj.c};color:#fff">${ICON(sj.k)}</span><span class="t"><b dir="auto">${x.t}</b><small>${x.d} ↗</small></span></a>`}).join('')}</div>
+  <p class="muted small">ما في دليل معلم منشور حالياً لكل المواد؛ بس ينزل دليل جديد منضيفه هون. بعض الأدلة من طبعات سابقة لكنها لنفس الكتب.</p>${tabbar('parent')}`;
+}
 function viewSurahs(){
   V.innerHTML=`<h1 class="ptitle">قصار السور</h1>
   <p class="muted">اقرأ السورة، وبعدين جرّب «سمّع» لتعرف إذا حفظتها. كل سورة بتحفظها إلها ${ar(30)} ياسمينة.</p>
@@ -1364,7 +1383,7 @@ const IN_APP=/ShattoorApp/.test(navigator.userAgent)||location.protocol==='file:
 function push(v){if(!IN_APP)return;try{if(history.state)history.replaceState({v},'','#'+v);else history.pushState({v},'','#'+v)}catch(e){}}
 const rootView=()=>!APP.user?'auth':APP.child?'home':isAdmin()?'admin':'kids';
 window.addEventListener('popstate',()=>{Q=null;go(rootView(),true)});
-const VIEWS={lessons:viewLessons,auth:viewAuth,kids:viewKids,kidForm:viewKidForm,home:viewHome,parent:viewParent,sub:viewSub,admin:viewAdmin,store:viewStore,surahs:viewSurahs,books:viewBooks,surah:viewSurah,cert:viewCert};
+const VIEWS={lessons:viewLessons,auth:viewAuth,kids:viewKids,kidForm:viewKidForm,home:viewHome,parent:viewParent,sub:viewSub,admin:viewAdmin,store:viewStore,surahs:viewSurahs,books:viewBooks,guides:viewGuides,surah:viewSurah,cert:viewCert};
 function go(v,fromPop){
   v=v||rootView();
   if(!APP.user)v='auth';
