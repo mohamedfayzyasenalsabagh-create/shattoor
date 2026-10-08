@@ -1,0 +1,68 @@
+name: جلب أدلة المعلم مع OCR
+on:
+  push:
+    branches: [main]
+    paths: [".github/workflows/books5.yml"]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  book:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      max-parallel: 13
+      matrix:
+        b:
+          - "g-ar14 1W-oEwcJJPjtJa75o2lnSuaNATI9C5YFk"
+          - "g-math1 1RZJY0pc_DuON7R7rQwWuMJaV63qgaT2s"
+          - "g-math4 1pL1nEiwL0FXFm8mYjirIHrXOHVcH2cCb"
+          - "g-math5 13uhN1wCdFifTANn8rpB5NnVaJjIByfKu"
+          - "g-math6 1Eb84_feuKfNqbjelbokW8GdI8euOE4Jd"
+          - "g-math6b 1JlT_fP3LUcoGSGNYM1mUQ4CkwPDaWB5p"
+    steps:
+      - run: sudo apt-get update -qq && sudo apt-get install -y -qq poppler-utils tesseract-ocr tesseract-ocr-ara >/dev/null && python3 -m pip install -q --user gdown
+      - name: تنزيل وقراءة
+        run: |
+          set -x
+          NAME=$(echo "${{ matrix.b }}" | cut -d' ' -f1); ID=$(echo "${{ matrix.b }}" | cut -d' ' -f2)
+          echo "NAME=$NAME" >> $GITHUB_ENV
+          mkdir -p out
+          for i in 1 2 3 4 5 6; do
+            python3 -m gdown "$ID" -O b.pdf || true
+            [ "$(head -c4 b.pdf 2>/dev/null)" = "%PDF" ] && break
+            curl -sL -o b.pdf "https://drive.usercontent.google.com/download?id=$ID&export=download&confirm=t" || true
+            [ "$(head -c4 b.pdf 2>/dev/null)" = "%PDF" ] && break
+            sleep $((i*30))
+          done
+          [ "$(head -c4 b.pdf)" = "%PDF" ] || { echo MISS > out/$NAME.txt; exit 0; }
+          NP=$(pdfinfo b.pdf | awk '/^Pages/{print $2}')
+          pdftotext -layout b.pdf out/$NAME.txt
+          SZ=$(stat -c%s out/$NAME.txt)
+          if [ $((SZ / NP)) -lt 400 ]; then
+            mkdir -p p && pdftoppm -r 150 -gray -png b.pdf p/x
+            export OMP_THREAD_LIMIT=1
+            ls p/*.png | xargs -P 4 -I{} sh -c 'tesseract {} {}.o -l ara+eng --psm 4 >/dev/null 2>&1'
+            : > out/$NAME.txt
+            for f in $(ls p/*.png | sort -V); do echo "===== $(basename $f)" >> out/$NAME.txt; cat $f.o.txt >> out/$NAME.txt; done
+          fi
+          echo "pages=$NP" >> out/$NAME.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.NAME }}
+          path: out/
+  save:
+    needs: book
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          path: /tmp/a
+      - run: |
+          git config user.name "shattoor-ci"; git config user.email "ci@shattoor.app"
+          git checkout --orphan ocr-tmp && git rm -rqf . && git clean -fdq
+          find /tmp/a -name '*.txt' -exec cp {} . \;
+          git add -A && git commit -qm "كتب ناقصة" && git push -f origin ocr-tmp:books-guides
