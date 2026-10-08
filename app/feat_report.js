@@ -7,7 +7,7 @@ const css=document.createElement('style');css.textContent=`.rp-img{width:100%;bo
 const SITE=location.origin+location.pathname;
 const D="'Lalezar','Tajawal',sans-serif",B="'Tajawal',sans-serif";
 function rr(x,X,Y,W,H,r){x.beginPath();if(x.roundRect)x.roundRect(X,Y,W,H,r);else x.rect(X,Y,W,H)}
-function flower(x,cx,cy,r){for(let k=0;k<5;k++){x.save();x.translate(cx,cy);x.rotate(k*Math.PI*2/5);x.beginPath();x.ellipse(0,-r*.55,r*.32,r*.55,0,0,Math.PI*2);x.fillStyle='#fff';x.fill();x.strokeStyle='#E6C96A';x.lineWidth=3;x.stroke();x.restore()}x.beginPath();x.arc(cx,cy,r*.22,0,Math.PI*2);x.fillStyle='#FFC83D';x.fill()}
+function flower(x,cx,cy,r){x.save();x.translate(cx,cy);x.beginPath();for(let k=0;k<10;k++){const a=-Math.PI/2+k*Math.PI/5,rad=k%2?r*.45:r;x.lineTo(Math.cos(a)*rad,Math.sin(a)*rad)}x.closePath();x.fillStyle='#FFC83D';x.fill();x.strokeStyle='#E0A100';x.lineWidth=4;x.stroke();x.restore();return;for(let k=0;k<5;k++){x.save();x.translate(cx,cy);x.rotate(k*Math.PI*2/5);x.beginPath();x.ellipse(0,-r*.55,r*.32,r*.55,0,0,Math.PI*2);x.fillStyle='#fff';x.fill();x.strokeStyle='#E6C96A';x.lineWidth=3;x.stroke();x.restore()}x.beginPath();x.arc(cx,cy,r*.22,0,Math.PI*2);x.fillStyle='#FFC83D';x.fill()}
 
 async function makeReport(){
   try{await document.fonts.ready}catch(e){}
@@ -42,7 +42,7 @@ async function makeReport(){
   return cv.toDataURL('image/png');
 }
 function reportText(){const r=weekReport(),c=APP.child;
-  return `🌼 تقرير ${c.name} هالأسبوع على تطبيق شطّور\n📅 أيام النشاط: ${r.active} من 7\n🔥 أيام ورا بعض: ${S.streak}\n`+r.rows.filter(x=>x.t).map(x=>`• ${SUBJ[x.s].n}: ${x.p}٪`).join('\n')+(r.best?`\n💪 أقوى مادة: ${SUBJ[r.best.s].n}`:'')+`\n\nجرّبوا شطّور لأولادكم: ${SITE}`}
+  return `🌟 تقرير ${c.name} هالأسبوع على تطبيق شطّور\n📅 أيام النشاط: ${r.active} من 7\n🔥 أيام ورا بعض: ${S.streak}\n`+r.rows.filter(x=>x.t).map(x=>`• ${SUBJ[x.s].n}: ${x.p}٪`).join('\n')+(r.best?`\n💪 أقوى مادة: ${SUBJ[r.best.s].n}`:'')+`\n\nجرّبوا شطّور لأولادكم: ${SITE}`}
 async function share(url,name,text){
   if(NATIVE&&NATIVE.shareImage){try{NATIVE.shareImage(url,name,text);return true}catch(e){}}
   try{const blob=await (await fetch(url)).blob(),f=new File([blob],name+'.png',{type:'image/png'});if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f],text});return true}}catch(e){}
@@ -89,7 +89,7 @@ async function viewSemCert(){
 window.reportBannerHTML=()=>{const d=new Date().getDay(),wk=Math.floor((today()+1)/7);if((d===5||d===6)&&S.rpShared!==wk)return`<div class="rp-fri"><span>🎉 تقرير ${esc(APP.child.name)} لهالأسبوع جاهز!</span><button class="btn sun sm" data-act="go" data-v="report">شوفه</button></div>`;return''};
 VIEWS.report=viewReport;VIEWS.semcert=viewSemCert;
 document.addEventListener('click',async e=>{const b=e.target.closest('[data-act]');if(!b)return;const a=b.dataset.act;
-  if(a==='rp_share'){const ok=await share(ui.rp,'shattoor-report','تقرير شطّور 🌼 '+SITE);if(!ok){b.textContent='اضغط مطوّل على الصورة لتحفظها'}}
+  if(a==='rp_share'){const ok=await share(ui.rp,'shattoor-report','تقرير شطّور 🌟 '+SITE);if(!ok){b.textContent='اضغط مطوّل على الصورة لتحفظها'}}
   else if(a==='rp_save'){try{NATIVE.saveImage(ui.rp,'shattoor-'+Date.now());b.textContent='انحفظت ✓'}catch(err){}}
 });
 })();

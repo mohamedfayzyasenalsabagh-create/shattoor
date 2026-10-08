@@ -239,7 +239,7 @@ function resultHTML(){
   return `<div class="lt-res">${MASCOT(r.stars>=2?'wow':'sad','mascot')}
     <div class="bigstars">${[1,2,3].map(k=>`<i class="${k<=r.stars?'on':''}" style="--d:${k*0.18}s">${ICON('star')}</i>`).join('')}</div>
     <h2>${msg}</h2>
-    ${r.gain?`<span class="lt-gain">${JAS()} +${ar(r.gain)} ياسمينة</span>`:r.best>r.stars?`<span class="muted small">أحسن نتيجة إلك: ${ar(r.best)} نجوم</span>`:''}
+    ${r.gain?`<span class="lt-gain">${JAS()} +${ar(r.gain)} نقطة</span>`:r.best>r.stars?`<span class="muted small">أحسن نتيجة إلك: ${ar(r.best)} نجوم</span>`:''}
     <div class="acts">
       ${nextL?`<button class="btn sun big wide" data-act="lt_go" data-l="${nextL}">${locked(lang,nextL)?ICON('lock')+' ':''}الحرف التالي ←</button>`:`<button class="btn sun big wide" data-act="go" data-v="letters">خلّصت كل الحروف! 🎉</button>`}
       <button class="btn ghost wide" data-act="lt_retry">↻ جرّب مرة تانية</button>

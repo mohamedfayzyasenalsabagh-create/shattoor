@@ -456,7 +456,7 @@ function viewStories(){
   const mine=gradeList(),rest=STORIES.filter(st=>!inGrade(st,APP.child.grade));
   const fin=mine.filter(st=>done()[st.id]!==undefined).length;
   V.innerHTML=`${back('home','قصص شطّور')}
-  <section class="st-hero">${MASCOT('happy','mascot')}<div><b>اسمع واقرأ وجاوب!</b><small>كل جواب صح إلو ${ar(PER_OK)} ياسمينات · خلّصت ${ar(fin)} من ${ar(mine.length)} قصص</small></div></section>
+  <section class="st-hero">${MASCOT('happy','mascot')}<div><b>اسمع واقرأ وجاوب!</b><small>كل جواب صح إلو ${ar(PER_OK)} نقاط · خلّصت ${ar(fin)} من ${ar(mine.length)} قصص</small></div></section>
   <h3 class="st-sec">قصص الصف ${GRADES[APP.child.grade-1]}</h3>
   <div class="st-grid">${mine.map(card).join('')}</div>
   ${rest.length?`<h3 class="st-sec">قصص لصفوف تانية</h3><div class="st-grid">${rest.map(card).join('')}</div>`:''}
@@ -508,7 +508,7 @@ function viewStory(){
       ${MASCOT(perfect?'wow':r.score>0?'happy':'sad','mascot big')}
       <h2>${perfect?'برافو! علامة كاملة':r.score>0?'شاطر! كمّل هيك':'ولا يهمك، جرّب مرة تانية'}</h2>
       <div class="st-score">${ar(r.score)} / ${ar(tot)}</div>
-      ${r.gain?`<span class="pill">${JAS()} ربحت ${ar(r.gain)} ياسمينة</span>`:r.first?'':`<p class="muted small">الياسمين بينعطى أول مرة بس تخلّص القصة.</p>`}
+      ${r.gain?`<span class="pill">${JAS()} ربحت ${ar(r.gain)} نقطة</span>`:r.first?'':`<p class="muted small">النقاط بتنعطى أول مرة بس تخلّص القصة.</p>`}
       <button class="btn sun big" data-act="st_another">📖 قصة تانية</button>
       <button class="btn ghost big" data-act="go" data-v="stories">الرجوع</button>
     </section>`;

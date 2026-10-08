@@ -78,7 +78,7 @@ function examFinish(timeout){
     <h1>${esc(q.title)}</h1>${timeout?'<p class="muted">خلص الوقت ⏱</p>':''}
     <div class="ex-mark">${ar(sc)}<small> / ${ar(100)}</small></div>
     <span class="ex-grade" style="background:${gc}">${gn}</span>
-    <div class="rstats"><div><b>${ar(q.c)}/${ar(n)}</b><span>إجابات صحيحة</span></div><div><b>${JAS()}${ar(earn)}</b><span>ياسمينة</span></div></div>
+    <div class="rstats"><div><b>${ar(q.c)}/${ar(n)}</b><span>إجابات صحيحة</span></div><div><b>${JAS()}${ar(earn)}</b><span>نقطة</span></div></div>
     ${W.length?`<h3 style="align-self:flex-start">🎯 راجع هالدروس</h3><div class="ex-weak">${W.map(w=>`<button data-act="practiceL" data-s="${q.s}" data-i="${w.li}"><span>${esc(w.t||'')}</span><small>${ar(w.n)} غلط · تمرّن ←</small></button>`).join('')}</div>`:''}
     ${wrong.length?`<details style="width:100%"><summary class="btn ghost wide">شوف الأسئلة الغلط (${ar(wrong.length)})</summary><div class="ex-rev">${wrong.map(({it,k})=>`<div class="it"><p>${esc(f(it)(it.q))}</p>${it.en?`<p dir="ltr">${esc(it.en)}</p>`:''}<div class="bad">جوابك: ${q.pick[k]!=null?esc(f(it)(q.pick[k])):'ما جاوبت'}</div><div class="good">الصح: ${esc(f(it)(it.a))}</div></div>`).join('')}</div></details>`:''}
     <div style="display:flex;flex-direction:column;gap:10px;width:100%">

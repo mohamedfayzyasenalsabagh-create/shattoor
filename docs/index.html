@@ -422,7 +422,7 @@ const GRADES=['الأول','الثاني','الثالث','الرابع','الخ�
 const MATH={
 1:[()=>{const a=ri(1,10),b=ri(1,10);return mN(`${a} + ${b} = ؟`,a+b,3)},
    ()=>{const a=ri(6,20),b=ri(1,a-1);return mN(`${a} − ${b} = ؟`,a-b,3)},
-   ()=>{const f=pick([['🍎','تفاحة'],['⭐','نجمة'],['🐟','سمكة'],['🌼','زهرة'],['🍊','برتقالة']]);const n=ri(3,9);return mN(`كم ${f[1]} هنا؟\n${f[0].repeat(n)}`,n,2,'',1)},
+   ()=>{const f=pick([['🍎','تفاحة'],['⭐','نجمة'],['🐟','سمكة'],['🌟','زهرة'],['🍊','برتقالة']]);const n=ri(3,9);return mN(`كم ${f[1]} هنا؟\n${f[0].repeat(n)}`,n,2,'',1)},
    ()=>{const a=ri(1,50);let b=ri(1,50);while(b===a)b=ri(1,50);return mc('أيّ العددين أكبر؟',Math.max(a,b),[Math.min(a,b)],{m:true})},
    ()=>{const s=ri(1,15);return mN(`${s}، ${s+1}، ${s+2}، ؟`,s+3,2)}],
 2:[()=>{const a=ri(10,60),b=ri(10,39);return mN(`${a} + ${b} = ؟`,a+b,10)},
@@ -780,25 +780,36 @@ async function refreshReqs(){try{APP.reqs=await API.myRequests()}catch(e){}}
 /* ================== الصوت والاحتفال ================== */
 let AC;
 function tone(ok){if(!S||!S.sound)return;try{AC=AC||new(window.AudioContext||window.webkitAudioContext)();const t0=AC.currentTime;(ok?[523,659,784]:[311,233]).forEach((f,i)=>{const o=AC.createOscillator(),g=AC.createGain();o.type=ok?'triangle':'sine';o.frequency.value=f;const t=t0+i*.11;g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.25,t+.02);g.gain.exponentialRampToValueAtTime(.0001,t+.22);o.connect(g).connect(AC.destination);o.start(t);o.stop(t+.25)})}catch(e){}}
-const JAS=(cls)=>`<svg class="${cls||'jas'}" viewBox="0 0 40 40" aria-hidden="true"><g transform="translate(20 20)">${[0,72,144,216,288].map(r=>`<ellipse rx="7" ry="12" cy="-10" transform="rotate(${r})" fill="#FFFFFF" stroke="#E6C96A" stroke-width="1.5"/>`).join('')}<circle r="5" fill="#FFC83D"/></g></svg>`;
+const JAS=(cls)=>`<svg class="${cls||'jas'}" viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="17" fill="#FFC83D" stroke="#E0A100" stroke-width="2.5"/><circle cx="20" cy="20" r="12.5" fill="none" stroke="#FFE38A" stroke-width="1.5"/><path d="M20 9.5l3.1 6.4 7 1-5.1 4.9 1.2 7L20 25.5l-6.2 3.3 1.2-7-5.1-4.9 7-1z" fill="#fff" stroke="#E0A100" stroke-width="1.2" stroke-linejoin="round"/></svg>`;
 function confetti(){if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;for(let i=0;i<24;i++){const d=document.createElement('div');d.className='fall';d.innerHTML=JAS('jas');d.style.left=Math.random()*100+'vw';d.style.animationDuration=(2.2+Math.random()*2)+'s';d.style.animationDelay=(Math.random()*.8)+'s';document.body.appendChild(d);setTimeout(()=>d.remove(),5200)}}
 
 
 /* ================== الرسومات: شخصية شطّور والأيقونات ================== */
 function MASCOT(mood,cls){
   mood=mood||'happy';
-  const petals=[0,72,144,216,288].map(r=>`<ellipse rx="17" ry="27" cy="-25" transform="rotate(${r})" fill="#FFFFFF" stroke="#E9CF7A" stroke-width="2.5"/>`).join('');
-  const eyes=mood==='sad'?'<path d="M-11 -4 q4 -4 8 0 M3 -4 q4 -4 8 0" stroke="#15283A" stroke-width="2.6" fill="none" stroke-linecap="round"/>'
-    :mood==='wow'?'<circle cx="-7" cy="-4" r="4.2" fill="#15283A"/><circle cx="7" cy="-4" r="4.2" fill="#15283A"/><circle cx="-5.6" cy="-5.6" r="1.4" fill="#fff"/><circle cx="8.4" cy="-5.6" r="1.4" fill="#fff"/>'
-    :'<ellipse cx="-7" cy="-4" rx="3.2" ry="4" fill="#15283A"/><ellipse cx="7" cy="-4" rx="3.2" ry="4" fill="#15283A"/><circle cx="-6" cy="-5.4" r="1.2" fill="#fff"/><circle cx="8" cy="-5.4" r="1.2" fill="#fff"/>';
-  const mouth=mood==='sad'?'<path d="M-6 9 q6 -5 12 0" stroke="#15283A" stroke-width="2.6" fill="none" stroke-linecap="round"/>'
-    :mood==='wow'?'<ellipse cx="0" cy="8" rx="4.5" ry="5.5" fill="#15283A"/><ellipse cx="0" cy="10" rx="3" ry="2.4" fill="#DD3F57"/>'
-    :'<path d="M-7 5 q7 8 14 0" stroke="#15283A" stroke-width="2.6" fill="#DD3F57" stroke-linecap="round"/>';
-  return `<svg class="${cls||'mascot'}" viewBox="-60 -62 120 124" aria-hidden="true"><g class="m-body">
-    <path d="M-6 30 q-22 10 -30 26 q20 2 30 -14z" fill="#2E9A57"/><path d="M6 30 q22 10 30 26 q-20 2 -30 -14z" fill="#3DB06A"/>
-    ${petals}<circle r="21" fill="#FFC83D"/><circle r="21" fill="url(#mg)" opacity=".35"/>
-    <ellipse cx="-13" cy="5" rx="4" ry="2.6" fill="#F59AA8" opacity=".8"/><ellipse cx="13" cy="5" rx="4" ry="2.6" fill="#F59AA8" opacity=".8"/>
-    ${eyes}${mouth}</g><defs><radialGradient id="mg" cx=".35" cy=".3"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient></defs></svg>`;
+  const brows=mood==='sad'?'<path d="M188 168 q20 6 40 -4 M284 164 q20 10 40 4" stroke="#5A3A22" stroke-width="8" fill="none" stroke-linecap="round"/>'
+    :mood==='wow'?'<path d="M188 160 q20 -18 40 -6 M284 154 q20 -12 40 6" stroke="#5A3A22" stroke-width="8" fill="none" stroke-linecap="round"/>'
+    :'<path d="M188 172 q20 -12 40 -2 M284 170 q20 -10 40 2" stroke="#5A3A22" stroke-width="8" fill="none" stroke-linecap="round"/>';
+  const mouth=mood==='sad'?'<path d="M228 296 q28 -22 56 0" fill="none" stroke="#8E2236" stroke-width="9" stroke-linecap="round"/>'
+    :mood==='wow'?'<ellipse cx="256" cy="292" rx="20" ry="24" fill="#8E2236"/><ellipse cx="256" cy="302" rx="12" ry="9" fill="#F07A8A"/>'
+    :'<path d="M222 282 q34 34 68 0 q-34 14 -68 0Z" fill="#B8384E" stroke="#8E2236" stroke-width="5" stroke-linejoin="round"/><path d="M232 284 q24 10 48 0" fill="#fff"/>';
+  const er=mood==='wow'?15:mood==='sad'?11:13;
+  const eyes=`<circle cx="212" cy="${mood==='sad'?230:226}" r="${er}" fill="#1E2A44"/><circle cx="304" cy="${mood==='sad'?230:226}" r="${er}" fill="#1E2A44"/>`+(mood==='sad'?'':'<circle cx="217" cy="221" r="4.5" fill="#fff"/><circle cx="309" cy="221" r="4.5" fill="#fff"/>');
+  return `<svg class="${cls||'mascot'}" viewBox="-60 -62 120 124" aria-hidden="true"><g class="m-body"><g transform="translate(-60 -64) scale(0.234)">
+    <path d="M120 512 C120 400 170 352 256 352 C342 352 392 400 392 512Z" fill="#FFC83D"/>
+    <rect x="230" y="318" width="52" height="44" rx="20" fill="#EDB48A"/>
+    <ellipse cx="148" cy="226" rx="26" ry="32" fill="#F4C49B"/><ellipse cx="364" cy="226" rx="26" ry="32" fill="#F4C49B"/>
+    <circle cx="256" cy="214" r="112" fill="#F8CFA8"/>
+    <path d="M142 218 C130 118 188 82 256 82 C324 82 382 118 370 218 C362 190 348 172 328 162 C312 176 288 176 272 160 C254 176 226 178 208 162 C186 168 160 186 142 218Z" fill="#5A3A22"/>
+    <path d="M250 92 C246 70 268 60 284 70 C270 74 262 84 262 96Z" fill="#5A3A22"/>
+    <ellipse cx="190" cy="262" rx="20" ry="12" fill="#F49A9A" opacity=".7"/><ellipse cx="322" cy="262" rx="20" ry="12" fill="#F49A9A" opacity=".7"/>
+    <g stroke="#1E2A44" stroke-width="10" fill="#FFFFFF" fill-opacity=".6"><circle cx="210" cy="222" r="38"/><circle cx="302" cy="222" r="38"/></g>
+    <path d="M248 220 q8 -8 16 0" fill="none" stroke="#1E2A44" stroke-width="9" stroke-linecap="round"/>
+    <path d="M172 216 l-24 -6 M340 216 l24 -6" stroke="#1E2A44" stroke-width="9" stroke-linecap="round"/>
+    ${eyes}${brows}${mouth}
+    <g transform="rotate(-6 256 430)"><rect x="150" y="448" width="212" height="44" rx="8" fill="#2E7DB8"/><rect x="164" y="404" width="190" height="46" rx="8" fill="#DD3F57"/><rect x="176" y="362" width="164" height="44" rx="8" fill="#2E9A57"/><rect x="206" y="376" width="70" height="8" rx="4" fill="#fff" opacity=".8"/><rect x="196" y="418" width="80" height="8" rx="4" fill="#fff" opacity=".8"/><rect x="184" y="462" width="90" height="8" rx="4" fill="#fff" opacity=".8"/></g>
+    <circle cx="142" cy="430" r="26" fill="#F8CFA8"/><circle cx="370" cy="420" r="26" fill="#F8CFA8"/>
+  </g></g></svg>`;
 }
 const IC={
   math:'<path d="M7 4v6M4 7h6M14 7h6M4.5 15.5l5 5M9.5 15.5l-5 5M14 16h6M14 20h6" />',
@@ -950,7 +961,7 @@ function viewHome(){
     <button class="hava" data-act="go" data-v="store" aria-label="شخصيتي">${avatarOf()}</button>
     <div class="hname"><small>${greet()} · الصف ${GRADES[c.grade-1]}</small><h2>${esc(c.name)}</h2></div>
     <span class="chip2 fire" title="سلسلة الأيام">${ICON('fire')}${ar(S.streak)}</span>
-    <button class="chip2 jasc" data-act="go" data-v="store" title="ياسمينات">${JAS()}${ar(bal())}</button>
+    <button class="chip2 jasc" data-act="go" data-v="store" title="نقاط">${JAS()}${ar(bal())}</button>
   </header>
   <div class="lvrow"><b>مستوى ${ar(lv.n+1)}</b><div class="lvbar"><i style="width:${lv.need?Math.max(4,Math.round(100*lv.cur/lv.need)):100}%"></i></div><span>${lv.name}</span></div>
   ${statusHTML()}
@@ -958,7 +969,7 @@ function viewHome(){
     <div class="htext">
       <span class="kicker">${fmtDay(d,{weekday:'long',day:'numeric',month:'long'})}</span>
       <h1>${done?'أحسنت! خلّصت تحدي اليوم':new Date().getHours()>=17?'لسا ما حليت تحدي اليوم ⏰':'تحدّي اليوم'}</h1>
-      <p>${done?`جاوبت ${ar(done.c)} من ${ar(done.t)}. نلتقي بكرا بتحدٍّ جديد 🌙`:`٥ أسئلة من دروس هالأسبوع · كل جواب صح = ${ar(10)} ياسمينات`}</p>
+      <p>${done?`جاوبت ${ar(done.c)} من ${ar(done.t)}. نلتقي بكرا بتحدٍّ جديد 🌙`:`٥ أسئلة من دروس هالأسبوع · كل جواب صح = ${ar(10)} نقاط`}</p>
       <div class="dots">${['math','ar','sci','en','isl'].map(s=>`<span style="--c:${SUBJ[s].c}" title="${SUBJ[s].n}">${ICON(SUBJ[s].k)}</span>`).join('')}</div>
       ${done?'':acc?`<button class="btn sun big" data-act="daily">${ICON('play')} ابدأ التحدي</button>`:`<button class="btn sun big" data-act="go" data-v="sub">اشترك لتكمل التحديات</button>`}
     </div>
@@ -975,7 +986,7 @@ function viewHome(){
   <div class="stiles ${acc?'':'locked'}">${['math','ar','sci','en','isl'].map(subjBtn).join('')}</div>
   <div class="duo">
     <button class="fcard" style="--c:var(--isl)" data-act="go" data-v="surahs"><span class="sicon">${ICON('quran')}</span><b>قصار السور</b><small>${ar(Object.keys(S.memo||{}).length)} من ${ar(SURAHS.length)} محفوظة</small></button>
-    <button class="fcard" style="--c:#C99410" data-act="go" data-v="store"><span class="sicon">${ICON('store')}</span><b>متجر الياسمين</b><small>شخصيات وشارات</small></button>
+    <button class="fcard" style="--c:#C99410" data-act="go" data-v="store"><span class="sicon">${ICON('store')}</span><b>متجر النقاط</b><small>شخصيات وشارات</small></button>
   </div>
   <h2 class="sech">أنشطة وألعاب</h2>
   <div class="duo">${[c.grade<=2&&window.lettersCardHTML?lettersCardHTML():'',window.storiesCardHTML?storiesCardHTML():'',window.duelCardHTML?duelCardHTML():'',`<button class="fcard" style="--c:#C99410" data-act="go" data-v="league"><span class="sicon">${ICON('trophy')}</span><b>مسابقة الشهر</b><small>${APP.set.prize?esc(APP.set.prize):'نافس رفقاتك بصفّك'}</small></button>`,c.grade>2&&window.lettersCardHTML?lettersCardHTML():''].filter(Boolean).join('')}</div>
@@ -1033,7 +1044,7 @@ function grade(ok,answerText){
   try{if(navigator.vibrate)navigator.vibrate(ok?18:[30,40,30])}catch(e){}
   const f=it.m?ar:(x=>x),praise=['أحسنت!','ممتاز!','برافو عليك!','رائع يا شطّور!'];
   const last=Q.i===Q.list.length-1;
-  V.querySelector('#fb').innerHTML=`<div class="sheet ${ok?'good':'bad'}"><div class="shead">${MASCOT(ok?'wow':'sad','mascot sm')}<div><b>${ok?pick(praise):'ولا يهمك!'}</b><span>${ok?(POINTS()?'+'+ar(POINTS())+' ياسمينات':'جواب صحيح'):'الجواب الصحيح: '+esc(f(it.a))}</span>${help?`<small class="helpmsg">${help}</small>`:''}</div></div><button class="btn ${ok?'teal':'red'} wide big" data-act="next">${last?'شوف النتيجة':'متابعة'}</button></div>`;
+  V.querySelector('#fb').innerHTML=`<div class="sheet ${ok?'good':'bad'}"><div class="shead">${MASCOT(ok?'wow':'sad','mascot sm')}<div><b>${ok?pick(praise):'ولا يهمك!'}</b><span>${ok?(POINTS()?'+'+ar(POINTS())+' نقاط':'جواب صحيح'):'الجواب الصحيح: '+esc(f(it.a))}</span>${help?`<small class="helpmsg">${help}</small>`:''}</div></div><button class="btn ${ok?'teal':'red'} wide big" data-act="next">${last?'شوف النتيجة':'متابعة'}</button></div>`;
   V.querySelector('#fb .btn').focus({preventScroll:true});
 }
 
@@ -1047,7 +1058,7 @@ function finish(){
   let lvlMsg='';
   if(Q.mode==='practice'){S.lvl=S.lvl||{};const cur=S.lvl[Q.s]||0,r0=Q.c/Q.list.length;if(r0>=.8&&cur<2){S.lvl[Q.s]=cur+1;lvlMsg=`🎉 انتقلت لمستوى «${LVL[cur+1]}» بـ${SUBJ[Q.s].n}!`}else if(r0<.4&&cur>0){S.lvl[Q.s]=cur-1;lvlMsg=`رجعنا لمستوى «${LVL[cur-1]}» لنتدرّب أكتر.`}}
   let memoMsg='';
-  if(Q.mode==='surah'){S.memo=S.memo||{};if(Q.c===Q.list.length){if(!S.memo[Q.surah]){S.memo[Q.surah]=today();S.jas+=30;memoMsg=`حفظت سورة ${SURAHS.find(x=>x.id===Q.surah).n}! +${ar(30)} ياسمينة 🌼`}else memoMsg='ما شاء الله! لسا حافظها.'}else memoMsg='راجع السورة وجرّب مرة تانية، قرّبت!'}
+  if(Q.mode==='surah'){S.memo=S.memo||{};if(Q.c===Q.list.length){if(!S.memo[Q.surah]){S.memo[Q.surah]=today();S.jas+=30;memoMsg=`حفظت سورة ${SURAHS.find(x=>x.id===Q.surah).n}! +${ar(30)} نقطة 🌟`}else memoMsg='ما شاء الله! لسا حافظها.'}else memoMsg='راجع السورة وجرّب مرة تانية، قرّبت!'}
   hook('finish',Q);save();syncSummary();
   const r=Q.c/Q.list.length,msg=r===1?'علامة كاملة!':r>=.6?'شغل حلو!':'كل يوم أحسن من اللي قبله';
   const stars=r>=.9?3:r>=.7?2:r>=.4?1:0;
@@ -1055,7 +1066,7 @@ function finish(){
   V.innerHTML=`<div class="result2">${MASCOT(r>=.6?'wow':'happy','mascot big')}
     <div class="bigstars">${[1,2,3].map(n=>`<i class="${n<=stars?'on':''}" style="--d:${n*0.18}s">${ICON('star')}</i>`).join('')}</div>
     <h1>${msg}</h1>
-    <div class="rstats"><div><b>${ar(Q.c)}/${ar(Q.list.length)}</b><span>إجابات صحيحة</span></div><div><b>${JAS()}${ar(Q.c*POINTS())}</b><span>ياسمينة</span></div>${Q.mode==='daily'?`<div><b>${ICON('fire')}${ar(S.streak)}</b><span>أيام ورا بعض</span></div>`:''}</div>
+    <div class="rstats"><div><b>${ar(Q.c)}/${ar(Q.list.length)}</b><span>إجابات صحيحة</span></div><div><b>${JAS()}${ar(Q.c*POINTS())}</b><span>نقطة</span></div>${Q.mode==='daily'?`<div><b>${ICON('fire')}${ar(S.streak)}</b><span>أيام ورا بعض</span></div>`:''}</div>
     ${lvlMsg?`<p class="lvlmsg">${lvlMsg}</p>`:''}
     ${Q.mode==='surah'?`<p class="lvlmsg">${memoMsg}</p>`:''}
     <div style="display:flex;flex-direction:column;gap:10px;width:100%">
@@ -1077,7 +1088,7 @@ function viewParent(){
     <h3>تقدّم ${esc(c.name)}</h3>
     <div class="row between"><span>أيام التحدي المنجزة</span><b>${ar(days)}</b></div>
     <div class="row between"><span>سلسلة الأيام الحالية</span><b>${ar(S.streak)}</b></div>
-    <div class="row between"><span>مجموع الياسمينات</span><b>${ar(S.jas)}</b></div>
+    <div class="row between"><span>مجموع النقاط</span><b>${ar(S.jas)}</b></div>
     <div class="row between"><span>المستوى</span><b>${ar(levelOf(S.jas).n+1)} · ${levelOf(S.jas).name}</b></div>
     <div class="row between"><span>الشارات</span><b>${ar(BADGES.filter(b=>b.ok()).length)} من ${ar(BADGES.length)}</b></div>
     <div class="row between"><span>السور المحفوظة</span><b>${ar(Object.keys(S.memo||{}).length)} من ${ar(SURAHS.length)}</b></div>
@@ -1088,7 +1099,7 @@ function viewParent(){
   <button class="fcard" style="--c:#2E7DB8;width:100%;margin:12px 0" data-act="go" data-v="guides"><span class="sicon">📘</span><b>دليل المعلم والحلول</b><small>أدلة المعلم للصف ${GRADES[c.grade-1]} · PDF</small></button>
   <section class="panel">
     <h3>شهادة الشهر 🏅</h3>
-    <p class="muted">شهادة تقدير باسم ${esc(c.name)} فيها أيام التحدي والياسمينات، بتقدروا تشاركوها مع العيلة.</p>
+    <p class="muted">شهادة تقدير باسم ${esc(c.name)} فيها أيام التحدي والنقاط، بتقدروا تشاركوها مع العيلة.</p>
     <div class="row"><button class="btn sun" data-act="go" data-v="cert">شهادة الشهر</button><button class="btn ghost" data-act="go" data-v="semcert">شهادة نهاية الفصل 🎓</button></div>
   </section>
   <section class="panel">
@@ -1238,12 +1249,12 @@ function speakItem(it){
 }
 const SPK=(act,extra)=>`<button class="spk" data-act="${act}" ${extra||''} aria-label="اسمع">🔊</button>`;
 
-/* ---- الياسمين: الرصيد والمستويات ---- */
+/* ---- النقاط: الرصيد والمستويات ---- */
 const bal=()=>Math.max(0,S.jas-(S.spent||0));
-const LEVELS=['برعم','وردة صغيرة','ياسمينة','نجمة','نجم لامع','بطل','بطل خارق','عبقري','أسطورة'];
+const LEVELS=['مبتدئ','نشيط','ذكي','نجمة','نجم لامع','بطل','بطل خارق','عبقري','أسطورة'];
 function levelOf(j){const step=200;const n=Math.min(LEVELS.length-1,Math.floor(j/step));return{n,name:LEVELS[n],cur:j-n*step,need:n===LEVELS.length-1?0:step}}
 const AVATARS=[
-{id:'jas',e:'🌼',n:'الياسمينة',p:0},{id:'cat',e:'🐱',n:'القطة',p:60},{id:'rabbit',e:'🐰',n:'الأرنب',p:100},{id:'lion',e:'🦁',n:'الأسد',p:150},
+{id:'jas',e:'🧒',n:'شطّور',p:0},{id:'cat',e:'🐱',n:'القطة',p:60},{id:'rabbit',e:'🐰',n:'الأرنب',p:100},{id:'lion',e:'🦁',n:'الأسد',p:150},
 {id:'owl',e:'🦉',n:'البومة الحكيمة',p:200},{id:'panda',e:'🐼',n:'الباندا',p:260},{id:'turtle',e:'🐢',n:'السلحفاة',p:300},{id:'fox',e:'🦊',n:'الثعلب',p:360},
 {id:'dolphin',e:'🐬',n:'الدلفين',p:420},{id:'rocket',e:'🚀',n:'الصاروخ',p:500},{id:'unicorn',e:'🦄',n:'الحصان الطائر',p:600},{id:'dino',e:'🦖',n:'الديناصور',p:750},
 {id:'astro',e:'🧑‍🚀',n:'رائد الفضاء',p:900},{id:'crown',e:'👑',n:'التاج الذهبي',p:1200}];
@@ -1263,14 +1274,14 @@ const BADGES=[
 
 function viewStore(){
   const lv=levelOf(S.jas),got=BADGES.filter(b=>b.ok());
-  V.innerHTML=`<h1 class="ptitle">متجر الياسمين</h1>
+  V.innerHTML=`<h1 class="ptitle">متجر النقاط</h1>
   <section class="panel lvl">
     <div class="row between"><div class="row"><span class="ava big">${avatarOf()}</span><div><b>${esc(APP.child.name)}</b><div class="muted small">المستوى ${ar(lv.n+1)}: ${lv.name}</div></div></div><span class="pill">${JAS()} ${ar(bal())}</span></div>
-    ${lv.need?`<div class="bar" style="--c:var(--sun)"><i style="width:${Math.round(100*lv.cur/lv.need)}%"></i></div><div class="muted small">باقي ${ar(lv.need-lv.cur)} ياسمينة للمستوى الجاي</div>`:'<div class="muted small">وصلت لأعلى مستوى!</div>'}
+    ${lv.need?`<div class="bar" style="--c:var(--sun)"><i style="width:${Math.round(100*lv.cur/lv.need)}%"></i></div><div class="muted small">باقي ${ar(lv.need-lv.cur)} نقطة للمستوى الجاي</div>`:'<div class="muted small">وصلت لأعلى مستوى!</div>'}
   </section>
   <h2>اختار شخصيتك</h2>
   <div class="store">${AVATARS.map(a=>{const own=(S.owned||[]).includes(a.id),on=S.avatar===a.id;return`<button class="item ${on?'on':''}" data-act="${own?'wear':'buy'}" data-id="${a.id}" ${!own&&bal()<a.p?'aria-disabled="true"':''}>
-      <span class="e">${a.e}</span><b>${a.n}</b><small>${on?'لابسها هلق':own?'البسها':a.p?`${ar(a.p)} ياسمينة`:'مجانية'}</small></button>`}).join('')}</div>
+      <span class="e">${a.e}</span><b>${a.n}</b><small>${on?'لابسها هلق':own?'البسها':a.p?`${ar(a.p)} نقطة`:'مجانية'}</small></button>`}).join('')}</div>
   ${msgHTML()}
   <h2>شاراتي <span class="muted small">${ar(got.length)} من ${ar(BADGES.length)}</span></h2>
   <div class="badges">${BADGES.map(b=>`<div class="badge ${b.ok()?'got':''}"><span>${b.e}</span><small>${b.n}</small></div>`).join('')}</div>${tabbar('store')}`;
@@ -1328,7 +1339,7 @@ function viewGuides(){
 }
 function viewSurahs(){
   V.innerHTML=`<h1 class="ptitle">قصار السور</h1>
-  <p class="muted">اقرأ السورة، وبعدين جرّب «سمّع» لتعرف إذا حفظتها. كل سورة بتحفظها إلها ${ar(30)} ياسمينة.</p>
+  <p class="muted">اقرأ السورة، وبعدين جرّب «سمّع» لتعرف إذا حفظتها. كل سورة بتحفظها إلها ${ar(30)} نقطة.</p>
   <div class="kids">${SURAHS.map(su=>`<button class="kid" data-act="surah" data-id="${su.id}"><span class="av">${(S.memo||{})[su.id]?'✓':'﴿'}</span><span class="t"><b>سورة ${su.n}</b><small>${ar(su.v.length)} آيات</small></span>${(S.memo||{})[su.id]?'<span class="tag ok">حفظتها</span>':''}</button>`).join('')}</div>
   <p class="muted small">النص بالرسم الإملائي لتسهيل القراءة على الأطفال.</p>${tabbar('surahs')}`;
 }
@@ -1368,7 +1379,7 @@ async function makeCertificate(){
   x.fillStyle='#E6F3F1';x.fillRect(0,0,W,H);
   x.fillStyle='#0E7C77';x.fillRect(40,40,W-80,H-80);x.fillStyle='#FFFFFF';x.fillRect(64,64,W-128,H-128);
   x.strokeStyle='#FFC83D';x.lineWidth=6;x.strokeRect(92,92,W-184,H-184);
-  const flower=(cx,cy,r)=>{for(let k=0;k<5;k++){x.save();x.translate(cx,cy);x.rotate(k*Math.PI*2/5);x.beginPath();x.ellipse(0,-r*.55,r*.32,r*.55,0,0,Math.PI*2);x.fillStyle='#FFFFFF';x.fill();x.strokeStyle='#E6C96A';x.lineWidth=3;x.stroke();x.restore()}x.beginPath();x.arc(cx,cy,r*.22,0,Math.PI*2);x.fillStyle='#FFC83D';x.fill()};
+  const flower=(cx,cy,r)=>{x.save();x.translate(cx,cy);x.beginPath();for(let k=0;k<10;k++){const a=-Math.PI/2+k*Math.PI/5,rad=k%2?r*.45:r;x.lineTo(Math.cos(a)*rad,Math.sin(a)*rad)}x.closePath();x.fillStyle='#FFC83D';x.fill();x.strokeStyle='#E0A100';x.lineWidth=4;x.stroke();x.restore();return;for(let k=0;k<5;k++){x.save();x.translate(cx,cy);x.rotate(k*Math.PI*2/5);x.beginPath();x.ellipse(0,-r*.55,r*.32,r*.55,0,0,Math.PI*2);x.fillStyle='#FFFFFF';x.fill();x.strokeStyle='#E6C96A';x.lineWidth=3;x.stroke();x.restore()}x.beginPath();x.arc(cx,cy,r*.22,0,Math.PI*2);x.fillStyle='#FFC83D';x.fill()};
   flower(W/2,230,90);flower(170,170,40);flower(W-170,170,40);flower(170,H-170,40);flower(W-170,H-170,40);
   x.textAlign='center';x.direction='rtl';
   const T=(t,y,size,font,color)=>{x.font=`${size}px ${font}`;x.fillStyle=color;x.fillText(t,W/2,y)};
@@ -1381,7 +1392,7 @@ async function makeCertificate(){
   const month=new Intl.DateTimeFormat('ar-SY',{month:'long',year:'numeric'}).format(now);
   T(`لاجتهاده في شهر ${month}`,710,44,B,'#15283A');
   const lv=levelOf(S.jas);
-  const stats=[[ar(mDays),'يوم تحدي'],[ar(S.jas),'ياسمينة'],[lv.name,'المستوى']];
+  const stats=[[ar(mDays),'يوم تحدي'],[ar(S.jas),'نقطة'],[lv.name,'المستوى']];
   stats.forEach((s,i)=>{const cx=W/2+(1-i)*290;x.fillStyle='#E6F3F1';x.beginPath();x.roundRect?x.roundRect(cx-125,790,250,170,28):x.rect(cx-125,790,250,170);x.fill();
     x.font=`60px ${D}`;x.fillStyle='#0E7C77';x.fillText(s[0],cx,880);x.font=`32px ${B}`;x.fillStyle='#55697A';x.fillText(s[1],cx,930)});
   T(`الصف ${GRADES[APP.child.grade-1]}`,1040,40,B,'#55697A');
@@ -1439,8 +1450,8 @@ async function adminStatsHTML(){
   const expired=[];kids.forEach(k=>Object.entries(k.subs||{}).forEach(([g,s])=>{if(s.until<t&&t-s.until<=30)expired.push({k,g:+g,s})}));
   const month=new Intl.DateTimeFormat('ar-SY',{month:'long'}).format(now);
   const rowHTML=(a,soon)=>{const left=a.s.until-t,pn=parentName(a.k.phone);
-    const msg=soon?`مرحباً ${pn} 🌼\nاشتراك ${a.k.name} بتطبيق شطّور (الصف ${GRADES[a.g-1]}) ${left<=0?'بينتهي اليوم':'بينتهي بعد '+left+' أيام'}.\nللتجديد افتح التطبيق ← الاشتراك ← أرسل طلب التفعيل.\nشكراً لثقتكم 🙏`
-      :`مرحباً ${pn} 🌼\nاشتقنا لـ ${a.k.name} بتطبيق شطّور! انتهى اشتراك الصف ${GRADES[a.g-1]}.\nللتجديد افتح التطبيق ← الاشتراك ← أرسل طلب التفعيل.`;
+    const msg=soon?`مرحباً ${pn} 🌟\nاشتراك ${a.k.name} بتطبيق شطّور (الصف ${GRADES[a.g-1]}) ${left<=0?'بينتهي اليوم':'بينتهي بعد '+left+' أيام'}.\nللتجديد افتح التطبيق ← الاشتراك ← أرسل طلب التفعيل.\nشكراً لثقتكم 🙏`
+      :`مرحباً ${pn} 🌟\nاشتقنا لـ ${a.k.name} بتطبيق شطّور! انتهى اشتراك الصف ${GRADES[a.g-1]}.\nللتجديد افتح التطبيق ← الاشتراك ← أرسل طلب التفعيل.`;
     return`<div class="exp"><div><b>${esc(a.k.name)}</b> · الصف ${GRADES[a.g-1]}<div class="muted small">${esc(pn)} · <span dir="ltr">${esc(a.k.phone)}</span> · ${soon?(left<=0?'بينتهي اليوم':'باقي '+ar(left)+' أيام'):'انتهى '+fmtDay(a.s.until)}</div></div>
       <a class="btn sun sm" href="${waLink(a.k.phone,msg)}" target="_blank" rel="noopener">ذكّر بواتساب</a></div>`};
   return`<div class="tiles">
@@ -1454,7 +1465,7 @@ async function adminStatsHTML(){
       <p class="muted small">تفعيلات ${month}: ${ar(monthAppr.length)}</p></section>
     ${(()=>{const ina=kids.filter(k=>hasSubFor(k,k.grade)&&k.lastActive!=null&&t-k.lastActive>=3).sort((a,b)=>a.lastActive-b.lastActive);
       return`<section class="panel"><h3>مشتركين غايبين ٣ أيام+ (${ar(ina.length)})</h3>${ina.length?ina.map(k=>{const pn=parentName(k.phone),d=t-k.lastActive;
-        return`<div class="exp"><div><b>${esc(k.name)}</b> · الصف ${GRADES[k.grade-1]}<div class="muted small">${esc(pn)} · <span dir="ltr">${esc(k.phone)}</span> · آخر نشاط من ${ar(d)} أيام</div></div><a class="btn sun sm" href="${waLink(k.phone,`مرحباً ${pn} 🌼\nاشتقنا لـ ${k.name} بتطبيق شطّور! صرلو ${d} أيام ما حلّ تحدي اليوم.\nتحدي اليوم بياخد ٥ دقايق بس، وكل يوم في حديث جديد 🌙`)}" target="_blank" rel="noopener">ذكّر بواتساب</a></div>`}).join(''):'<p class="muted">كل المشتركين نشيطين 👏</p>'}</section>`})()}
+        return`<div class="exp"><div><b>${esc(k.name)}</b> · الصف ${GRADES[k.grade-1]}<div class="muted small">${esc(pn)} · <span dir="ltr">${esc(k.phone)}</span> · آخر نشاط من ${ar(d)} أيام</div></div><a class="btn sun sm" href="${waLink(k.phone,`مرحباً ${pn} 🌟\nاشتقنا لـ ${k.name} بتطبيق شطّور! صرلو ${d} أيام ما حلّ تحدي اليوم.\nتحدي اليوم بياخد ٥ دقايق بس، وكل يوم في حديث جديد 🌙`)}" target="_blank" rel="noopener">ذكّر بواتساب</a></div>`}).join(''):'<p class="muted">كل المشتركين نشيطين 👏</p>'}</section>`})()}
     <section class="panel"><h3>بينتهوا خلال أسبوع (${ar(expiring.length)})</h3>${expiring.length?expiring.map(a=>rowHTML(a,true)).join(''):'<p class="muted">ما في اشتراكات رح تنتهي قريباً.</p>'}</section>
     <section class="panel"><h3>انتهوا آخر ٣٠ يوم (${ar(expired.length)})</h3>${expired.length?expired.map(a=>rowHTML(a,false)).join(''):'<p class="muted">ما في.</p>'}</section>`;
 }
@@ -1495,13 +1506,13 @@ document.addEventListener('click',async e=>{
   else if(a==='untile')untile();
   else if(a==='spkQ')speakItem(Q.list[Q.i]);
   else if(a==='spkHadith'){const h=todayHadith();speak('قال رسول الله صلى الله عليه وسلم: '+h[0]+'. '+h[2])}
-  else if(a==='buy'){const it=AVATARS.find(x=>x.id===b.dataset.id);if(bal()<it.p){ui.msg={t:`بدك ${ar(it.p-bal())} ياسمينة كمان لتشتري ${it.n}. حل تحدي اليوم والتمارين لتجمع أكتر!`}}else{S.spent=(S.spent||0)+it.p;S.owned=[...new Set([...(S.owned||['jas']),it.id])];S.avatar=it.id;save();tone(true);ui.msg={ok:true,t:`مبروك! صار عندك ${it.n} ${it.e}`}}viewStore()}
+  else if(a==='buy'){const it=AVATARS.find(x=>x.id===b.dataset.id);if(bal()<it.p){ui.msg={t:`بدك ${ar(it.p-bal())} نقطة كمان لتشتري ${it.n}. حل تحدي اليوم والتمارين لتجمع أكتر!`}}else{S.spent=(S.spent||0)+it.p;S.owned=[...new Set([...(S.owned||['jas']),it.id])];S.avatar=it.id;save();tone(true);ui.msg={ok:true,t:`مبروك! صار عندك ${it.n} ${it.e}`}}viewStore()}
   else if(a==='wear'){S.avatar=b.dataset.id;save();ui.msg=null;viewStore()}
   else if(a==='surah'){ui.keep={surah:b.dataset.id};go('surah')}
   else if(a==='surahQuiz'){const su=SURAHS.find(x=>x.id===b.dataset.id);Q={mode:'surah',surah:su.id,list:surahQuiz(su),i:0,c:0,res:[]};push('quiz');viewQuiz();window.scrollTo(0,0)}
   else if(a==='autoread'){S.autoRead=!autoRead();save();viewParent()}
   else if(a==='remind'){ui.rmt=val('rmt')||'17:00';const on=!(S.remind&&S.remind.on);if(on&&NATIVE.notifyState&&NATIVE.notifyState()!=='granted'){ui.wantRemind=true;NATIVE.requestNotify()}else applyRemind(on)}
-  else if(a==='certShare'){try{NATIVE.shareImage(ui.cert,'shattoor-certificate','شهادة تقدير من تطبيق شطّور 🌼')}catch(err){}}
+  else if(a==='certShare'){try{NATIVE.shareImage(ui.cert,'shattoor-certificate','شهادة تقدير من تطبيق شطّور 🌟')}catch(err){}}
   else if(a==='certSave'){try{NATIVE.saveImage(ui.cert,'shattoor-certificate')}catch(err){}}
   else if(a==='saveQr'){try{const im=V.querySelector('.sham img');const c=document.createElement('canvas');c.width=im.naturalWidth;c.height=im.naturalHeight;c.getContext('2d').drawImage(im,0,0);NATIVE.saveImage(c.toDataURL('image/png'),'shamcash-qr')}catch(err){}}
   else if(a==='copyText'){const t=b.dataset.t;const el=V.querySelector('#shamcode');const sel=()=>{if(!el)return;const r=document.createRange();r.selectNodeContents(el);const g=getSelection();g.removeAllRanges();g.addRange(r)};try{navigator.clipboard.writeText(t).then(()=>{b.textContent='تم النسخ ✓'},sel)}catch(err){sel()}}

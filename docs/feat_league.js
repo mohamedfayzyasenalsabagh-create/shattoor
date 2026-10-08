@@ -30,7 +30,7 @@ function bump(n){if(!S||!n)return;const w=weekId(),m=monthId();
   if(!S.wk||S.wk.w!==w)S.wk={w,p:0};if(!S.mo||S.mo.m!==m)S.mo={m,p:0};S.wk.p+=n;S.mo.p+=n}
 let pushT=null;
 function pushBoard(){if(!APP.child||!S||S.noBoard)return;clearTimeout(pushT);pushT=setTimeout(()=>{
-  const c=APP.child,g=c.grade,first=String(c.name||'').trim().split(/\s+/)[0].slice(0,20),av=typeof avatarOf==='function'?avatarOf():'🌼';
+  const c=APP.child,g=c.grade,first=String(c.name||'').trim().split(/\s+/)[0].slice(0,20),av=typeof avatarOf==='function'?avatarOf():'🧒';
   bump(0);const base={n:first,av,g,cid:c.id,t:today()};
   if(S.wk&&S.wk.p>0)API.boardPut(`w${S.wk.w}_g${g}_${c.id}`,Object.assign({per:`w${S.wk.w}_g${g}`,p:S.wk.p},base)).catch(()=>{});
   if(S.mo&&S.mo.p>0)API.boardPut(`m${S.mo.m}_g${g}_${c.id}`,Object.assign({per:`m${S.mo.m}_g${g}`,p:S.mo.p},base)).catch(()=>{});
@@ -47,18 +47,18 @@ async function viewLeague(){
   V.innerHTML=`<h1 class="ptitle">🏆 المسابقة</h1>
   ${APP.set.prize?`<div class="lg-prize"><span class="big">🎁</span><span>جائزة شهر ${monthName}: ${esc(APP.set.prize)}</span></div>`:''}
   <div class="tabs"><button data-act="lg_per" data-p="w" class="${per==='w'?'on':''}">هالأسبوع</button><button data-act="lg_per" data-p="m" class="${per==='m'?'on':''}">شهر ${monthName}</button></div>
-  <p class="muted small">ترتيب أطفال الصف ${GRADES[g-1]} حسب الياسمينات يلي جمعوها ${per==='w'?'من السبت لهلق':'هالشهر'}. كل جواب صح وكل امتحان بيزيد نقاطك!</p>
+  <p class="muted small">ترتيب أطفال الصف ${GRADES[g-1]} حسب النقاط يلي جمعوها ${per==='w'?'من السبت لهلق':'هالشهر'}. كل جواب صح وكل امتحان بيزيد نقاطك!</p>
   <div id="lgbox"><p class="muted">جارِ التحميل…</p></div>${tabbar('league')}`;
   if(S.noBoard){V.querySelector('#lgbox').innerHTML=`<section class="panel"><p>اسم ${esc(APP.child.name)} مخفي من المسابقة. فيك تفعّلها من ركن الأهل.</p><p>نقاطك: <b>${ar(mine)}</b></p></section>`;return}
   pushBoard();
-  let L=[];try{L=await API.boardGet(key)}catch(e){V.querySelector('#lgbox').innerHTML=`<section class="panel"><p>المسابقة رح تشتغل قريباً إن شاء الله 🌼</p><p>نقاطك ${per==='w'?'هالأسبوع':'هالشهر'}: <b>${ar(mine)}</b></p></section>`;return}
+  let L=[];try{L=await API.boardGet(key)}catch(e){V.querySelector('#lgbox').innerHTML=`<section class="panel"><p>المسابقة رح تشتغل قريباً إن شاء الله 🌟</p><p>نقاطك ${per==='w'?'هالأسبوع':'هالشهر'}: <b>${ar(mine)}</b></p></section>`;return}
   const me=APP.child.id;L=L.filter(x=>x.cid!==me);if(mine>0)L.push({cid:me,n:String(APP.child.name).split(' ')[0],av:avatarOf(),p:mine});
   L.sort((a,b)=>b.p-a.p);const rk=L.findIndex(x=>x.cid===me);
   const top=L.slice(0,3),col=['#C99410','#8FA3AE','#C7773B'],h=[110,80,64];
-  const pod=top.length>=3?`<div class="lg-podium">${[1,0,2].map(i=>`<div><span class="av">${top[i].av||'🌼'}</span><b class="lg-n" style="max-width:100%">${esc(top[i].n)}</b><span class="lg-p">${JAS()}${ar(top[i].p)}</span><div class="col" style="background:${col[i]};height:${h[i]}px">${ar(i+1)}</div></div>`).join('')}</div>`:'';
+  const pod=top.length>=3?`<div class="lg-podium">${[1,0,2].map(i=>`<div><span class="av">${top[i].av||'🧒'}</span><b class="lg-n" style="max-width:100%">${esc(top[i].n)}</b><span class="lg-p">${JAS()}${ar(top[i].p)}</span><div class="col" style="background:${col[i]};height:${h[i]}px">${ar(i+1)}</div></div>`).join('')}</div>`:'';
   V.querySelector('#lgbox').innerHTML=`${pod}
-    ${rk>=0?`<div class="status ok"><span>ترتيبك: <b>${ar(rk+1)}</b> من ${ar(L.length)} · ${ar(mine)} ياسمينة</span></div>`:`<div class="status trial"><span>لسا ما جمعت نقاط ${per==='w'?'هالأسبوع':'هالشهر'}. حل تحدي اليوم لتدخل المسابقة!</span></div>`}
-    <div class="lg-list">${L.slice(0,30).map((x,i)=>`<div class="lg-row ${x.cid===me?'me':''}"><span class="lg-rk">${i<3?['🥇','🥈','🥉'][i]:ar(i+1)}</span><span class="lg-av">${x.av||'🌼'}</span><span class="lg-n">${esc(x.n)}${x.cid===me?' (أنت)':''}</span><span class="lg-p">${JAS()}${ar(x.p)}</span></div>`).join('')||'<p class="muted">لسا ما حدا دخل المسابقة. كون الأول! 🚀</p>'}</div>
+    ${rk>=0?`<div class="status ok"><span>ترتيبك: <b>${ar(rk+1)}</b> من ${ar(L.length)} · ${ar(mine)} نقطة</span></div>`:`<div class="status trial"><span>لسا ما جمعت نقاط ${per==='w'?'هالأسبوع':'هالشهر'}. حل تحدي اليوم لتدخل المسابقة!</span></div>`}
+    <div class="lg-list">${L.slice(0,30).map((x,i)=>`<div class="lg-row ${x.cid===me?'me':''}"><span class="lg-rk">${i<3?['🥇','🥈','🥉'][i]:ar(i+1)}</span><span class="lg-av">${x.av||'🧒'}</span><span class="lg-n">${esc(x.n)}${x.cid===me?' (أنت)':''}</span><span class="lg-p">${JAS()}${ar(x.p)}</span></div>`).join('')||'<p class="muted">لسا ما حدا دخل المسابقة. كون الأول! 🚀</p>'}</div>
     ${rk>29?`<div class="lg-row me"><span class="lg-rk">${ar(rk+1)}</span><span class="lg-av">${avatarOf()}</span><span class="lg-n">${esc(APP.child.name)} (أنت)</span><span class="lg-p">${JAS()}${ar(mine)}</span></div>`:''}`;
 }
 
@@ -87,7 +87,7 @@ async function viewTeacher(){
   ${C.length?`<div class="tabs" style="flex-wrap:wrap">${C.map(x=>`<button data-act="tc_sel" data-c="${x.code}" class="${x.code===sel?'on':''}">${esc(x.name)}</button>`).join('')}</div>`:''}
   ${cl?`<section class="panel" style="text-align:center"><small class="muted">رمز الصف</small><div class="tc-code sel">${esc(cl.code)}</div>
     <p class="muted small">الأهل بيكتبوا هالرمز من «ركن الأهل ← صف الأستاذ».</p>
-    <a class="btn sun sm" href="https://wa.me/?text=${encodeURIComponent(`أهلاً بأهالي طلاب ${cl.name} 🌼\nانضموا لصفّنا على تطبيق شطّور لنتابع تقدّم أولادنا سوا:\n١. افتحوا التطبيق ← ركن الأهل ← صف الأستاذ\n٢. اكتبوا الرمز: ${cl.code}\n${location.origin+location.pathname}`)}" target="_blank" rel="noopener">ابعت الرمز للأهل على واتساب</a></section>
+    <a class="btn sun sm" href="https://wa.me/?text=${encodeURIComponent(`أهلاً بأهالي طلاب ${cl.name} 🌟\nانضموا لصفّنا على تطبيق شطّور لنتابع تقدّم أولادنا سوا:\n١. افتحوا التطبيق ← ركن الأهل ← صف الأستاذ\n٢. اكتبوا الرمز: ${cl.code}\n${location.origin+location.pathname}`)}" target="_blank" rel="noopener">ابعت الرمز للأهل على واتساب</a></section>
   <div class="tiles" style="grid-template-columns:repeat(3,1fr)"><div class="tile"><b>${ar(M.length)}</b><span>طالب</span></div><div class="tile ok"><b>${ar(M.filter(m=>t-(m.last||0)<3).length)}</b><span>نشيط</span></div><div class="tile"><b>${ar(inactive)}</b><span>غايب ٣ أيام+</span></div></div>
   <div class="tc-table">${M.map(m=>{const d=t-(m.last||0);return`<div class="tc-st"><div class="top"><b>${esc(m.name)}</b><span class="tag ${d>=3?'warn':'ok'}">${d<=0?'اليوم':d===1?'مبارح':'من '+ar(d)+' أيام'}</span></div>
     <div class="row between muted small"><span>🔥 ${ar(m.streak||0)} · ${JAS()} ${ar(m.jas||0)} · هالأسبوع ${ar(m.wk||0)}</span>${(m.exams||[]).length?`<span>آخر امتحان: <b>${ar(m.exams[m.exams.length-1].sc)}</b></span>`:''}</div>

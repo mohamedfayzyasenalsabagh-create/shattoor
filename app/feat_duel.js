@@ -256,7 +256,7 @@ function rEnd(){
       ${win?`<div class="du-crown">👑 ${win.av}</div><h1>البطل: ${esc(win.n)}!</h1>`:`<div class="du-crown">🤝</div><h1>تعادل! الاتنين أبطال</h1>`}
       <p class="muted">${res==='w'?'برافو يا شطّور! غلبت '+esc(b.n)+' 💪':res==='l'?'ولا يهمك! المرة الجاية بتغلب 💪':'نفس النقاط بالزبط، شو هالمستوى!'}</p>
       ${board()}
-      ${res!=='l'?`<span class="du-prize">${JAS()} +${ar(15)} ياسمينة لـ${esc(a.n)}</span>`:''}
+      ${res!=='l'?`<span class="du-prize">${JAS()} +${ar(15)} نقطة لـ${esc(a.n)}</span>`:''}
     </section>
     <button class="btn teal big wide" data-act="du_again">🔁 جولة جديدة</button>
     <button class="btn ghost big wide" data-act="du_back">الرجوع</button>
