@@ -61,13 +61,23 @@ service cloud.firestore {
       allow read: if isAdmin();
     }
 
+    // طلبات الاشتراك: سجل دائم ما بينحذف. الأهل بينشئوا طلب «قيد المراجعة» فقط، والأدمن بيقبل أو بيرفض
     match /requests/{rid} {
-      allow create: if isAdmin() || signedIn()
+      allow create: if isAdmin() || (signedIn()
         && request.resource.data.uid == request.auth.uid
         && isOwner(request.resource.data.phone)
-        && request.resource.data.status == 'pending';
+        && request.resource.data.status == 'pending'
+        && request.resource.data.keys().hasOnly(['status','uid','created','phone','parentName','childId','childName','grade','plan','months','amount','currency','method','txn','receipt','coupon','family'])
+        && (!('receipt' in request.resource.data) || (request.resource.data.receipt is string && request.resource.data.receipt.size() < 800000)));
       allow read: if isAdmin() || (signedIn() && resource.data.uid == request.auth.uid);
-      allow update, delete: if isAdmin();
+      allow update: if isAdmin();
+      allow delete: if false;
+    }
+
+    // أكواد الخصم: الأهل بيتحققوا من كود معيّن فقط، والأدمن بيديرها
+    match /coupons/{code} {
+      allow get: if signedIn();
+      allow list, write: if isAdmin();
     }
 
     // مسابقة الأسبوع والشهر: الاسم الأول والنقاط فقط

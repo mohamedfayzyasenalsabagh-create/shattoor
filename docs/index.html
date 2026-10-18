@@ -384,7 +384,9 @@ const CONFIG = {
     whatsapp: ''
   }
 };
-const PLANS = { monthly: { name: 'شهري', days: 30 }, yearly: { name: 'سنوي', days: 365 } };
+let PLANS = { monthly: { name: 'شهري', days: 30, months: 1 }, yearly: { name: 'سنوي', days: 365, months: 12 }, gift: { name: 'هدية مدى الحياة', days: 99999, months: 0 } };
+const DEFAULT_PLANS=[{id:'monthly',name:'شهري',months:1,price:0,on:true},{id:'q3',name:'٣ أشهر',months:3,price:0,on:false},{id:'sem',name:'فصل دراسي',months:5,price:0,on:false},{id:'yearly',name:'سنوي',months:12,price:0,on:true}];
+const planDays=m=>m>=12?365:m*30;
 const PAY = { syriatel: 'سيريتل كاش', mtn: 'MTN كاش', sham: 'شام كاش' };
 const VERSION = '0.6';
 
@@ -513,7 +515,7 @@ const ENB={1:[gVoc,gCol,gNumEn,gLetter],2:[gVoc,gCol,gNumEn,gLetter],3:[gBank(EN
 const HADITH=[
 ['إنّما الأعمالُ بالنيّات','رواه البخاري ومسلم','الله يجزي كل إنسان على نيّته، فاجعل نيّتك طيبة في كل عمل تعمله.','على ماذا تقوم الأعمال في هذا الحديث؟','النيّة','السرعة','كثرة الكلام'],
 ['الكلمةُ الطيّبةُ صدقة','رواه البخاري ومسلم','كلامك اللطيف مع أهلك وأصدقائك له أجر مثل أجر الصدقة.','ما الذي جعله النبي ﷺ صدقة؟','الكلمة الطيبة','الصراخ','السكوت دائماً'],
-['تبسُّمُكَ في وجهِ أخيكَ لكَ صدقة','رواه الترمذي','ابتسامتك تُفرح الناس، ولك بها أجر مثل الصدقة.','كيف أتصدّق دون مال؟','بالابتسامة','بالعبوس','بالغضب'],
+['إنّ الصدقَ يهدي إلى البِرّ، وإنّ البِرَّ يهدي إلى الجنّة','رواه البخاري ومسلم','الصدق يقودك إلى كل عمل طيب، والعمل الطيب يقودك إلى الجنة.','إلى ماذا يهدي الصدق؟','إلى البِرّ والخير','إلى المشاكل','إلى الخوف'],
 ['لا يؤمنُ أحدُكم حتى يحبَّ لأخيه ما يحبُّ لنفسه','رواه البخاري ومسلم','تمنَّ الخير لأصحابك وإخوتك كما تتمناه لنفسك.','ماذا نحب لإخوتنا؟','ما نحبه لأنفسنا','أقلّ مما نحبه لأنفسنا','لا شيء'],
 ['مَن كان يؤمنُ باللهِ واليومِ الآخرِ فليقلْ خيراً أو ليصمت','رواه البخاري ومسلم','إذا لم يكن كلامك مفيداً ولطيفاً فالسكوت أفضل.','إذا لم يكن عندي كلام خير، ماذا أفعل؟','أسكت','أقول أي شيء','أرفع صوتي'],
 ['المسلمُ مَن سَلِمَ المسلمون من لسانِه ويدِه','رواه البخاري ومسلم','المسلم الحقيقي لا يؤذي أحداً بكلامه ولا بيده.','المسلم لا يؤذي الناس بـ:','لسانه ويده','ماله فقط','عينيه فقط'],
@@ -521,25 +523,25 @@ const HADITH=[
 ['لا تغضب','رواه البخاري','عندما تشعر بالغضب: اهدأ، واسكت، وتوضأ، وابتعد عن الشجار.','بماذا أوصى النبي ﷺ في هذا الحديث؟','ألّا نغضب','ألّا نبتسم','ألّا نلعب'],
 ['خيرُكم مَن تعلّمَ القرآنَ وعلّمه','رواه البخاري','من يتعلم القرآن ويعلّمه لغيره من أفضل الناس.','مَن خير الناس في هذا الحديث؟','من تعلّم القرآن وعلّمه','من يملك مالاً كثيراً','من يلعب كثيراً'],
 ['مَن سلكَ طريقاً يلتمسُ فيه علماً سهّلَ اللهُ له به طريقاً إلى الجنّة','رواه مسلم','كل يوم تتعلم فيه شيئاً جديداً تمشي في طريق الخير.','طلب العلم طريق إلى:','الجنة','التعب فقط','الملل'],
-['ارحموا مَن في الأرضِ يرحمْكم مَن في السماء','رواه الترمذي وأبو داود','ارحم الناس والحيوانات والنباتات، يرحمك الله.','من نرحم؟','كل من في الأرض','الكبار فقط','أصحابنا فقط'],
+['مَن كان يؤمنُ باللهِ واليومِ الآخرِ فليُكرِمْ ضيفَه','رواه البخاري ومسلم','نستقبل الضيف بابتسامة، ونقدّم له الضيافة، ونحترمه.','كيف نعامل الضيف؟','نكرمه ونحترمه','نتجاهله','نغضب منه'],
 ['ليس الشديدُ بالصُّرَعة، إنما الشديدُ الذي يملكُ نفسَه عند الغضب','رواه البخاري ومسلم','القوي الحقيقي هو من يهدأ ويتحكم بنفسه عندما يغضب.','من القوي حقاً؟','من يملك نفسه عند الغضب','من يغلب في المصارعة','من يصرخ أعلى'],
 ['يا غلام، سمِّ الله، وكُلْ بيمينك، وكُلْ ممّا يليك','رواه البخاري ومسلم','من آداب الطعام: نقول بسم الله، ونأكل باليد اليمنى، ومن الطعام القريب منا.','بأيّ يد نأكل؟','باليد اليمنى','باليد اليسرى','لا فرق'],
 ['مَن لا يَرحمْ لا يُرحمْ','رواه البخاري ومسلم','من يرحم الناس يرحمه الله، فكن رحيماً.','ماذا يحدث لمن لا يرحم غيره؟','لا يُرحَم','يُرحَم دائماً','يصبح قوياً'],
 ['إنّ اللهَ رفيقٌ يحبُّ الرِّفقَ في الأمرِ كلِّه','رواه البخاري','الرفق هو اللطف واللين في الكلام والتعامل.','ما معنى الرفق؟','اللطف واللين','القسوة','العجلة'],
 ['أحبُّ الأعمالِ إلى اللهِ أدومُها وإن قلّ','رواه البخاري ومسلم','عمل صغير تداوم عليه كل يوم، مثل تحديك اليومي، أفضل من كثير تتركه.','أيّ الأعمال أحبّ إلى الله؟','الدائم ولو كان قليلاً','الكثير مرة واحدة','الصعب فقط'],
 ['الحياءُ من الإيمان','رواه البخاري ومسلم','الحياء خُلق جميل يمنعنا من الكلام والفعل القبيح.','الحياء جزء من:','الإيمان','اللعب','الخوف'],
-['تهادَوا تحابُّوا','رواه البخاري في الأدب المفرد','الهدية ولو كانت صغيرة تزيد المحبة بين الناس.','ماذا تفعل الهدية؟','تزيد المحبة','تزيد الخصام','لا شيء'],
-['مَن لا يشكرُ الناسَ لا يشكرُ الله','رواه أبو داود والترمذي','قل شكراً لكل من يساعدك: أمك وأبوك ومعلمك وأصدقاؤك.','لمن نقول شكراً؟','للناس ولله','لله فقط','لا لأحد'],
+['كلُّكم راعٍ، وكلُّكم مسؤولٌ عن رعيّته','رواه البخاري ومسلم','كل واحد منا مسؤول عن شيء: أنت مسؤول عن كتبك وواجباتك وأغراضك.','ما معنى «كلكم راعٍ»؟','كل واحد منا مسؤول','لا أحد مسؤول','الكبار فقط مسؤولون'],
+['يسِّروا ولا تعسِّروا، وبشِّروا ولا تنفِّروا','رواه البخاري ومسلم','نسهّل الأمور على الناس، ونقول لهم الكلام المفرح المشجّع.','ماذا أوصى النبي ﷺ في هذا الحديث؟','أن نيسّر ولا نعسّر','أن نصعّب الأمور','أن نخيف الناس'],
 ['إنّ اللهَ جميلٌ يحبُّ الجمال','رواه مسلم','الله يحب النظافة والترتيب وحسن المظهر.','ماذا يحب الله؟','الجمال','الفوضى','الوسخ'],
 ['أفشُوا السلامَ بينكم','رواه مسلم','قل: السلام عليكم لمن تعرف ومن لا تعرف.','ماذا ننشر بيننا؟','السلام','الأسرار','الخصام'],
 ['المؤمنُ للمؤمنِ كالبنيانِ يشدُّ بعضُه بعضاً','رواه البخاري ومسلم','المؤمنون يساعد بعضهم بعضاً مثل حجارة البناء المتماسكة.','المؤمنون مثل:','البنيان القوي','البحر','الريح'],
 ['اليدُ العليا خيرٌ من اليدِ السفلى','رواه البخاري ومسلم','اليد التي تعطي خير من اليد التي تأخذ.','أيّ يد أفضل؟','اليد التي تعطي','اليد التي تأخذ','لا فرق'],
-['ليس منّا مَن لم يرحمْ صغيرَنا ويوقّرْ كبيرَنا','رواه الترمذي','نعطف على الصغار ونحترم الكبار.','كيف نعامل الكبار؟','نوقّرهم ونحترمهم','نرفع صوتنا عليهم','نتجاهلهم'],
+['مَن دلَّ على خيرٍ فله مثلُ أجرِ فاعلِه','رواه مسلم','إذا علّمت صديقك شيئاً مفيداً فعمل به، لك أجر مثل أجره.','ماذا يأخذ مَن دلّ غيره على الخير؟','مثل أجر من فعله','لا شيء','نصف الأجر فقط'],
 ['وتُميطُ الأذى عن الطريقِ صدقة','رواه البخاري ومسلم','إذا رأيت حجراً أو زجاجاً في الطريق فأبعده، ولك أجر.','ما معنى إماطة الأذى عن الطريق؟','إزالة ما يؤذي من الطريق','رمي الأوساخ','الركض في الطريق'],
 ['لا تحقِرَنّ من المعروفِ شيئاً ولو أن تلقى أخاك بوجهٍ طَلْق','رواه مسلم','حتى الوجه المبتسم عمل خير لا نستصغره.','ما معنى «وجه طلق»؟','وجه مبتسم','وجه غاضب','وجه نائم'],
-['خيرُكم خيرُكم لأهله','رواه الترمذي','أفضل الناس من يحسن إلى أمه وأبيه وإخوته.','من خير الناس؟','الأحسن لأهله','الأقوى جسماً','الأغنى'],
+['إنّ اللهَ لا ينظرُ إلى صوَرِكم وأموالِكم، ولكن ينظرُ إلى قلوبِكم وأعمالِكم','رواه مسلم','المهم عند الله قلبك الطيب وعملك الصالح، لا شكلك ولا مالك.','إلى ماذا ينظر الله؟','إلى قلوبنا وأعمالنا','إلى ملابسنا','إلى أموالنا'],
 ['إنّ مِن أحبِّكم إليّ أحسنَكم أخلاقاً','رواه البخاري','الأخلاق الحسنة تقرّبنا من حب النبي ﷺ.','من أحبّ الناس إلى النبي ﷺ؟','أحسنهم أخلاقاً','أكثرهم مالاً','أطولهم'],
-['اتّقِ اللهَ حيثما كنت، وأتبعِ السيئةَ الحسنةَ تمحُها، وخالقِ الناسَ بخلقٍ حسن','رواه الترمذي','إذا أخطأت فاعمل عملاً حسناً بعده، وعامل الناس بأخلاق طيبة.','إذا أخطأتُ ماذا أفعل؟','أتبع الخطأ بعمل حسن','أكرر الخطأ','أغضب'],
+['آيةُ المنافقِ ثلاث: إذا حدّثَ كذب، وإذا وعدَ أخلف، وإذا اؤتُمِنَ خان','رواه البخاري ومسلم','المسلم صادق، يفي بوعده، ويحفظ الأمانة.','المسلم إذا وعد:','يفي بوعده','يُخلف وعده','ينسى'],
 ['الطُّهورُ شطرُ الإيمان','رواه مسلم','النظافة والوضوء نصف الإيمان، فحافظ على نظافتك.','الطُّهور نصف:','الإيمان','اللعب','النوم'],
 ['مَن صلّى البَرْدَين دخلَ الجنّة','رواه البخاري ومسلم','البردان هما صلاة الفجر وصلاة العصر.','ما البَردان؟','الفجر والعصر','الظهر والمغرب','العشاء والظهر']
 ];
@@ -629,6 +631,8 @@ function buildPractice(s,g,li){setDiff(s);
 /* ================== الحسابات والبيانات ================== */
 const AR2EN=s=>String(s).replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace(/[۰-۹]/g,d=>'۰۱۲۳۴۵۶۷۸۹'.indexOf(d));
 function normPhone(p){let d=AR2EN(p).replace(/\D/g,'');if(d.startsWith('00963'))d=d.slice(5);else if(d.startsWith('963'))d=d.slice(3);if(d.length===9&&d[0]==='9')d='0'+d;return/^09\d{8}$/.test(d)?d:null}
+const amountOf=a=>{const n=parseInt(AR2EN(a||'').replace(/[^\d]/g,''),10);return isNaN(n)?0:n};
+const fmtNum=n=>ar(Number(n).toLocaleString('en-US')).replace(/,/g,'٬');
 const normCode=c=>AR2EN(c).replace(/\D/g,'');
 const isAdminPhone=p=>p===normPhone(CONFIG.adminPhone);
 const today=()=>dayIdx();
@@ -638,7 +642,11 @@ function newCode(){let s='';const a=new Uint32Array(8);(window.crypto||{}).getRa
 const ERR={'auth/email-already-in-use':'هذا الرقم مسجّل من قبل. سجّل الدخول بدلاً من ذلك.','auth/invalid-credential':'الرقم أو كلمة السر غير صحيحة.','auth/wrong-password':'الرقم أو كلمة السر غير صحيحة.','auth/invalid-login-credentials':'الرقم أو كلمة السر غير صحيحة.','auth/user-not-found':'لا يوجد حساب بهذا الرقم. أنشئ حساباً جديداً.','auth/weak-password':'كلمة السر قصيرة. اكتب ٦ أحرف أو أرقام على الأقل.','auth/network-request-failed':'لا يوجد اتصال بالإنترنت. اتصل وحاول مرة ثانية.','auth/too-many-requests':'محاولات كثيرة. انتظر قليلاً ثم حاول.','permission-denied':'ليس لديك صلاحية لهذه العملية.','unavailable':'لا يوجد اتصال بالإنترنت. اتصل وحاول مرة ثانية.','bad-code':'رمز إعادة التعيين غير صحيح. تأكد منه أو اطلب رمزاً جديداً من الإدارة.','no-reset':'لا يوجد طلب إعادة تعيين لهذا الرقم. راسل الإدارة على واتساب.'};
 const errMsg=e=>ERR[e&&(e.code||e.message)]||'حدث خطأ. حاول مرة ثانية.';
 const fail=(code)=>{const e=new Error(code);e.code=code;return e};
-const mergeSettings=s=>{const d=CONFIG.defaults;s=s||{};const pay=Object.assign({},d.pay,s.pay);if(!pay.sham)pay.sham=d.pay.sham;return{trialDays:s.trialDays!=null?+s.trialDays:d.trialDays,prices:Object.assign({},d.prices,s.prices),pay,shamName:s.shamName||d.shamName,shamQr:s.shamQr||d.shamQr,whatsapp:s.whatsapp!=null?s.whatsapp:d.whatsapp,family:s.family!=null?+s.family:20,school:s.school||'',prize:s.prize||''}};
+const mergeSettings=s=>{const d=CONFIG.defaults;s=s||{};const pay=Object.assign({},d.pay,s.pay);if(!pay.sham)pay.sham=d.pay.sham;return{trialDays:s.trialDays!=null?+s.trialDays:d.trialDays,prices:Object.assign({},d.prices,s.prices),pay,shamName:s.shamName||d.shamName,shamQr:s.shamQr||d.shamQr,whatsapp:s.whatsapp!=null?s.whatsapp:d.whatsapp,family:s.family!=null?+s.family:20,school:s.school||'',prize:s.prize||'',currency:s.currency||'ل.س',plans:buildPlans(s)}};
+function buildPlans(s){const pr=(s&&s.prices)||{};let L=(s&&Array.isArray(s.plans)&&s.plans.length)?s.plans.map(x=>Object.assign({},x)):DEFAULT_PLANS.map(x=>Object.assign({},x,{price:x.id==='monthly'?amountOf(pr.monthly):x.id==='yearly'?amountOf(pr.yearly):0}));
+  PLANS={};L.forEach(x=>{x.months=+x.months||1;x.price=+x.price||0;PLANS[x.id]={name:x.name,months:x.months,days:planDays(x.months),price:x.price,on:x.on!==false}});
+  if(!PLANS.monthly)PLANS.monthly={name:'شهري',months:1,days:30,price:0,on:false};if(!PLANS.yearly)PLANS.yearly={name:'سنوي',months:12,days:365,price:0,on:false};
+  PLANS.gift={name:'هدية مدى الحياة',months:0,days:99999,price:0,on:false};return L}
 
 /* ---- الوضع التجريبي: كل البيانات على هذا الجهاز ---- */
 function DemoBackend(){
@@ -670,7 +678,15 @@ function DemoBackend(){
     async myRequests(){return wait(Object.entries(D.requests).filter(([k,r])=>r.phone===D.session).map(([k,r])=>Object.assign({id:k},r)))},
     async pending(){return wait(Object.entries(D.requests).filter(([k,r])=>r.status==='pending').map(([k,r])=>Object.assign({id:k},r)))},
     async findByPhone(phone){const u=D.parents[phone];if(!u)return wait(null);return wait({phone,name:u.name,created:u.created,reset:D.resets[phone]?D.resets[phone].key:null,children:kids(phone)})},
-    async activate(phone,cid,grade,plan){const c=D.children[phone]&&D.children[phone][cid];if(!c)throw fail('not-found');c.subs=c.subs||{};const cur=c.subs[grade];c.subs[grade]={plan,until:newUntil(cur&&cur.until,PLANS[plan].days)};save();return wait(c.subs[grade])},
+    async activate(phone,cid,grade,plan,days){const c=D.children[phone]&&D.children[phone][cid];if(!c)throw fail('not-found');c.subs=c.subs||{};const cur=c.subs[grade];c.subs[grade]={plan,until:newUntil(cur&&cur.until,days||PLANS[plan].days)};save();return wait(c.subs[grade])},
+    async approveReq(r,days){const c=D.children[r.phone]&&D.children[r.phone][r.childId];if(!c)throw fail('not-found');c.subs=c.subs||{};const cur=c.subs[r.grade];const v={plan:r.plan,until:newUntil(cur&&cur.until,days)};c.subs[r.grade]=v;D.inv=(D.inv||0)+1;Object.assign(D.requests[r.id],{status:'approved',invoice:D.inv,until:v.until,done:today(),by:D.session});save();return wait(Object.assign({invoice:D.inv},v))},
+    async rejectReq(rid,reason){Object.assign(D.requests[rid],{status:'rejected',reason,done:today(),by:D.session});save();return wait()},
+    async txnUsed(txn,except){return wait(Object.entries(D.requests).filter(([k,r])=>k!==except&&r.txn&&r.txn===txn&&r.status!=='rejected').length)},
+    async history(){return wait(Object.entries(D.requests).filter(([k,r])=>r.status!=='pending').map(([k,r])=>Object.assign({id:k},r)).sort((a,b)=>(b.done||0)-(a.done||0)).slice(0,150))},
+    async couponGet(code){D.coupons=D.coupons||{};const c=D.coupons[code];return wait(c?Object.assign({code},c):null)},
+    async couponSet(code,v){D.coupons=D.coupons||{};D.coupons[code]=v;save();return wait()},
+    async couponDel(code){D.coupons=D.coupons||{};delete D.coupons[code];save();return wait()},
+    async couponList(){D.coupons=D.coupons||{};return wait(Object.entries(D.coupons).map(([k,v])=>Object.assign({code:k},v)))},
     async cancelSub(phone,cid,grade){delete D.children[phone][cid].subs[grade];save();return wait()},
     async resolve(rid,status){D.requests[rid].status=status;D.requests[rid].done=today();save();return wait()},
     async makeReset(phone){const key=newCode();D.resets[phone]={key,created:today()};save();return wait(key)},
@@ -733,7 +749,18 @@ function FirebaseBackend(cfg){
     async myRequests(){return(await db.collection('requests').where('uid','==',U.uid).get()).docs.map(d=>Object.assign({id:d.id},d.data()))},
     async pending(){return(await db.collection('requests').where('status','==','pending').get()).docs.map(d=>Object.assign({id:d.id},d.data()))},
     async findByPhone(phone){const s=await P(phone).get();if(!s.exists)return null;const x=s.data();const r=await db.collection('resets').doc(phone).get();return{phone,name:x.name,created:tsDay(x.created),reset:r.exists?r.data().key:null,children:await kids(phone)}},
-    async activate(phone,cid,grade,plan){const ref=kidsCol(phone).doc(cid);const s=await ref.get();if(!s.exists)throw fail('not-found');const cur=((s.data().subs||{})[grade]||{}).until;const v={plan,until:newUntil(cur,PLANS[plan].days)};await ref.update({['subs.'+grade]:v});return v},
+    async activate(phone,cid,grade,plan,days){const ref=kidsCol(phone).doc(cid);const s=await ref.get();if(!s.exists)throw fail('not-found');const cur=((s.data().subs||{})[grade]||{}).until;const v={plan,until:newUntil(cur,days||PLANS[plan].days)};await ref.update({['subs.'+grade]:v});return v},
+    approveReq(r,days){const kref=kidsCol(r.phone).doc(r.childId),cref=db.doc('settings/counter'),rref=db.collection('requests').doc(r.id);
+      return db.runTransaction(async t=>{const [k,c,q]=await Promise.all([t.get(kref),t.get(cref),t.get(rref)]);if(!k.exists)throw fail('not-found');if(q.exists&&q.data().status!=='pending')throw fail('already');
+        const cur=((k.data().subs||{})[r.grade]||{}).until,v={plan:r.plan,until:newUntil(cur,days)},inv=((c.exists&&c.data().invoice)||0)+1;
+        t.update(kref,{['subs.'+r.grade]:v});t.set(cref,{invoice:inv},{merge:true});t.update(rref,{status:'approved',invoice:inv,until:v.until,done:FV.serverTimestamp(),by:U.phone});return Object.assign({invoice:inv},v)})},
+    rejectReq(rid,reason){return db.collection('requests').doc(rid).update({status:'rejected',reason,done:FV.serverTimestamp(),by:U.phone})},
+    async txnUsed(txn,except){const q=await db.collection('requests').where('txn','==',txn).get();return q.docs.filter(d=>d.id!==except&&d.data().status!=='rejected').length},
+    async history(){return(await db.collection('requests').orderBy('created','desc').limit(200).get()).docs.map(d=>Object.assign({id:d.id},d.data())).filter(r=>r.status!=='pending').slice(0,150)},
+    async couponGet(code){const s=await db.collection('coupons').doc(code).get();return s.exists?Object.assign({code},s.data()):null},
+    couponSet(code,v){return db.collection('coupons').doc(code).set(v)},
+    couponDel(code){return db.collection('coupons').doc(code).delete()},
+    async couponList(){return(await db.collection('coupons').get()).docs.map(d=>Object.assign({code:d.id},d.data()))},
     cancelSub(phone,cid,grade){return kidsCol(phone).doc(cid).update({['subs.'+grade]:FV.delete()})},
     resolve(rid,status){return db.collection('requests').doc(rid).update({status,done:FV.serverTimestamp()})},
     async makeReset(phone){const key=newCode();await db.collection('resets').doc(phone).set({key,created:FV.serverTimestamp()});return key},
@@ -1166,11 +1193,12 @@ async function viewAdmin(){
   const tab=ui.tab||'req';
   V.innerHTML=`<div class="top"><div class="hi"><small>شطّور</small><h2>لوحة الإدارة</h2></div>
     <button class="btn ghost sm" data-act="go" data-v="kids">أطفالي</button><button class="btn ghost sm" data-act="logout">خروج</button></div>
-  <div class="tabs four-t"><button data-act="tab" data-t="stats" class="${tab==='stats'?'on':''}">الإحصائيات</button><button data-act="tab" data-t="req" class="${tab==='req'?'on':''}">الطلبات</button><button data-act="tab" data-t="find" class="${tab==='find'?'on':''}">بحث بالرقم</button><button data-act="tab" data-t="set" class="${tab==='set'?'on':''}">الإعدادات</button></div>
+  <div class="tabs four-t admtabs">${[['stats','الإحصائيات'],['req','الطلبات'+(ui.pendN?` <i class="badge">${ar(ui.pendN)}</i>`:'')],['hist','السجل'],['find','بحث'],['set','الإعدادات']].map(([k,n])=>`<button data-act="tab" data-t="${k}" class="${tab===k?'on':''}">${n}</button>`).join('')}</div>
   <div id="adm"><p class="muted">جارِ التحميل…</p></div>`;
   const box=V.querySelector('#adm');
   if(tab==='stats'){
     try{box.innerHTML=await adminStatsHTML()}catch(e){box.innerHTML=`<p class="msg no">${errMsg(e)}</p>`}
+  }else if(window.SUBADM&&SUBADM[tab]){await SUBADM[tab](box);
   }else if(tab==='req'){
     try{ui.reqs=(await API.pending()).sort((a,b)=>tsDay(a.created)-tsDay(b.created))}catch(e){box.innerHTML=`<p class="msg no">${errMsg(e)}</p>`;return}
     box.innerHTML=msgHTML()+(ui.reqs.length?ui.reqs.map((r,i)=>`<section class="panel req">
@@ -1434,8 +1462,6 @@ function shamHTML(){
 function resizeImage(file,max){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{const k=Math.min(1,max/Math.max(im.width,im.height));const c=document.createElement('canvas');c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);x.drawImage(im,0,0,c.width,c.height);res(c.toDataURL('image/png'))};im.onerror=rej;im.src=r.result};r.onerror=rej;r.readAsDataURL(file)})}
 
 /* ---- إحصائيات الإدارة ---- */
-const amountOf=a=>{const n=parseInt(AR2EN(a||'').replace(/[^\d]/g,''),10);return isNaN(n)?0:n};
-const fmtNum=n=>ar(Number(n).toLocaleString('en-US')).replace(/,/g,'٬');
 const waLink=(phone,text)=>`https://wa.me/963${String(phone).replace(/^0/,'')}?text=${encodeURIComponent(text)}`;
 async function adminStatsHTML(){
   const st=await API.stats(),t=today();
@@ -1542,7 +1568,7 @@ document.addEventListener('click',async e=>{
   else if(a==='admP'){ui['p'+b.dataset.i]=b.dataset.p;viewAdmin()}
   else if(a==='admAct'){const i=+b.dataset.i,k=ui.found.children[i],g=ui['g'+i]||k.grade,p=ui['p'+i]||'monthly';busy(b);
     try{const s=await API.activate(ui.found.phone,k.id,g,p);
-      API.logActivation({phone:ui.found.phone,parentName:ui.found.name,childId:k.id,childName:k.name,grade:g,plan:p,amount:price(p),status:'approved',source:'admin'}).catch(()=>{});
+      API.logActivation({phone:ui.found.phone,parentName:ui.found.name,childId:k.id,childName:k.name,grade:g,plan:p,amount:(PLANS[p]&&PLANS[p].price)||0,currency:APP.set.currency||'ل.س',status:'approved',source:'admin'}).catch(()=>{});
       const pr=(await API.pending()).filter(r=>r.childId===k.id&&r.grade===g);for(const r of pr)await API.resolve(r.id,'merged');
       ui.msg={ok:true,t:`تفعّل اشتراك ${esc(k.name)} للصف ${GRADES[g-1]} حتى ${fmtDay(s.until)}`};await reloadFound()}
     catch(err){ui.msg={t:errMsg(err)}}viewAdmin()}
@@ -1575,5 +1601,6 @@ window.addEventListener('online',()=>{offBar();if(APP.child)syncSummary()});wind
 <script src="feat_letters.js"></script>
 <script src="feat_report.js"></script>
 <script src="feat_stories.js"></script>
+<script src="feat_subs.js"></script>
 </body>
 </html>
