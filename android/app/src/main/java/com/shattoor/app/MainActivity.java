@@ -11,6 +11,8 @@ import android.provider.MediaStore;
 import android.speech.tts.TextToSpeech;
 import android.util.Base64;
 import android.webkit.JavascriptInterface;
+import android.webkit.ValueCallback;
+import android.webkit.WebChromeClient;
 import java.io.OutputStream;
 import java.util.Locale;
 import android.content.ActivityNotFoundException;
@@ -41,6 +43,8 @@ public class MainActivity extends Activity {
     View splash;
     TextToSpeech tts;
     boolean ttsReady;
+    static final int FILE_REQ = 11;
+    ValueCallback<Uri[]> fileCb;
 
     @Override
     protected void onCreate(Bundle b) {
@@ -64,6 +68,26 @@ public class MainActivity extends Activity {
         s.setUserAgentString(s.getUserAgentString() + " ShattoorApp/2");
         web.addJavascriptInterface(new Bridge(), "ShattoorNative");
         tts = new TextToSpeech(this, st -> ttsReady = st == TextToSpeech.SUCCESS);
+
+        // رفع الصور (إيصال الدفع، QR شام كاش): يفتح المعرض أو الملفات
+        web.setWebChromeClient(new WebChromeClient() {
+            @Override
+            public boolean onShowFileChooser(WebView v, ValueCallback<Uri[]> cb, FileChooserParams p) {
+                if (fileCb != null) fileCb.onReceiveValue(null);
+                fileCb = cb;
+                Intent i = new Intent(Intent.ACTION_GET_CONTENT);
+                i.addCategory(Intent.CATEGORY_OPENABLE);
+                i.setType("image/*");
+                try {
+                    startActivityForResult(Intent.createChooser(i, "اختر صورة"), FILE_REQ);
+                } catch (ActivityNotFoundException e) {
+                    fileCb = null;
+                    Toast.makeText(MainActivity.this, "ما في تطبيق لاختيار الصور", Toast.LENGTH_SHORT).show();
+                    return false;
+                }
+                return true;
+            }
+        });
 
         web.setWebViewClient(new WebViewClient() {
             @Override
@@ -216,5 +240,19 @@ public class MainActivity extends Activity {
     @Override
     public void onBackPressed() {
         if (web.canGoBack()) web.goBack(); else super.onBackPressed();
+    }
+
+    @Override
+    protected void onActivityResult(int req, int res, Intent data) {
+        super.onActivityResult(req, res, data);
+        if (req == FILE_REQ && fileCb != null) {
+            Uri[] r = null;
+            if (res == RESULT_OK && data != null) {
+                if (data.getData() != null) r = new Uri[]{data.getData()};
+                else if (data.getClipData() != null && data.getClipData().getItemCount() > 0) r = new Uri[]{data.getClipData().getItemAt(0).getUri()};
+            }
+            fileCb.onReceiveValue(r);
+            fileCb = null;
+        }
     }
 }

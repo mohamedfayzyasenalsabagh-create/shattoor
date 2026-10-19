@@ -125,7 +125,7 @@ function viewSub2(){
     <div class="sb-proof">
       <label class="sb-drop" for="sbfile">${ui.sbRcpt?`<img src="${ui.sbRcpt}" alt="صورة الإيصال"><span>✓ الصورة جاهزة · اكبس لتغييرها</span>`:'📷 اكبس لترفع صورة الإيصال (لقطة شاشة التحويل)'}</label>
       <input id="sbfile" type="file" accept="image/*" hidden>
-      <div class="field"><label for="sbtxn">رقم العملية ${meth==='sham'?'(اختياري)':'(إذا ما في صورة)'}</label><input id="sbtxn" type="text" dir="ltr" inputmode="numeric" value="${esc(ui.sbTxn||'')}" placeholder="مثلاً: 123456789"></div>
+      <div class="field"><label for="sbtxn">رقم العملية (إذا ما رفعت صورة)</label><input id="sbtxn" type="text" dir="ltr" inputmode="numeric" value="${esc(ui.sbTxn||'')}" placeholder="مثلاً: 123456789"></div>
       <button class="btn teal big" data-act="sb_send">أرسل طلب التفعيل</button>${msgHTML()}
       <p class="muted small">بإرسالك الطلب بتوافق إنو الاشتراك لصف ${GRADES[g-1]} لـ ${esc(c.name)} فقط، وبيتفعّل بعد التأكد من وصول المبلغ.</p>
     </div>`}}
@@ -257,8 +257,7 @@ document.addEventListener('click',async e=>{const b=e.target.closest('[data-act]
   else if(a==='sb_cpx'){keepTxn();ui.sbCp=null;viewSub2()}
   else if(a==='sb_send'){keepTxn();const c=APP.child,P=activePlans(),p=P.find(x=>x.id===ui.sbPlan)||P[0],m=ui.sbMeth||'',txn=normCode(ui.sbTxn||'');
     if(!p)return;
-    if(m==='sham'&&!ui.sbRcpt){ui.msg={t:'لشام كاش لازم ترفع صورة الإيصال.'};return viewSub2()}
-    if(!ui.sbRcpt&&txn.length<4){ui.msg={t:'ارفع صورة الإيصال أو اكتب رقم العملية.'};return viewSub2()}
+    if(!ui.sbRcpt&&txn.length<4){ui.msg={t:txn?'رقم العملية قصير. اكتب رقم العملية كامل كما هو بإشعار التحويل (٤ أرقام على الأقل)، أو ارفع صورة الإيصال.':'ارفع صورة الإيصال أو اكتب رقم العملية.'};return viewSub2()}
     const k=calc(p);busy(b,'جارِ الإرسال…');
     try{await API.requestSub({phone:APP.user.phone,parentName:APP.user.name,childId:c.id,childName:c.name,grade:c.grade,plan:p.id,months:p.months,amount:k.total,currency:CUR(),method:m,txn:txn||'',receipt:ui.sbRcpt||'',coupon:ui.sbCp?ui.sbCp.code:'',family:!!k.fam});
       await refreshReqs();ui.sbRcpt=null;ui.sbTxn='';ui.sbCp=null;ui.msg={ok:true,t:'وصل طلبك ✓ رح نراجعه ونفعّل الاشتراك بأقرب وقت.'}}
