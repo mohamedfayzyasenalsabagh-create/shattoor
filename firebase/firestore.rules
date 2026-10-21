@@ -22,7 +22,8 @@ service cloud.firestore {
     match /logins/{phone} {
       allow get: if true;
       allow list: if false;
-      allow create: if signedIn() && request.auth.token.email == phone + '@shattoor.app' && request.resource.data.key == '';
+      allow create: if (signedIn() && request.auth.token.email == phone + '@shattoor.app' && request.resource.data.key == '')
+        || (isResetClaim(phone) && request.resource.data.key == resetKey(phone));
       allow update: if isResetClaim(phone) && request.resource.data.key == resetKey(phone);
       allow delete: if isAdmin();
     }
@@ -35,7 +36,8 @@ service cloud.firestore {
 
     match /parents/{phone} {
       allow read: if isOwner(phone) || isAdmin();
-      allow create: if signedIn()
+      allow create: if (isResetClaim(phone) && request.resource.data.phone == phone && request.resource.data.uid == request.auth.uid)
+        || signedIn()
         && request.auth.token.email == phone + '@shattoor.app'
         && request.resource.data.phone == phone
         && request.resource.data.uid == request.auth.uid

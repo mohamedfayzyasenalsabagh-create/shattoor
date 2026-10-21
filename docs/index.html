@@ -715,6 +715,7 @@ function FirebaseBackend(cfg){
   const P=p=>db.collection('parents').doc(p);
   const load=async fu=>{if(!fu)return U=null;const phone=fu.email.split('@')[0].split('.')[0];
     let s;try{s=await P(phone).get()}catch(e){let c=null;try{c=JSON.parse(localStorage.getItem('shattoor_u'))}catch(x){}if(c&&c.uid===fu.uid)return U=c;throw e}
+    if(!s.exists&&fu.email===phone+dom){try{const l=await db.collection('logins').doc(phone).get();const b=db.batch();b.set(P(phone),{phone,name:'',uid:fu.uid,created:FV.serverTimestamp()});if(!l.exists)b.set(db.collection('logins').doc(phone),{key:''});await b.commit();s=await P(phone).get()}catch(e){}}
     const d=s.exists?s.data():{};
     if(s.exists&&d.uid!==fu.uid){await auth.signOut();return U=null}
     U={uid:fu.uid,phone,name:d.name||'',created:tsDay(d.created)};try{localStorage.setItem('shattoor_u',JSON.stringify(U))}catch(x){}return U};
@@ -724,18 +725,26 @@ function FirebaseBackend(cfg){
     demo:false,
     init(){return new Promise(r=>{const off=auth.onAuthStateChanged(async fu=>{off();try{r(await load(fu))}catch(e){r(null)}})})},
     async signUp(phone,name,pass){
-      const c=await auth.createUserWithEmailAndPassword(emailOf(phone),pass);
-      const b=db.batch();b.set(P(phone),{phone,name,uid:c.user.uid,created:FV.serverTimestamp()});b.set(db.collection('logins').doc(phone),{key:''});await b.commit();
+      let c;
+      try{c=await auth.createUserWithEmailAndPassword(emailOf(phone),pass)}
+      catch(e){if(e.code!=='auth/email-already-in-use')throw e;
+        // حساب ناقص من قبل (انعمل الدخول وما انحفظت بياناته): إذا كلمة السر صحيحة منكمّله
+        const l=await db.collection('logins').doc(phone).get().catch(()=>null);if(l&&l.exists)throw e;
+        try{c=await auth.signInWithEmailAndPassword(emailOf(phone),pass)}catch(x){throw e}}
+      const ex=await P(phone).get().catch(()=>null);
+      if(!ex||!ex.exists){const b=db.batch();b.set(P(phone),{phone,name,uid:c.user.uid,created:FV.serverTimestamp()});b.set(db.collection('logins').doc(phone),{key:''});
+        try{await b.commit()}catch(e){try{await c.user.delete()}catch(x){}await auth.signOut().catch(()=>{});throw e}}
       return load(c.user)},
     async signIn(phone,pass){
       const l=await db.collection('logins').doc(phone).get({source:'server'}).catch(()=>db.collection('logins').doc(phone).get());
-      if(!l.exists)throw fail('auth/user-not-found');
-      const c=await auth.signInWithEmailAndPassword(emailOf(phone,l.data().key),pass);return load(c.user)},
+      const key=l.exists?l.data().key:'';
+      let c;try{c=await auth.signInWithEmailAndPassword(emailOf(phone,key),pass)}catch(e){if(!l.exists&&/user-not-found|invalid/.test(e.code||''))throw fail('auth/user-not-found');throw e}
+      return load(c.user)},
     async resetWithCode(phone,code,pass){
       let c;
       try{c=await auth.createUserWithEmailAndPassword(emailOf(phone,code),pass)}
       catch(e){if(e.code==='auth/email-already-in-use'){c=await auth.signInWithEmailAndPassword(emailOf(phone,code),pass).catch(()=>{throw fail('bad-code')})}else throw e}
-      try{const b=db.batch();b.update(P(phone),{uid:c.user.uid});b.set(db.collection('logins').doc(phone),{key:code});b.delete(db.collection('resets').doc(phone));await b.commit()}
+      try{const ex=await P(phone).get().catch(()=>null);const b=db.batch();if(ex&&ex.exists)b.update(P(phone),{uid:c.user.uid});else b.set(P(phone),{phone,name:'',uid:c.user.uid,created:FV.serverTimestamp()});b.set(db.collection('logins').doc(phone),{key:code});b.delete(db.collection('resets').doc(phone));await b.commit()}
       catch(e){try{await c.user.delete()}catch(x){}await auth.signOut().catch(()=>{});throw fail(e.code==='permission-denied'?'bad-code':e.code)}
       return load(c.user)},
     async signOut(){await auth.signOut();U=null},
@@ -1238,7 +1247,7 @@ async function viewAdmin(){
   }else{
     const f=ui.found;
     box.innerHTML=`<form class="panel" id="ff" novalidate><div class="field"><label for="fp">رقم موبايل وليّ الأمر</label><input id="fp" type="tel" dir="ltr" inputmode="tel" placeholder="09XX XXX XXX" value="${esc(ui.fp||'')}"></div><button class="btn teal" type="submit" id="ffb">بحث</button>${msgHTML()}</form>
-    ${f?`<section class="panel"><h3>${esc(f.name)}</h3><div class="row between"><span>رقم الموبايل</span><b dir="ltr">${esc(f.phone)}</b></div><div class="row between"><span>انضم</span><span>${fmtDay(f.created)}</span></div>
+    ${f?`<section class="panel"><h3>${esc(f.name)}</h3><div class="row between"><span>رقم الموبايل</span><b dir="ltr">${esc(f.phone)}</b></div>${f.missing?`<p class="muted">إذا صاحب الرقم سجّل وما ظهر حسابه هون، يعني التسجيل ما كمل عنده (غالباً انقطع النت لحظة التسجيل). اعطه رمز إعادة تعيين، وبس يدخل الرمز من «نسيت كلمة السر؟» بيكمل حسابه لحاله. وإذا ما سجّل أصلاً، خلّيه يعمل «حساب جديد».</p>`:`<div class="row between"><span>انضم</span><span>${fmtDay(f.created)}</span></div>`}
         ${f.reset?`<div class="codebox"><span>رمز إعادة تعيين كلمة السر</span><b class="code sel">${f.reset}</b><small class="muted">ابعته لوليّ الأمر على واتساب. بيدخله من «نسيت كلمة السر؟» بشاشة الدخول.</small><button class="btn ghost sm" data-act="copyCode">نسخ الرمز</button></div>`
           :`<button class="btn ghost" data-act="mkReset">إعادة تعيين كلمة السر</button>`}</section>
       ${f.children.length?f.children.map((k,i)=>{const g=ui['g'+i]||k.grade,p=ui['p'+i]||'monthly';return`<section class="panel">
@@ -1251,11 +1260,11 @@ async function viewAdmin(){
     V.querySelector('#ff').addEventListener('submit',async e=>{e.preventDefault();ui.fp=val('fp');const p=normPhone(ui.fp);ui.found=null;ui.msg=null;
       if(!p){ui.msg={t:'اكتب رقم موبايل صحيح يبدأ بـ ٠٩.'};return viewAdmin()}
       busy(V.querySelector('#ffb'),'جارِ البحث…');
-      try{ui.found=await API.findByPhone(p);if(!ui.found)ui.msg={t:'ما في حساب بهالرقم.'}}catch(err){ui.msg={t:errMsg(err)}}
+      try{ui.found=await API.findByPhone(p);if(!ui.found)ui.found={phone:p,name:'ما لقينا حساب كامل بهالرقم',missing:true,created:null,reset:null,children:[]}}catch(err){ui.msg={t:errMsg(err)}}
       Object.keys(ui).filter(k=>/^[gp]\d+$/.test(k)).forEach(k=>delete ui[k]);viewAdmin()});
   }
 }
-async function reloadFound(){if(ui.found)ui.found=await API.findByPhone(ui.found.phone)}
+async function reloadFound(){if(ui.found){const ph=ui.found.phone,r=await API.findByPhone(ph);ui.found=r||Object.assign(ui.found,{})}}
 
 /* ================== ميزات إضافية: الصوت، المتجر، المستويات، الشهادة، التقرير، السور ================== */
 const NATIVE=window.ShattoorNative||null;
@@ -1582,6 +1591,7 @@ window.addEventListener('online',()=>{offBar();if(APP.child)syncSummary()});wind
 (async()=>{
   try{if(IN_APP&&history.state)history.replaceState(null,'',location.pathname)}catch(e){}
   viewLoading();
+  if(CONFIG.firebase&&API.demo){V.innerHTML=`<div class="result">${MASCOT('sad','mascot big')}<h2>ما قدرنا نتصل بالسيرفر</h2><p class="muted">تأكد من الإنترنت وجرّب مرة تانية.</p><button class="btn teal wide" onclick="location.reload()">إعادة المحاولة</button></div>`;return}
   try{APP.user=await API.init()}catch(e){APP.user=null}
   await loadSettings();
   if(!APP.user)return go('auth',true);
