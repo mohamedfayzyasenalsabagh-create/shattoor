@@ -26,7 +26,7 @@ const css=document.createElement('style');css.textContent=`
 
 const weekId=()=>Math.floor((today()+5)/7);
 const monthId=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')};
-function bump(n){if(!S||!n)return;const w=weekId(),m=monthId();
+function bump(n){if(!S)return;n=+n||0;const w=weekId(),m=monthId();
   if(!S.wk||S.wk.w!==w)S.wk={w,p:0};if(!S.mo||S.mo.m!==m)S.mo={m,p:0};S.wk.p+=n;S.mo.p+=n}
 let pushT=null;
 function pushBoard(){if(!APP.child||!S||S.noBoard)return;clearTimeout(pushT);pushT=setTimeout(()=>{
