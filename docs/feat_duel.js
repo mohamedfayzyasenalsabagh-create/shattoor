@@ -227,7 +227,7 @@ function rQ(){
     <div class="du-top">${quitBtn()}<span class="du-tag p${i}"><span>${P.av}</span>${esc(P.n)}</span><span class="du-sp"></span><span class="du-rn">${ar(D.r+1)}/${ar(D.n)}</span></div>
     <div class="row" style="gap:10px"><div class="du-tbar" style="flex:1"><i id="du-bar"></i></div><span class="du-secs" id="du-secs">${ar(SECS)}</span></div>
     <section class="du-q p${i}"><div class="qmeta" style="--c:${sj.c}"><span class="sicon sm">${ICON(sj.k)}</span><span>${sj.n}</span></div>${qHead(it)}</section>
-    <div class="olist" id="du-opts">${it.opts.map((o,j)=>`<button class="opt2" data-act="du_ans" data-i="${j}"><span class="ob">${BADGE[j]||j+1}</span><span class="ot" dir="auto">${esc(f(o))}</span></button>`).join('')}</div>
+    <div class="olist" id="du-opts">${it.opts.map((o,j)=>`<button class="opt2" data-act="du_ans" data-i="${j}"><span class="ob">${BADGE[j]||j+1}</span>${OT(f(o))}</button>`).join('')}</div>
   </div>`;
   D.t0=Date.now();D.locked=false;
   TM=setInterval(()=>{

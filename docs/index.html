@@ -330,6 +330,7 @@ a.btn{text-decoration:none;white-space:nowrap}
 .opt2:active{transform:translateY(3px);box-shadow:0 1px 0 var(--line)}
 .ob{width:34px;height:34px;border-radius:11px;border:2px solid var(--line);display:grid;place-items:center;font-size:1rem;color:var(--muted);flex:none}
 .ot{flex:1;unicode-bidi:plaintext}
+.ot.r{unicode-bidi:isolate}
 .opt2.right{background:#DDF2E4;border-color:var(--leaf);box-shadow:0 4px 0 var(--leaf)}.opt2.right .ob{background:var(--leaf);border-color:var(--leaf);color:#fff}
 .opt2.wrong{background:#FBDDE2;border-color:var(--pom);box-shadow:0 4px 0 var(--pom)}.opt2.wrong .ob{background:var(--pom);border-color:var(--pom);color:#fff}
 .opt2[disabled]{pointer-events:none}
@@ -393,6 +394,8 @@ const VERSION = '0.6';
 /* ================== أدوات ================== */
 const AD='٠١٢٣٤٥٦٧٨٩';
 const ar=s=>String(s).replace(/\d/g,d=>AD[d]).replace(/([٠-٩])\.(?=[٠-٩])/g,'$1٫').replace(/%/g,'٪');
+/* خيار الجواب: العربي والأرقام والإشارات (< > =) دايماً من اليمين لليسار متل السؤال، والإنكليزي تلقائي */
+const OT=t=>/[A-Za-z]/.test(String(t))?`<span class="ot" dir="auto">${esc(t)}</span>`:`<span class="ot r" dir="rtl">${esc(t)}</span>`;
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function hash(s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)}return h>>>0}
 function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
@@ -1048,7 +1051,7 @@ function viewQuiz(){
   </section>
   ${it.kind==='spell'?`<div class="tiles-row" dir="${it.lang==='en'?'ltr':'rtl'}">${it.tiles.map((t,i)=>`<button class="tilebtn" data-act="tile" data-i="${i}" ${(Q.usedT||[]).includes(i)?'disabled':''}>${esc(t)}</button>`).join('')}</div>
     <button class="btn ghost" data-act="untile" ${(Q.built||[]).length?'':'disabled'}>⌫ امسح آخر حرف</button>`
-  :`<div class="olist">${it.opts.map((o,i)=>`<button class="opt2 ${it.preKind==='quran'?'qopt':''}" data-act="ans" data-i="${i}"><span class="ob">${BADGE[i]||i+1}</span><span class="ot" dir="auto">${esc(f(o))}</span></button>`).join('')}</div>`}
+  :`<div class="olist">${it.opts.map((o,i)=>`<button class="opt2 ${it.preKind==='quran'?'qopt':''}" data-act="ans" data-i="${i}"><span class="ob">${BADGE[i]||i+1}</span>${OT(f(o))}</button>`).join('')}</div>`}
   <div id="fb"></div>`;
   if(autoRead()&&!Q.read){Q.read=true;speakItem(it)}
 }
@@ -1082,7 +1085,7 @@ function grade(ok,answerText){
   try{if(navigator.vibrate)navigator.vibrate(ok?18:[30,40,30])}catch(e){}
   const f=it.m?ar:(x=>x),praise=['أحسنت!','ممتاز!','برافو عليك!','رائع يا شطّور!'];
   const last=Q.i===Q.list.length-1;
-  V.querySelector('#fb').innerHTML=`<div class="sheet ${ok?'good':'bad'}"><div class="shead">${MASCOT(ok?'wow':'sad','mascot sm')}<div><b>${ok?pick(praise):'ولا يهمك!'}</b><span>${ok?(POINTS()?'+'+ar(POINTS())+' نقاط':'جواب صحيح'):'الجواب الصحيح: '+esc(f(it.a))}</span>${help?`<small class="helpmsg">${help}</small>`:''}</div></div><button class="btn ${ok?'teal':'red'} wide big" data-act="next">${last?'شوف النتيجة':'متابعة'}</button></div>`;
+  V.querySelector('#fb').innerHTML=`<div class="sheet ${ok?'good':'bad'}"><div class="shead">${MASCOT(ok?'wow':'sad','mascot sm')}<div><b>${ok?pick(praise):'ولا يهمك!'}</b><span>${ok?(POINTS()?'+'+ar(POINTS())+' نقاط':'جواب صحيح'):'الجواب الصحيح: '+OT(f(it.a)).replace('class="ot r"','').replace('class="ot"','')}</span>${help?`<small class="helpmsg">${help}</small>`:''}</div></div><button class="btn ${ok?'teal':'red'} wide big" data-act="next">${last?'شوف النتيجة':'متابعة'}</button></div>`;
   V.querySelector('#fb .btn').focus({preventScroll:true});
 }
 
