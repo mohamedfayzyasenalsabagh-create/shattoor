@@ -700,7 +700,7 @@ function DemoBackend(){
     async memberPut(code,cid,v){const c=D.classes[code];if(!c)throw fail('not-found');c.members[cid]=Object.assign({},v,{uid:D.session});save();return wait()},
     async memberDel(code,cid){const c=D.classes[code];if(c)delete c.members[cid];save();return wait()},
     async members(code){const c=D.classes[code];return wait(c?Object.entries(c.members).map(([k,v])=>Object.assign({id:k},v)):[])},
-    async stats(){return wait({parents:Object.entries(D.parents).map(([phone,u])=>({phone,name:u.name})),kids:Object.entries(D.children).flatMap(([phone,o])=>Object.entries(o).map(([id,c])=>Object.assign({phone,id},c))),approved:Object.values(D.requests).filter(r=>r.status==='approved')})}
+    async stats(){return wait({parents:Object.entries(D.parents).map(([phone,u])=>({phone,name:u.name,created:u.created})),kids:Object.entries(D.children).flatMap(([phone,o])=>Object.entries(o).map(([id,c])=>Object.assign({phone,id},c))),approved:Object.values(D.requests).filter(r=>r.status==='approved')})}
   };
 }
 
@@ -784,7 +784,7 @@ function FirebaseBackend(cfg){
     memberDel(code,cid){return db.collection('classes').doc(code).collection('members').doc(cid).delete()},
     async members(code){return(await db.collection('classes').doc(code).collection('members').get()).docs.map(d=>Object.assign({id:d.id},d.data()))},
     async stats(){const[ps,cs,rq]=await Promise.all([db.collection('parents').get(),db.collectionGroup('children').get(),db.collection('requests').where('status','==','approved').get()]);
-      return{parents:ps.docs.map(d=>({phone:d.id,name:d.data().name})),kids:cs.docs.map(d=>Object.assign({phone:d.ref.parent.parent.id,id:d.id},d.data())),approved:rq.docs.map(d=>d.data())}}
+      return{parents:ps.docs.map(d=>({phone:d.id,name:d.data().name,created:tsDay(d.data().created)})),kids:cs.docs.map(d=>Object.assign({phone:d.ref.parent.parent.id,id:d.id},d.data())),approved:rq.docs.map(d=>d.data())}}
   };
 }
 
@@ -1202,7 +1202,7 @@ async function viewAdmin(){
   const tab=ui.tab||'req';
   V.innerHTML=`<div class="top"><div class="hi"><small>شطّور</small><h2>لوحة الإدارة</h2></div>
     <button class="btn ghost sm" data-act="go" data-v="kids">أطفالي</button><button class="btn ghost sm" data-act="logout">خروج</button></div>
-  <div class="tabs four-t admtabs">${[['stats','الإحصائيات'],['req','الطلبات'+(ui.pendN?` <i class="badge">${ar(ui.pendN)}</i>`:'')],['hist','السجل'],['find','بحث'],['set','الإعدادات']].map(([k,n])=>`<button data-act="tab" data-t="${k}" class="${tab===k?'on':''}">${n}</button>`).join('')}</div>
+  <div class="tabs four-t admtabs">${[['stats','الإحصائيات'],['accts','الحسابات'],['req','الطلبات'+(ui.pendN?` <i class="badge">${ar(ui.pendN)}</i>`:'')],['hist','السجل'],['find','بحث'],['set','الإعدادات']].map(([k,n])=>`<button data-act="tab" data-t="${k}" class="${tab===k?'on':''}">${n}</button>`).join('')}</div>
   <div id="adm"><p class="muted">جارِ التحميل…</p></div>`;
   const box=V.querySelector('#adm');
   if(tab==='stats'){

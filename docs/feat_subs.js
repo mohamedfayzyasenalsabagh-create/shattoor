@@ -50,7 +50,14 @@ const css=document.createElement('style');css.textContent=`
 .sb-note>div{background:var(--card);width:100%;max-width:520px;border-radius:26px 26px 0 0;padding:20px 18px calc(18px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;animation:up .3s ease-out}
 .sb-plan-ed{display:grid;grid-template-columns:1.3fr .7fr 1fr auto;gap:6px;align-items:center;margin-bottom:6px}
 .sb-plan-ed input{min-width:0;padding:8px;border-radius:10px;border:1.5px solid var(--line);font:inherit}
-.admtabs{grid-template-columns:repeat(5,1fr)!important}.admtabs button{font-size:.8rem;padding-inline:2px}
+.admtabs{grid-template-columns:repeat(3,1fr)!important;row-gap:4px}.admtabs button{font-size:.85rem;padding-inline:2px}
+.ac-row{display:flex;align-items:center;gap:10px;background:var(--card);border:1.5px solid var(--line);border-radius:16px;padding:10px 12px;text-align:start;width:100%}
+.ac-row .av{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;font-weight:800;color:#fff;flex:none}
+.ac-row .t{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}.ac-row .t b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ac-row small{color:var(--muted);font-size:.78rem}
+.ac-st{border-radius:999px;padding:3px 10px;font-size:.75rem;font-weight:800;white-space:nowrap}
+.ac-st.sub{background:#DDF2E4;color:#1F7A42}.ac-st.trial{background:#E3EEF9;color:#2E7DB8}.ac-st.exp{background:#FCE0E5;color:#8A1C2E}.ac-st.none{background:#EEF2F4;color:#55697A}
+.ac-new{background:var(--sun);color:#4A3300;border-radius:999px;padding:1px 8px;font-size:.7rem;font-weight:800;margin-inline-start:6px}
 .admtabs .badge{display:inline-grid;place-items:center;min-width:18px;height:18px;border-radius:9px;background:var(--pom);color:#fff;font-style:normal;font-size:.7rem;padding:0 4px}
 .sb-reasons{display:flex;flex-wrap:wrap;gap:6px}.sb-reasons button{border:1.5px solid var(--line);background:#fff;border-radius:999px;padding:5px 10px;font-size:.8rem;font-weight:700}
 `;document.head.appendChild(css);
@@ -239,7 +246,34 @@ async function admSet(box){
     busy(V.querySelector('#sfb'),'جارِ الحفظ…');
     try{await API.saveSettings(ns);APP.set=mergeSettings(ns);ui.plEd=null;try{localStorage.setItem('shattoor_set',JSON.stringify(APP.set))}catch(x){}ui.msg={ok:true,t:'تم الحفظ ✓ الأهل بيشوفوا التغييرات بأول فتح للتطبيق.'}}catch(err){ui.msg={t:errMsg(err)}}viewAdmin()});
 }
-window.SUBADM={req:admReq,hist:admHist,set:admSet};
+
+async function admAccts(box){
+  let st;try{st=await API.stats()}catch(e){box.innerHTML=`<p class="msg no">${errMsg(e)}</p>`;return}
+  const t=today(),td=APP.set.trialDays||0,adm=normPhone(CONFIG.adminPhone);
+  const byP={};st.kids.forEach(k=>{(byP[k.phone]=byP[k.phone]||[]).push(k)});
+  const L=st.parents.filter(p=>p.phone!==adm).map(p=>{const kids=byP[p.phone]||[];
+    const act=[],had=[];kids.forEach(k=>Object.entries(k.subs||{}).forEach(([g,s])=>{(s.until>=t?act:had).push({k,g:+g,s})}));
+    const cr=p.created!=null?p.created:null,trial=cr!=null&&cr+td>t;
+    const stt=act.length?'sub':trial?'trial':had.length?'exp':'none';
+    const last=Math.max(-1,...kids.map(k=>k.lastActive!=null?k.lastActive:-1));
+    return Object.assign({},p,{kids,act,had,stt,cr,last})}).sort((a,b)=>(b.cr||0)-(a.cr||0));
+  const cnt=k=>L.filter(x=>k==='all'||x.stt===k).length;
+  const f=ui.acF||'all',q=(ui.acQ||'').trim();
+  const V2=L.filter(x=>(f==='all'||x.stt===f)&&(!q||(x.name||'').includes(q)||x.phone.includes(normCode(q)||q)||x.kids.some(k=>(k.name||'').includes(q))));
+  const NM={sub:'مشترك',trial:'تجربة',exp:'منتهي',none:'غير مشترك'},CL={sub:'#2E9A57',trial:'#2E7DB8',exp:'#DD3F57',none:'#8FA3AE'};
+  const newN=L.filter(x=>x.cr!=null&&t-x.cr<=7).length;
+  box.innerHTML=`<div class="tiles" style="grid-template-columns:repeat(2,1fr)"><div class="tile"><b>${fmtNum(L.length)}</b><span>حساب أهل</span></div><div class="tile ok"><b>${fmtNum(cnt('sub'))}</b><span>مشترك</span></div><div class="tile"><b>${fmtNum(cnt('trial'))}</b><span>بالتجربة</span></div><div class="tile"><b>${fmtNum(newN)}</b><span>جديد آخر ٧ أيام</span></div></div>
+  <div class="tabs" style="flex-wrap:wrap">${[['all','الكل'],['sub','مشترك'],['trial','تجربة'],['none','غير مشترك'],['exp','منتهي']].map(([k,n])=>`<button data-act="sb_acf" data-f="${k}" class="${f===k?'on':''}">${n} (${ar(cnt(k))})</button>`).join('')}</div>
+  <div class="row" style="margin:8px 0"><input id="acq" type="text" placeholder="بحث بالاسم أو الرقم أو اسم الطفل" value="${esc(q)}" style="flex:1"><button class="btn ghost sm" data-act="sb_acq">بحث</button></div>
+  <div style="display:flex;flex-direction:column;gap:8px">${V2.map(x=>`<button class="ac-row" data-act="sb_aco" data-p="${x.phone}">
+    <span class="av" style="background:${CL[x.stt]}">${esc((x.name||'؟').trim()[0]||'؟')}</span>
+    <span class="t"><b>${esc(x.name||'بدون اسم')}${x.cr!=null&&t-x.cr<=7?'<span class="ac-new">جديد</span>':''}</b>
+      <small dir="ltr" style="text-align:end">${esc(x.phone)}</small>
+      <small>${x.kids.length?x.kids.map(k=>esc(k.name)+' ('+GRADES[(k.grade||1)-1]+')').join('، '):'ما ضاف أطفال'}${x.cr!=null?' · انضم '+fmtDay(x.cr,{day:'numeric',month:'short'}):''}${x.last>=0?' · آخر نشاط '+(t-x.last<=0?'اليوم':'من '+ar(t-x.last)+' يوم'):''}</small>
+      ${x.act.length?`<small style="color:#1F7A42;font-weight:700">${x.act.map(a=>esc(a.k.name)+': '+esc(planName(a.s.plan))+' حتى '+fmtDay(a.s.until,{day:'numeric',month:'short'})).join(' · ')}</small>`:''}</span>
+    <span class="ac-st ${x.stt}">${NM[x.stt]}</span></button>`).join('')||'<p class="muted">ما في حسابات.</p>'}</div>`;
+}
+window.SUBADM={req:admReq,hist:admHist,set:admSet,accts:admAccts};
 function setBadge(n){const b=V.querySelector('.admtabs [data-t=req]');if(b)b.innerHTML='الطلبات'+(n?` <i class="badge">${ar(n)}</i>`:'')}
 const _va=viewAdmin;viewAdmin=async function(){await _va();if((ui.tab||'req')!=='req')API.pending().then(L=>setBadge(L.length)).catch(()=>{})};
 VIEWS.admin=viewAdmin;
@@ -277,6 +311,9 @@ document.addEventListener('click',async e=>{const b=e.target.closest('[data-act]
   else if(a==='sb_no2'){const r=ui.reqs[+b.dataset.i],why=val('rjr');if(!why){ui.rjr='';ui.msg={t:'اكتب سبب الرفض ليعرفه الأهل.'};return viewAdmin()}busy(b);
     try{await API.rejectReq(r.id,why);ui.msg={ok:true,t:`انرفض الطلب · <a href="${waLink(r.phone,`مرحباً ${r.parentName||''}\nما قدرنا نفعّل اشتراك ${r.childName} بتطبيق شطّور: ${why}.\nفيكم تبعتوا طلب جديد من صفحة الاشتراك.`)}" target="_blank" rel="noopener">بلّغ الأهل بواتساب</a>`}}catch(err){ui.msg={t:errMsg(err)}}ui.rejI=null;viewAdmin()}
   else if(a==='sb_hf'){ui.hf=b.dataset.f;viewAdmin()}
+  else if(a==='sb_acf'){ui.acF=b.dataset.f;viewAdmin()}
+  else if(a==='sb_acq'){ui.acQ=val('acq');viewAdmin()}
+  else if(a==='sb_aco'){const ph=b.dataset.p;ui.tab='find';ui.fp=ph;ui.msg=null;try{ui.found=await API.findByPhone(ph)}catch(err){ui.msg={t:errMsg(err)}}viewAdmin()}
   else if(a==='sb_hq'){ui.hq=val('hq');viewAdmin()}
   else if(a==='sb_cpadd'){const code=normCodeTxt(val('ncc')),pct=parseInt(normCode(val('ncp')),10),d=parseInt(normCode(val('ncd')),10);
     if(!code||!(pct>0&&pct<=90)){ui.msg={t:'اكتب كود ونسبة بين ١ و٩٠.'};return viewAdmin()}
