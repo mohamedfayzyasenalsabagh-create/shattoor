@@ -1,0 +1,12 @@
+https://mohamedfayzyasenalsabagh-create.github.io/shattoor/shattoor.apk -> 200 application/vnd.android.package-archive 170261
+f: Android package (APK), with gradle app-metadata.properties, with APK Signing Block
+   178077                     16 files
+d570663bd9001fa656e9eb33f5c0d1cf  f
+https://mohamedfayzyasenalsabagh-create.github.io/shattoor/dl.html -> 200 text/html; charset=utf-8 1757
+f: HTML document, Unicode text, UTF-8 text
+Archive:  f
+d8a1abbf4fbcdbfef23f1bd1f0cc9738  f
+https://github.com/mohamedfayzyasenalsabagh-create/shattoor/releases/latest/download/shattoor.apk -> 200 application/vnd.android.package-archive 170261
+f: Android package (APK), with gradle app-metadata.properties, with APK Signing Block
+   178077                     16 files
+d570663bd9001fa656e9eb33f5c0d1cf  f
