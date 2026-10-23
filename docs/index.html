@@ -688,6 +688,7 @@ function DemoBackend(){
     async couponDel(code){D.coupons=D.coupons||{};delete D.coupons[code];save();return wait()},
     async couponList(){D.coupons=D.coupons||{};return wait(Object.entries(D.coupons).map(([k,v])=>Object.assign({code:k},v)))},
     async cancelSub(phone,cid,grade){delete D.children[phone][cid].subs[grade];save();return wait()},
+    async deleteParent(phone){delete D.parents[phone];delete D.children[phone];delete D.resets[phone];save();return wait()},
     async resolve(rid,status){D.requests[rid].status=status;D.requests[rid].done=today();save();return wait()},
     async makeReset(phone){const key=newCode();D.resets[phone]={key,created:today()};save();return wait(key)},
     async logActivation(r){const k=id();D.requests[k]=Object.assign({created:today(),done:today()},r);save();return wait(k)},
@@ -771,6 +772,7 @@ function FirebaseBackend(cfg){
     couponDel(code){return db.collection('coupons').doc(code).delete()},
     async couponList(){return(await db.collection('coupons').get()).docs.map(d=>Object.assign({code:d.id},d.data()))},
     cancelSub(phone,cid,grade){return kidsCol(phone).doc(cid).update({['subs.'+grade]:FV.delete()})},
+    async deleteParent(phone){const ks=await kidsCol(phone).get();const b=db.batch();ks.docs.forEach(d=>b.delete(d.ref));b.delete(P(phone));b.delete(db.collection('logins').doc(phone));b.delete(db.collection('resets').doc(phone));await b.commit()},
     resolve(rid,status){return db.collection('requests').doc(rid).update({status,done:FV.serverTimestamp()})},
     async makeReset(phone){const key=newCode();await db.collection('resets').doc(phone).set({key,created:FV.serverTimestamp()});return key},
     async logActivation(r){await db.collection('requests').add(Object.assign({uid:U.uid,created:FV.serverTimestamp(),done:FV.serverTimestamp()},r))},
@@ -1249,7 +1251,8 @@ async function viewAdmin(){
     box.innerHTML=`<form class="panel" id="ff" novalidate><div class="field"><label for="fp">رقم موبايل وليّ الأمر</label><input id="fp" type="tel" dir="ltr" inputmode="tel" placeholder="09XX XXX XXX" value="${esc(ui.fp||'')}"></div><button class="btn teal" type="submit" id="ffb">بحث</button>${msgHTML()}</form>
     ${f?`<section class="panel"><h3>${esc(f.name)}</h3><div class="row between"><span>رقم الموبايل</span><b dir="ltr">${esc(f.phone)}</b></div>${f.missing?`<p class="muted">إذا صاحب الرقم سجّل وما ظهر حسابه هون، يعني التسجيل ما كمل عنده (غالباً انقطع النت لحظة التسجيل). اعطه رمز إعادة تعيين، وبس يدخل الرمز من «نسيت كلمة السر؟» بيكمل حسابه لحاله. وإذا ما سجّل أصلاً، خلّيه يعمل «حساب جديد».</p>`:`<div class="row between"><span>انضم</span><span>${fmtDay(f.created)}</span></div>`}
         ${f.reset?`<div class="codebox"><span>رمز إعادة تعيين كلمة السر</span><b class="code sel">${f.reset}</b><small class="muted">ابعته لوليّ الأمر على واتساب. بيدخله من «نسيت كلمة السر؟» بشاشة الدخول.</small><button class="btn ghost sm" data-act="copyCode">نسخ الرمز</button></div>`
-          :`<button class="btn ghost" data-act="mkReset">إعادة تعيين كلمة السر</button>`}</section>
+          :`<button class="btn ghost" data-act="mkReset">إعادة تعيين كلمة السر</button>`}
+        ${!f.missing&&!isAdminPhone(f.phone)?(ui.delAsk?`<div class="confirm"><b>رح ينحذف حساب ${esc(f.name)} وكل أطفاله واشتراكاتهم نهائياً. متأكد؟</b><div class="row"><button class="btn red sm" data-act="delParent">نعم، احذف</button><button class="btn ghost sm" data-act="delParentNo">إلغاء</button></div></div>`:`<button class="btn ghost sm" style="color:var(--pom)" data-act="delParentAsk">🗑 حذف الحساب</button>`):''}</section>
       ${f.children.length?f.children.map((k,i)=>{const g=ui['g'+i]||k.grade,p=ui['p'+i]||'monthly';return`<section class="panel">
         <div class="row between"><h3>${esc(k.name)}</h3><span class="muted">حالياً بالصف ${GRADES[k.grade-1]}</span></div>
         ${Object.entries(k.subs||{}).sort((a,b)=>a[0]-b[0]).map(([sg,s])=>`<div class="row between"><span>الصف ${GRADES[sg-1]} · ${planName(s.plan)} · <b class="${s.until>=today()?'okc':'offc'}">${s.until>=today()?'حتى '+fmtDay(s.until):'منتهي'}</b></span><button class="btn ghost sm" data-act="cancelSub" data-i="${i}" data-g="${sg}">إلغاء</button></div>`).join('')||'<p class="muted">لا يوجد اشتراك.</p>'}
@@ -1587,6 +1590,9 @@ document.addEventListener('click',async e=>{
       const pr=(await API.pending()).filter(r=>r.childId===k.id&&r.grade===g);for(const r of pr)await API.resolve(r.id,'merged');
       ui.msg={ok:true,t:`تفعّل اشتراك ${esc(k.name)} للصف ${GRADES[g-1]} حتى ${fmtDay(s.until)}`};await reloadFound()}
     catch(err){ui.msg={t:errMsg(err)}}viewAdmin()}
+  else if(a==='delParentAsk'){ui.delAsk=true;viewAdmin()}
+  else if(a==='delParentNo'){ui.delAsk=false;viewAdmin()}
+  else if(a==='delParent'){busy(b);try{await API.deleteParent(ui.found.phone);ui.msg={ok:true,t:'انحذف الحساب.'};ui.found=null;ui.fp=''}catch(err){ui.msg={t:errMsg(err)}}ui.delAsk=false;viewAdmin()}
   else if(a==='cancelSub'){const k=ui.found.children[+b.dataset.i];busy(b);try{await API.cancelSub(ui.found.phone,k.id,b.dataset.g);ui.msg={ok:true,t:'تم إلغاء الاشتراك.'};await reloadFound()}catch(err){ui.msg={t:errMsg(err)}}viewAdmin()}
 });
 
