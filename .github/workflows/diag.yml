@@ -15,7 +15,7 @@ jobs:
         with: { node-version: "20" }
       - run: npm i --no-save playwright@1.48.2 >/dev/null && npx playwright install --with-deps chromium >/dev/null
       - run: sleep 20
-      - run: PH=0999000123 node build-tools/diag/signup.js || true
+      - run: PH=0999000124 timeout 300 node build-tools/diag/signup.js || true
       - if: always()
         run: |
           mkdir -p /tmp/o && touch diag.txt && cp diag.txt /tmp/o/ && (cp diag.png /tmp/o/ || true)
