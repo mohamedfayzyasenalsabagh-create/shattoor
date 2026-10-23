@@ -1,0 +1,27 @@
+17:50:58 [console.warning] [2026-10-23T17:50:58.257Z]  @firebase/firestore: Firestore (10.14.1): enableIndexedDbPersistence() will be deprecated in the future, you can use `FirestoreSettings.cache` instead.
+17:50:59 [reqfail] https://firestore.googleapis.com/google.firestore.v1.Firestore/Listen/channel?gsessionid=7xbmsVKLvY_ net::ERR_ABORTED
+17:51:03 VIEW0: شطّور |  | كل يوم تحدٍّ جديد وحديث شريف |  | تسجيل الدخول | حساب جديد | رقم الموبايل | كلمة السر | دخول | نسيت كلمة السر؟
+17:51:03 DEMO? false
+17:51:04 [reqfail] https://firestore.googleapis.com/google.firestore.v1.Firestore/Listen/channel?gsessionid=7xbmsVKLvY_ net::ERR_ABORTED
+17:51:06 [reqfail] https://firestore.googleapis.com/google.firestore.v1.Firestore/Write/channel?gsessionid=Yravz2BRZHcP net::ERR_ABORTED
+17:51:06 [reqfail] https://firestore.googleapis.com/google.firestore.v1.Firestore/Listen/channel?gsessionid=sGcmR9JNr_n net::ERR_ABORTED
+17:51:06 [reqfail] https://firestore.googleapis.com/google.firestore.v1.Firestore/Listen/channel?gsessionid=sGcmR9JNr_n net::ERR_ABORTED
+17:51:07 [reqfail] https://firestore.googleapis.com/google.firestore.v1.Firestore/Listen/channel?gsessionid=sGcmR9JNr_n net::ERR_ABORTED
+17:51:07 [reqfail] https://firestore.googleapis.com/google.firestore.v1.Firestore/Listen/channel?gsessionid=sGcmR9JNr_n net::ERR_ABORTED
+17:51:07 [reqfail] https://firestore.googleapis.com/google.firestore.v1.Firestore/Listen/channel?gsessionid=sGcmR9JNr_n net::ERR_ABORTED
+17:51:08 t+5s VIEW: → | إضافة طفل | اسم الطفل | الصف | ١ | الأول | ٢ | الثاني | ٣ | الثالث | ٤ | الرابع | ٥ | الخامس | ٦ | السادس | إضافة
+17:51:13 t+10s VIEW: → | إضافة طفل | اسم الطفل | الصف | ١ | الأول | ٢ | الثاني | ٣ | الثالث | ٤ | الرابع | ٥ | الخامس | ٦ | السادس | إضافة
+17:51:18 t+15s VIEW: → | إضافة طفل | اسم الطفل | الصف | ١ | الأول | ٢ | الثاني | ٣ | الثالث | ٤ | الرابع | ٥ | الخامس | ٦ | السادس | إضافة
+17:51:23 t+20s VIEW: → | إضافة طفل | اسم الطفل | الصف | ١ | الأول | ٢ | الثاني | ٣ | الثالث | ٤ | الرابع | ٥ | الخامس | ٦ | السادس | إضافة
+17:51:28 t+25s VIEW: → | إضافة طفل | اسم الطفل | الصف | ١ | الأول | ٢ | الثاني | ٣ | الثالث | ٤ | الرابع | ٥ | الخامس | ٦ | السادس | إضافة
+17:51:33 t+30s VIEW: → | إضافة طفل | اسم الطفل | الصف | ١ | الأول | ٢ | الثاني | ٣ | الثالث | ٤ | الرابع | ٥ | الخامس | ٦ | السادس | إضافة
+17:51:33 AUTH USER: 0999000124@shattoor.app
+17:51:33 APP.user: {"uid":"jNeZVLTHLiQ5d9avetvpmt9p2vJ2","phone":"0999000124","name":"🧪 حساب اختبار — احذفه","created":295}
+17:51:33 [reqfail] https://firestore.googleapis.com/google.firestore.v1.Firestore/Listen/channel?gsessionid=sGcmR9JNr_n net::ERR_ABORTED
+17:51:33 PARENT DOC: EXISTS {"created":{"seconds":1792777866,"nanoseconds":125000000},"name":"🧪 حساب اختبار — احذفه","phone":"0999000124","uid":"jNeZVLTHLiQ5d9avetvpmt9p2vJ2"}
+17:51:33 [reqfail] https://firestore.googleapis.com/google.firestore.v1.Firestore/Listen/channel?gsessionid=sGcmR9JNr_n net::ERR_ABORTED
+17:51:34 LOGIN DOC: OK
+17:51:34 [reqfail] https://firestore.googleapis.com/google.firestore.v1.Firestore/Listen/channel?gsessionid=sGcmR9JNr_n net::ERR_ABORTED
+17:51:34 [reqfail] https://firestore.googleapis.com/google.firestore.v1.Firestore/Write/channel?gsessionid=Yravz2BRZHcP net::ERR_ABORTED
+17:51:34 DIRECT WRITE TEST: ERR permission-denied Missing or insufficient permissions.
+17:51:34 DONE
