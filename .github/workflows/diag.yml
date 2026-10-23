@@ -14,11 +14,11 @@ jobs:
       - uses: actions/setup-node@v4
         with: { node-version: "20" }
       - run: npm i --no-save playwright@1.48.2 >/dev/null && npx playwright install --with-deps chromium >/dev/null
-      - run: sleep 60   # ننتظر نشر الموقع
+      - run: sleep 20
       - run: PH=0999000123 node build-tools/diag/signup.js || true
       - if: always()
         run: |
-          mkdir -p /tmp/o && cp diag.txt diag.png /tmp/o/ 2>/dev/null || true
+          mkdir -p /tmp/o && touch diag.txt && cp diag.txt /tmp/o/ && (cp diag.png /tmp/o/ || true)
           git config user.name "shattoor-ci"; git config user.email "ci@shattoor.app"
           git checkout --orphan diag-tmp && git rm -rqf . && git clean -fdq
           cp /tmp/o/* . && git add -A && git commit -qm diag && git push -f origin diag-tmp:diag

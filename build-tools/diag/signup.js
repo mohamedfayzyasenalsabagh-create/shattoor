@@ -1,11 +1,11 @@
 // فحص حي: تسجيل حساب تجريبي على الموقع الحقيقي ومعرفة إذا انحفظ
 const {chromium}=require('playwright');
-(async()=>{const b=await chromium.launch();const p=await b.newPage({viewport:{width:390,height:844}});const log=[];
+(async()=>{const fs=require('fs');const log=[];const W=()=>fs.writeFileSync('diag.txt',log.join('\n'));try{const b=await chromium.launch();const p=await b.newPage({viewport:{width:390,height:844}});
 p.on('console',m=>log.push('['+m.type()+'] '+m.text()));p.on('pageerror',e=>log.push('[pageerror] '+e.message));
 p.on('requestfailed',r=>log.push('[reqfail] '+r.url().slice(0,120)+' '+(r.failure()||{}).errorText));
 const PH=process.env.PH,PW='Test#2026x';
 await p.goto('https://mohamedfayzyasenalsabagh-create.github.io/shattoor/?t='+Date.now(),{waitUntil:'networkidle'});await p.waitForTimeout(3000);
-log.push('DEMO? '+await p.evaluate(()=>!!(window.API&&API.demo)).catch(e=>'?'));
+log.push('VIEW0: '+(await p.evaluate(()=>document.body.innerText)).slice(0,200).replace(/\n/g,' | '));W();log.push('DEMO? '+await p.evaluate(()=>!!(window.API&&API.demo)).catch(e=>'?'));
 await p.click('[data-act=mode][data-m=signup]');await p.fill('#an','🧪 حساب اختبار — احذفه');await p.fill('#ap',PH);await p.fill('#aw',PW);
 await p.click('#authb');await p.waitForTimeout(9000);
 log.push('AFTER SIGNUP VIEW: '+(await p.evaluate(()=>document.getElementById('view').innerText)).slice(0,300).replace(/\n/g,' | '));
@@ -18,4 +18,4 @@ log.push('ADD CHILD: '+await p.evaluate(async()=>{try{const id=await API.addChil
 // خروج ودخول من جديد
 log.push('RELOGIN: '+await p.evaluate(async(pw)=>{try{await API.signOut();const u=await API.signIn(APP.user?APP.user.phone:'',pw);return 'OK '+JSON.stringify(u)}catch(e){return 'ERR '+e.code+' '+e.message}},PW));
 await p.screenshot({path:'diag.png'});
-require('fs').writeFileSync('diag.txt',log.join('\n'));console.log(log.join('\n'));await b.close()})();
+W();console.log(log.join('\n'));await b.close()}catch(e){log.push('FATAL '+e.stack);W()}})();
