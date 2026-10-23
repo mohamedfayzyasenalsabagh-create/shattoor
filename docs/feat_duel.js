@@ -86,30 +86,49 @@ st.textContent=`
 .du-end{text-align:center;align-items:center}
 .du-end h1{font-family:var(--display);font-weight:400;font-size:2rem;margin:0}
 .du-crown{font-size:3rem;line-height:1}
-.du-end .du-board{width:100%;align-self:stretch}
+.du-end .du-board,.du-end .du-rank{width:100%;align-self:stretch}
 .du-prize{background:#FFF4D6;border:2px solid #E2AC1F;border-radius:999px;padding:6px 16px;font-weight:800;display:inline-flex;align-items:center;gap:6px}
 .du-prize svg{width:22px;height:22px}
+.du-pl.p2,.du-pk.p2{background:#F1EAFE;border-color:#7A4FD1}.du-pl.p3,.du-pk.p3{background:#FCE4EA;border-color:#DD3F57}
+.du-hand.p2{background:radial-gradient(circle at 50% 30%,#9B78E6,#7A4FD1 70%)}.du-hand.p3{background:radial-gradient(circle at 50% 30%,#F07A8A,#DD3F57 70%)}
+.du-tag.p2{background:#7A4FD1}.du-tag.p3{background:#DD3F57}.du-q.p2{border-color:#7A4FD1}.du-q.p3{border-color:#DD3F57}
+.du-plist{display:flex;flex-direction:column;gap:8px}
+.du-prow{display:flex;align-items:center;gap:10px;border-radius:18px;padding:8px 10px;border:2px solid}
+.du-prow .du-av{font-size:1.9rem;width:44px;text-align:center}
+.du-prow .du-in{flex:1;border-color:transparent;background:#ffffffaa}
+.du-prow .du-rm{width:36px;height:36px;border-radius:50%;border:0;background:#0001;font-size:1.1rem;font-weight:800}
+.du-prow.p0{background:#E1F4F2;border-color:var(--teal)}.du-prow.p1{background:#FFF4D6;border-color:#E2AC1F}.du-prow.p2{background:#F1EAFE;border-color:#7A4FD1}.du-prow.p3{background:#FCE4EA;border-color:#DD3F57}
+.du-add{border:2px dashed var(--line);background:transparent;border-radius:18px;padding:10px;font-weight:800;color:var(--muted)}
+.du-rank{display:flex;flex-direction:column;gap:6px;background:var(--ink);color:#fff;border-radius:20px;padding:10px 12px}
+.du-rank>div{display:flex;align-items:center;gap:10px}
+.du-rank .m{width:30px;text-align:center;font-size:1.3rem}.du-rank .n{flex:1;font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.du-rank b{font-family:var(--display);font-weight:400;font-size:1.6rem;line-height:1}
+.du-rank .c0{color:#5FE0D6}.du-rank .c1{color:var(--sun)}.du-rank .c2{color:#C9B3FF}.du-rank .c3{color:#FF9DAC}
+.du-podium{display:grid;grid-template-columns:1fr 1.15fr 1fr;align-items:end;gap:8px;width:100%}
+.du-podium>div{display:flex;flex-direction:column;align-items:center;gap:4px}
+.du-podium .col{width:100%;border-radius:14px 14px 6px 6px;color:#fff;font-family:var(--display);font-size:1.6rem;padding-top:4px}
+.du-podium .av{font-size:2.2rem}.du-podium small{font-weight:800;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 @media (prefers-reduced-motion:reduce){.du-hand .du-big,.du-lead{animation:none}}
 `;
 document.head.appendChild(st);
 
 const P2CH=[['ماما','👩'],['بابا','👨'],['أخي','👦'],['أختي','👧']];
-const SECS=10;
-const SET={p2:'ماما',subj:'mix',n:6};
+const SECS=10,MAXP=4;
+const SET={ps:['ماما'],subj:'mix',n:6};
 let D=null,TM=null;
 
 function stopT(){if(TM){clearInterval(TM);TM=null}}
-// تنظيف المؤقت عند أي تنقّل
-// ولو طلعنا من شاشة اللعب (زر الرجوع أو التاب بار) منلغي المباراة
+// تنظيف المؤقت عند أي تنقّل، ولو طلعنا من شاشة اللعب منلغي المباراة
 if(typeof go==='function'){const _go=go;go=function(v,f){stopT();if(v!=='duelq')D=null;return _go(v,f)}}
 
 const SIBS=()=>(APP.kids||[]).filter(k=>APP.child&&k.id!==APP.child.id).map(k=>[String(k.name||'').trim(),'🧒']).filter(x=>x[0]);
 const CHIPS=()=>{const L=[['ماما','👩'],['بابا','👨']].concat(SIBS());return L.length>2?L:L.concat([['أخي','👦'],['أختي','👧']])};
-const p2av=n=>(CHIPS().concat(P2CH).find(x=>x[0]===n.trim())||[0,'🙂'])[1];
-window.duelWith=n=>{SET.p2=n;SET._init=APP.child&&APP.child.id;if(S)S.duP2=n;go('duel')};
+const avOf=n=>(CHIPS().concat(P2CH).find(x=>x[0]===String(n).trim())||[0,'🙂'])[1];
+window.duelWith=n=>{SET.ps=[n];SET._init=APP.child&&APP.child.id;if(S)S.duPs=[n];go('duel')};
 const childAv=()=>{try{return typeof avatarOf==='function'?avatarOf():'🧒'}catch(e){return '🧒'}};
 const hist=()=>{S.duel=S.duel||{w:0,l:0,t:0};return S.duel};
 const SUBS=()=>Object.keys(SUBJ).filter(k=>['math','ar','sci','en','isl'].includes(k));
+const MED=['🥇','🥈','🥉','4️⃣'];
 
 function drawQs(subj,n){
   const out=[],seen=new Set(),g=APP.child.grade;
@@ -121,13 +140,14 @@ function drawQs(subj,n){
   }
   return subj==='mix'?shuf(out):out;
 }
+function readNames(){V.querySelectorAll('.du-pin').forEach(inp=>{SET.ps[+inp.dataset.i]=inp.value})}
 
 /* ---------- شاشة الإعداد ---------- */
 function viewDuel(){
   if(!APP.child){go('kids');return}
   stopT();
   const h=hist(),c=APP.child;
-  if(SET._init!==APP.child.id){SET._init=APP.child.id;if(S.duP2)SET.p2=S.duP2}
+  if(SET._init!==APP.child.id){SET._init=APP.child.id;if(Array.isArray(S.duPs)&&S.duPs.length)SET.ps=S.duPs.slice(0,MAXP-1);else if(S.duP2)SET.ps=[S.duP2]}
   if(!hasAccess()){
     V.innerHTML=`${back('home','تحدّي العيلة')}
     <div class="du-wrap"><section class="panel du-lock">${MASCOT('sad','mascot')}
@@ -136,16 +156,17 @@ function viewDuel(){
       <button class="btn sun big wide" data-act="go" data-v="sub">اشترك وافتح التحدّي</button></section></div>${tabbar('home')}`;
     return;
   }
-  const subs=SUBS();
+  const subs=SUBS(),names=SET.ps.map(x=>String(x).trim());
   V.innerHTML=`${back('home','تحدّي العيلة')}
   <div class="du-wrap">
-    <div class="du-hero">${MASCOT('happy','mascot sm')}<div><b>⚔️ مين الأشطر؟</b><small>نفس السؤال للاتنين، والأسرع بالجواب الصح ياخد نقاط أكتر!</small></div></div>
-    <div class="du-vs">
-      <div class="du-pl p0"><span class="du-av">${childAv()}</span><b>${esc(c.name)}</b><small>اللاعب الأول</small></div>
-      <span class="du-vsx">ضد</span>
-      <div class="du-pl p1"><span class="du-av" id="du-p2av">${p2av(SET.p2)}</span><input class="du-in" id="du-p2" maxlength="12" value="${esc(SET.p2)}" aria-label="اسم اللاعب التاني"><small>اللاعب التاني</small></div>
+    <div class="du-hero">${MASCOT('happy','mascot sm')}<div><b>⚔️ مين الأشطر؟</b><small>من ٢ لـ ${ar(MAXP)} لاعبين على نفس الموبايل. نفس السؤال للكل، والأسرع بالجواب الصح ياخد نقاط أكتر!</small></div></div>
+    <div class="du-lab">اللاعبين (${ar(names.length+1)})</div>
+    <div class="du-plist">
+      <div class="du-prow p0"><span class="du-av">${childAv()}</span><b style="flex:1">${esc(c.name)}</b><small class="muted">اللاعب الأول</small></div>
+      ${SET.ps.map((n,i)=>`<div class="du-prow p${i+1}"><span class="du-av">${avOf(n)}</span><input class="du-in du-pin" data-i="${i}" maxlength="12" value="${esc(n)}" aria-label="اسم اللاعب ${ar(i+2)}">${SET.ps.length>1?`<button class="du-rm" data-act="du_rm" data-i="${i}" aria-label="شيل اللاعب">×</button>`:''}</div>`).join('')}
+      ${SET.ps.length<MAXP-1?`<button class="du-add" data-act="du_add">➕ ضيف لاعب</button>`:''}
     </div>
-    <div class="du-chips">${CHIPS().map(([n,e])=>`<button class="du-chip ${SET.p2===n?'on':''}" data-act="du_p2" data-v="${n}">${e} ${n}</button>`).join('')}</div>
+    <div class="du-chips">${CHIPS().map(([n,e])=>`<button class="du-chip ${names.includes(n)?'on':''}" data-act="du_p2" data-v="${esc(n)}">${e} ${esc(n)}</button>`).join('')}</div>
     <div class="du-lab">اختار المادة</div>
     <div class="du-subs">${subs.map(s=>`<button class="du-sub ${SET.subj===s?'on':''}" style="--c:${SUBJ[s].c}" data-act="du_subj" data-v="${s}">${ICON(SUBJ[s].k)}<span>${SUBJ[s].n}</span></button>`).join('')}
       <button class="du-sub ${SET.subj==='mix'?'on':''}" style="--c:#DD3F57" data-act="du_subj" data-v="mix"><span class="du-e">🎲</span><span>منوّع</span></button></div>
@@ -154,21 +175,24 @@ function viewDuel(){
     ${msgHTML()}<button class="btn teal big wide" data-act="du_start">${ICON('play')} يلّا نبلّش!</button>
     <div class="du-hist" aria-label="سجل التحدّيات"><div><b>${ar(h.w)}</b><small>فوز 🏆</small></div><div><b>${ar(h.t)}</b><small>تعادل 🤝</small></div><div><b>${ar(h.l)}</b><small>خسارة</small></div></div>
   </div>${tabbar('home')}`;
-  const inp=V.querySelector('#du-p2');
-  inp.addEventListener('input',()=>{SET.p2=inp.value;V.querySelector('#du-p2av').textContent=p2av(inp.value);V.querySelectorAll('.du-chip').forEach(b=>b.classList.toggle('on',b.dataset.v===inp.value.trim()))});
+  V.querySelectorAll('.du-pin').forEach(inp=>inp.addEventListener('input',()=>{SET.ps[+inp.dataset.i]=inp.value;const av=inp.parentNode.querySelector('.du-av');if(av)av.textContent=avOf(inp.value)}));
 }
 
 function startDuel(){
   if(!hasAccess()){go('sub');return}
-  const n2=(SET.p2||'').trim()||'ماما';SET.p2=n2;S.duP2=n2;
+  let ps=SET.ps.map(x=>String(x||'').trim()).filter(Boolean);if(!ps.length)ps=['ماما'];
+  const seen=new Set([String(APP.child.name).trim()]);ps=ps.map(n=>{let m=n,k=2;while(seen.has(m))m=n+' '+ar(k++);seen.add(m);return m});
+  SET.ps=ps.slice();S.duPs=ps.slice();
   const qs=drawQs(SET.subj,SET.n);
   if(!qs.length){ui.msg={ok:false,t:'ما لقينا أسئلة، جرّب مادة تانية'};viewDuel();return}
   D={subj:SET.subj,n:qs.length,qs,r:0,k:0,phase:'hand',done:false,
-     p:[{n:APP.child.name,av:childAv(),sc:0},{n:n2,av:p2av(n2),sc:0}],picks:[]};
+     p:[{n:APP.child.name,av:childAv(),sc:0}].concat(ps.map(n=>({n,av:avOf(n),sc:0}))),picks:[]};
   go('duelq');
 }
-const order=()=>D.r%2===0?[0,1]:[1,0];  // نبدّل مين يبلّش كل جولة
+const NP=()=>D.p.length;
+const order=()=>D.p.map((_,k)=>(k+D.r)%NP());  // كل جولة بيبلّش لاعب مختلف
 const cur=()=>order()[D.k];
+const ranked=()=>{const L=D.p.map((P,i)=>Object.assign({i},P)).sort((a,b)=>b.sc-a.sc);L.forEach(P=>P.rk=1+L.filter(x=>x.sc>P.sc).length);return L};
 
 /* ---------- شاشة اللعب ---------- */
 function viewDuelq(){
@@ -187,7 +211,7 @@ function rHand(){
     <div class="row between" style="width:100%">${quitBtn()}<span class="du-rd">الجولة ${ar(D.r+1)} من ${ar(D.n)}</span></div>
     <div class="du-big">${P.av}</div>
     <h1>دور ${esc(P.n)}</h1>
-    <p>${first?'خلّي التاني ما يتطلّع على الشاشة 🙈':'تمّ! هلّق سلّم الموبايل لـ'+esc(P.n)+' 📱'}</p>
+    <p>${first?(NP()>2?'خلّي الباقيين ما يتطلّعوا على الشاشة 🙈':'خلّي التاني ما يتطلّع على الشاشة 🙈'):'تمّ! هلّق سلّم الموبايل لـ'+esc(P.n)+' 📱'}</p>
     <button class="du-go" data-act="du_ready">جاهز؟</button>
     <p class="small">عندك ${ar(SECS)} ثواني ⏱️ — الأسرع ياخد نقاط أكتر</p>
   </div>`;
@@ -220,18 +244,17 @@ function answerDuel(j){
   const ok=j>=0&&it.opts[j]===it.a,pts=ok?10+Math.ceil(left):0;
   D.picks[i]={j,ok,pts};D.p[i].sc+=pts;
   try{if(navigator.vibrate)navigator.vibrate(20)}catch(e){}
-  // نخفي الجواب: بس نعلّم الخيار المختار بدون صح/غلط
   const btns=[...V.querySelectorAll('#du-opts .opt2')];btns.forEach((b,k)=>{b.disabled=true;if(k===j)b.classList.add('du-picked')});
   const box=document.createElement('div');box.className='du-wait';
   box.innerHTML=`<b>${j<0?'⏰ خلص الوقت!':'🔒 انحفظ جوابك'}</b>`;
   V.querySelector('.du-wrap').appendChild(box);
   setTimeout(()=>{if(!D||D.phase!=='q'||!document.getElementById('du-opts'))return;
-    if(D.k===0){D.k=1;D.phase='hand'}else{D.phase='rev';D.revTone=true}
+    if(D.k<NP()-1){D.k++;D.phase='hand'}else{D.phase='rev';D.revTone=true}
     viewDuelq();window.scrollTo(0,0)},j<0?1100:700);
 }
 function board(){
-  const [a,b]=D.p,la=a.sc>b.sc,lb=b.sc>a.sc;
-  return `<div class="du-board"><div class="du-s p0"><b class="${la?'du-lead':''}">${ar(a.sc)}</b><small>${a.av} ${esc(a.n)}</small></div><span class="du-m">${la||lb?'👑':'🤝'}</span><div class="du-s p1"><b class="${lb?'du-lead':''}">${ar(b.sc)}</b><small>${b.av} ${esc(b.n)}</small></div></div>`;
+  const R=ranked(),top=R[0].sc;
+  return `<div class="du-rank">${R.map((P,k)=>`<div><span class="m">${P.sc>0&&P.sc===top?'👑':MED[P.rk-1]}</span><span class="n">${P.av} ${esc(P.n)}</span><b class="c${P.i}">${ar(P.sc)}</b></div>`).join('')}</div>`;
 }
 function rRev(){
   const it=D.qs[D.r],f=it.m?ar:(x=>x),last=D.r===D.n-1;
@@ -239,27 +262,30 @@ function rRev(){
     <div class="du-top">${quitBtn()}<b style="font-size:1.1rem">نتيجة الجولة ${ar(D.r+1)}</b><span class="du-sp"></span><span class="du-rn">${ar(D.r+1)}/${ar(D.n)}</span></div>
     <section class="du-q">${qHead(it)}</section>
     <div class="du-ans"><small>الجواب الصح</small>✅ ${esc(f(it.a))}</div>
-    <div class="du-picks">${[0,1].map(i=>{const P=D.p[i],k=D.picks[i]||{j:-1,ok:false,pts:0};
+    <div class="du-picks">${D.p.map((P,i)=>{const k=D.picks[i]||{j:-1,ok:false,pts:0};
       return `<div class="du-pk p${i}"><span class="du-av">${P.av}</span><b>${esc(P.n)}</b>
         <span class="du-ch">${k.j<0?'⏰ ما جاوب':esc(f(it.opts[k.j]))}</span>
         <span class="du-ok ${k.ok?'y':'n'}">${k.ok?'صح ✓':'غلط ✗'}</span><span class="du-pts">+${ar(k.pts)}</span></div>`}).join('')}</div>
     ${board()}
     <button class="btn ${last?'sun':'teal'} big wide" data-act="du_next">${last?'🏆 شوف مين ربح':'الجولة الجاية ←'}</button>
   </div>`;
-  if(D.revTone){D.revTone=false;const a=D.picks[0]||{},b=D.picks[1]||{};tone(!!a.ok);setTimeout(()=>{if(D&&D.phase==='rev')tone(!!b.ok)},450)}
+  if(D.revTone){D.revTone=false;tone(!!(D.picks[0]||{}).ok)}
 }
 function rEnd(){
-  const [a,b]=D.p,res=a.sc>b.sc?'w':a.sc<b.sc?'l':'t';
-  if(!D.done){D.done=true;const h=hist();h[res]++;S.duelVs=S.duelVs||{};const vk=String(b.n).trim(),vs=S.duelVs[vk]||(S.duelVs[vk]={w:0,l:0,t:0});vs[res]++;if(res!=='l')S.jas+=15;save();
+  const R=ranked(),top=R[0].sc,winners=R.filter(P=>P.sc===top),me=D.p[0];
+  const res=me.sc<top?'l':winners.length>1?'t':'w';
+  if(!D.done){D.done=true;const h=hist();h[res]++;S.duelVs=S.duelVs||{};
+    D.p.slice(1).forEach(o=>{const vk=String(o.n).trim(),vs=S.duelVs[vk]||(S.duelVs[vk]={w:0,l:0,t:0});vs[me.sc>o.sc?'w':me.sc<o.sc?'l':'t']++});
+    if(res!=='l')S.jas+=15;save();if(typeof hook==='function'&&res!=='l')try{hook('points',15)}catch(e){}
     if(res!=='l'){confetti();tone(true)}else tone(false)}
-  const win=res==='w'?a:res==='l'?b:null;
+  const pod=R.length>=3?`<div class="du-podium">${[1,0,2].map(k=>{const P=R[k],cols=['#C99410','#8FA3AE','#C7773B'],hh=[96,70,54];return`<div><span class="av">${P.av}</span><small>${esc(P.n)}</small><div class="col" style="background:${cols[P.rk-1]||cols[2]};height:${hh[P.rk-1]||hh[2]}px">${ar(P.rk)}</div></div>`}).join('')}</div>`:'';
   V.innerHTML=`<div class="du-wrap">
     <section class="panel du-end">
       ${MASCOT(res==='l'?'happy':'wow','mascot big')}
-      ${win?`<div class="du-crown">👑 ${win.av}</div><h1>البطل: ${esc(win.n)}!</h1>`:`<div class="du-crown">🤝</div><h1>تعادل! الاتنين أبطال</h1>`}
-      <p class="muted">${res==='w'?'برافو يا شطّور! غلبت '+esc(b.n)+' 💪':res==='l'?'ولا يهمك! المرة الجاية بتغلب 💪':'نفس النقاط بالزبط، شو هالمستوى!'}</p>
-      ${board()}
-      ${res!=='l'?`<span class="du-prize">${JAS()} +${ar(15)} نقطة لـ${esc(a.n)}</span>`:''}
+      ${winners.length===1?`<div class="du-crown">👑 ${winners[0].av}</div><h1>البطل: ${esc(winners[0].n)}!</h1>`:`<div class="du-crown">🤝</div><h1>تعادل بين ${winners.map(w=>esc(w.n)).join(' و')}!</h1>`}
+      <p class="muted">${res==='w'?'برافو يا شطّور! كنت الأشطر 💪':res==='l'?'ولا يهمك! المرة الجاية بتربح 💪':'نفس النقاط بالزبط، شو هالمستوى!'}</p>
+      ${pod}${board()}
+      ${res!=='l'?`<span class="du-prize">${JAS()} +${ar(15)} نقطة لـ${esc(me.n)}</span>`:''}
     </section>
     <button class="btn teal big wide" data-act="du_again">🔁 جولة جديدة</button>
     <button class="btn ghost big wide" data-act="du_back">الرجوع</button>
@@ -269,10 +295,12 @@ function rEnd(){
 document.addEventListener('click',e=>{
   const b=e.target.closest('[data-act]');if(!b||b.disabled)return;const a=b.dataset.act;
   if(!a||a.indexOf('du_')!==0)return;
-  if(a==='du_p2'){SET.p2=b.dataset.v;viewDuel()}
-  else if(a==='du_subj'){SET.subj=b.dataset.v;viewDuel()}
-  else if(a==='du_len'){SET.n=+b.dataset.v;viewDuel()}
-  else if(a==='du_start'){const i=V.querySelector('#du-p2');if(i)SET.p2=i.value;startDuel()}
+  if(a==='du_p2'){readNames();const n=b.dataset.v,k=SET.ps.map(x=>String(x).trim()).indexOf(n);if(k>=0){if(SET.ps.length>1)SET.ps.splice(k,1)}else if(SET.ps.length<MAXP-1)SET.ps.push(n);else SET.ps[SET.ps.length-1]=n;viewDuel()}
+  else if(a==='du_add'){readNames();if(SET.ps.length<MAXP-1){const used=SET.ps.map(x=>String(x).trim());const nx=(CHIPS().find(c=>!used.includes(c[0]))||['لاعب'])[0];SET.ps.push(nx)}viewDuel()}
+  else if(a==='du_rm'){readNames();if(SET.ps.length>1)SET.ps.splice(+b.dataset.i,1);viewDuel()}
+  else if(a==='du_subj'){readNames();SET.subj=b.dataset.v;viewDuel()}
+  else if(a==='du_len'){readNames();SET.n=+b.dataset.v;viewDuel()}
+  else if(a==='du_start'){readNames();startDuel()}
   else if(a==='du_ready'){if(D&&D.phase==='hand'){D.phase='q';viewDuelq()}}
   else if(a==='du_ans'){answerDuel(+b.dataset.i)}
   else if(a==='du_next'){if(!D)return;if(D.r>=D.n-1){D.phase='end'}else{D.r++;D.k=0;D.picks=[];D.phase='hand'}viewDuelq();window.scrollTo(0,0)}
@@ -283,5 +311,5 @@ document.addEventListener('click',e=>{
 
 VIEWS.duel=viewDuel;
 VIEWS.duelq=viewDuelq;
-window.duelCardHTML=function(){return `<button class="fcard" style="--c:#DD3F57;width:100%;margin-top:10px" data-act="go" data-v="duel"><span class="sicon">👨‍👩‍👧</span><b>⚔️ تحدّي العيلة — العب ضد ماما وبابا</b><small>مبارزة أسئلة على نفس الموبايل</small></button>`};
+window.duelCardHTML=function(){return `<button class="fcard" style="--c:#DD3F57;width:100%;margin-top:10px" data-act="go" data-v="duel"><span class="sicon">👨‍👩‍👧</span><b>⚔️ تحدّي العيلة</b><small>من ٢ لـ ٤ لاعبين على نفس الموبايل</small></button>`};
 })();
