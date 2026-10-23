@@ -1,0 +1,16 @@
+name: linkcheck
+on: workflow_dispatch
+permissions: { contents: write }
+jobs:
+  c:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - run: |
+          set +e
+          for u in https://mohamedfayzyasenalsabagh-create.github.io/shattoor/shattoor.apk https://mohamedfayzyasenalsabagh-create.github.io/shattoor/dl.html https://github.com/mohamedfayzyasenalsabagh-create/shattoor/releases/latest/download/shattoor.apk; do
+            curl -sSL --max-time 60 -o f -w "$u -> %{http_code} %{content_type} %{size_download}\n" "$u" >> out.txt
+            file f >> out.txt; unzip -l f 2>/dev/null | tail -1 >> out.txt; md5sum f >> out.txt
+          done
+          cat out.txt
+          git init -q r && cd r && cp ../out.txt . && git add out.txt && git -c user.email=a@b -c user.name=bot commit -qm r && git push -qf "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}" HEAD:linkcheck
