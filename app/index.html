@@ -1451,8 +1451,13 @@ function resizeImage(file,max){return new Promise((res,rej)=>{const r=new FileRe
 
 /* ---- إحصائيات الإدارة ---- */
 const waLink=(phone,text)=>`https://wa.me/963${String(phone).replace(/^0/,'')}?text=${encodeURIComponent(text)}`;
+async function appDownloads(){
+  try{const c=new AbortController(),tm=setTimeout(()=>c.abort(),7000);
+    const r=await fetch('https://api.github.com/repos/mohamedfayzyasenalsabagh-create/shattoor/releases?per_page=100',{signal:c.signal,headers:{Accept:'application/vnd.github+json'}});clearTimeout(tm);
+    if(!r.ok)return null;const L=await r.json();const per=L.map(x=>({v:x.tag_name,d:(x.assets||[]).reduce((s,a)=>s+(a.download_count||0),0)}));
+    return{total:per.reduce((s,x)=>s+x.d,0),latest:per[0]||null}}catch(e){return null}}
 async function adminStatsHTML(){
-  const st=await API.stats(),t=today();
+  const [st,dl]=await Promise.all([API.stats(),appDownloads()]),t=today();
   const kids=st.kids,parentName=p=>(st.parents.find(x=>x.phone===p)||{}).name||'';
   const activeSubs=[];kids.forEach(k=>Object.entries(k.subs||{}).forEach(([g,s])=>{if(s.until>=t)activeSubs.push({k,g:+g,s})}));
   const activeKids=new Set(activeSubs.map(a=>a.k.phone+'/'+a.k.id)).size;
@@ -1468,7 +1473,8 @@ async function adminStatsHTML(){
       :`مرحباً ${pn} 🌟\nاشتقنا لـ ${a.k.name} بتطبيق شطّور! انتهى اشتراك الصف ${GRADES[a.g-1]}.\nللتجديد افتح التطبيق ← الاشتراك ← أرسل طلب التفعيل.`;
     return`<div class="exp"><div><b>${esc(a.k.name)}</b> · الصف ${GRADES[a.g-1]}<div class="muted small">${esc(pn)} · <span dir="ltr">${esc(a.k.phone)}</span> · ${soon?(left<=0?'بينتهي اليوم':'باقي '+ar(left)+' أيام'):'انتهى '+fmtDay(a.s.until)}</div></div>
       <a class="btn sun sm" href="${waLink(a.k.phone,msg)}" target="_blank" rel="noopener">ذكّر بواتساب</a></div>`};
-  return`<div class="tiles">
+  return`<section class="panel" style="display:flex;align-items:center;gap:14px"><span style="font-size:2.4rem">📲</span><div style="flex:1"><div class="muted small">تنزيلات تطبيق الأندرويد</div><b style="font-family:var(--display);font-weight:400;font-size:2rem;color:var(--teal)">${dl?fmtNum(dl.total):'—'}</b>${dl&&dl.latest?`<div class="muted small">آخر نسخة (${esc(dl.latest.v)}): ${fmtNum(dl.latest.d)} تنزيل</div>`:'<div class="muted small">ما قدرنا نجيب العدد هلق، جرّب بعد شوي</div>'}</div></section>
+    <div class="tiles">
       <div class="tile"><b>${fmtNum(st.parents.length)}</b><span>حساب أهل</span></div>
       <div class="tile"><b>${fmtNum(kids.length)}</b><span>طفل</span></div>
       <div class="tile ok"><b>${fmtNum(activeKids)}</b><span>طفل مشترك</span></div>
