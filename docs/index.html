@@ -1025,7 +1025,7 @@ function viewHome(){
     <button class="fcard" style="--c:#C99410" data-act="go" data-v="store"><span class="sicon">${ICON('store')}</span><b>متجر النقاط</b><small>شخصيات وشارات</small></button>
   </div>
   <h2 class="sech">أنشطة وألعاب</h2>
-  <div class="duo">${[c.grade<=2&&window.lettersCardHTML?lettersCardHTML():'',window.storiesCardHTML?storiesCardHTML():'',window.duelCardHTML?duelCardHTML():'',`<button class="fcard" style="--c:#C99410" data-act="go" data-v="league"><span class="sicon">${ICON('trophy')}</span><b>مسابقة الشهر</b><small>${APP.set.prize?esc(APP.set.prize):'نافس رفقاتك بصفّك'}</small></button>`,c.grade>2&&window.lettersCardHTML?lettersCardHTML():''].filter(Boolean).join('')}</div>
+  <div class="duo">${[c.grade<=2&&window.lettersCardHTML?lettersCardHTML():'',window.storiesCardHTML?storiesCardHTML():'',window.duelCardHTML?duelCardHTML():'',`<button class="fcard" style="--c:#C99410" data-act="go" data-v="league"><span class="sicon">${ICON('trophy')}</span><b>مسابقة العيلة</b><small>نافس إخوتك وماما وبابا</small></button>`,c.grade>2&&window.lettersCardHTML?lettersCardHTML():''].filter(Boolean).join('')}</div>
   <button class="fcard" style="--c:#2E7DB8;width:100%;margin-top:10px" data-act="go" data-v="books"><span class="sicon">📚</span><b>كتبي المدرسية</b><small>كتب الوزارة للصف ${GRADES[c.grade-1]} · PDF</small></button>
   ${tabbar('home')}`;
 }

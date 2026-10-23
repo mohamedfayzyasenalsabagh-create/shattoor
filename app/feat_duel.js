@@ -103,7 +103,10 @@ function stopT(){if(TM){clearInterval(TM);TM=null}}
 // ولو طلعنا من شاشة اللعب (زر الرجوع أو التاب بار) منلغي المباراة
 if(typeof go==='function'){const _go=go;go=function(v,f){stopT();if(v!=='duelq')D=null;return _go(v,f)}}
 
-const p2av=n=>(P2CH.find(x=>x[0]===n.trim())||[0,'🙂'])[1];
+const SIBS=()=>(APP.kids||[]).filter(k=>APP.child&&k.id!==APP.child.id).map(k=>[String(k.name||'').trim(),'🧒']).filter(x=>x[0]);
+const CHIPS=()=>{const L=[['ماما','👩'],['بابا','👨']].concat(SIBS());return L.length>2?L:L.concat([['أخي','👦'],['أختي','👧']])};
+const p2av=n=>(CHIPS().concat(P2CH).find(x=>x[0]===n.trim())||[0,'🙂'])[1];
+window.duelWith=n=>{SET.p2=n;SET._init=APP.child&&APP.child.id;if(S)S.duP2=n;go('duel')};
 const childAv=()=>{try{return typeof avatarOf==='function'?avatarOf():'🧒'}catch(e){return '🧒'}};
 const hist=()=>{S.duel=S.duel||{w:0,l:0,t:0};return S.duel};
 const SUBS=()=>Object.keys(SUBJ).filter(k=>['math','ar','sci','en','isl'].includes(k));
@@ -142,7 +145,7 @@ function viewDuel(){
       <span class="du-vsx">ضد</span>
       <div class="du-pl p1"><span class="du-av" id="du-p2av">${p2av(SET.p2)}</span><input class="du-in" id="du-p2" maxlength="12" value="${esc(SET.p2)}" aria-label="اسم اللاعب التاني"><small>اللاعب التاني</small></div>
     </div>
-    <div class="du-chips">${P2CH.map(([n,e])=>`<button class="du-chip ${SET.p2===n?'on':''}" data-act="du_p2" data-v="${n}">${e} ${n}</button>`).join('')}</div>
+    <div class="du-chips">${CHIPS().map(([n,e])=>`<button class="du-chip ${SET.p2===n?'on':''}" data-act="du_p2" data-v="${n}">${e} ${n}</button>`).join('')}</div>
     <div class="du-lab">اختار المادة</div>
     <div class="du-subs">${subs.map(s=>`<button class="du-sub ${SET.subj===s?'on':''}" style="--c:${SUBJ[s].c}" data-act="du_subj" data-v="${s}">${ICON(SUBJ[s].k)}<span>${SUBJ[s].n}</span></button>`).join('')}
       <button class="du-sub ${SET.subj==='mix'?'on':''}" style="--c:#DD3F57" data-act="du_subj" data-v="mix"><span class="du-e">🎲</span><span>منوّع</span></button></div>
@@ -247,7 +250,7 @@ function rRev(){
 }
 function rEnd(){
   const [a,b]=D.p,res=a.sc>b.sc?'w':a.sc<b.sc?'l':'t';
-  if(!D.done){D.done=true;const h=hist();h[res]++;if(res!=='l')S.jas+=15;save();
+  if(!D.done){D.done=true;const h=hist();h[res]++;S.duelVs=S.duelVs||{};const vk=String(b.n).trim(),vs=S.duelVs[vk]||(S.duelVs[vk]={w:0,l:0,t:0});vs[res]++;if(res!=='l')S.jas+=15;save();
     if(res!=='l'){confetti();tone(true)}else tone(false)}
   const win=res==='w'?a:res==='l'?b:null;
   V.innerHTML=`<div class="du-wrap">

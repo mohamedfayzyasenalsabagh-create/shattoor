@@ -29,7 +29,7 @@ const monthId=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMon
 function bump(n){if(!S)return;n=+n||0;const w=weekId(),m=monthId();
   if(!S.wk||S.wk.w!==w)S.wk={w,p:0};if(!S.mo||S.mo.m!==m)S.mo={m,p:0};S.wk.p+=n;S.mo.p+=n}
 let pushT=null;
-function pushBoard(){if(!APP.child||!S||S.noBoard)return;clearTimeout(pushT);pushT=setTimeout(()=>{
+function pushBoard(){return;if(!APP.child||!S||S.noBoard)return;clearTimeout(pushT);pushT=setTimeout(()=>{
   const c=APP.child,g=c.grade,first=String(c.name||'').trim().split(/\s+/)[0].slice(0,20),av=typeof avatarOf==='function'?avatarOf():'🧒';
   bump(0);const base={n:first,av,g,cid:c.id,t:today()};
   if(S.wk&&S.wk.p>0)API.boardPut(`w${S.wk.w}_g${g}_${c.id}`,Object.assign({per:`w${S.wk.w}_g${g}`,p:S.wk.p},base)).catch(()=>{});
@@ -37,29 +37,31 @@ function pushBoard(){if(!APP.child||!S||S.noBoard)return;clearTimeout(pushT);pus
 },1500)}
 function memberSync(){const c=APP.child;if(!c||!c.cls||!S)return;bump(0);
   API.memberPut(c.cls,c.id,{name:c.name,grade:c.grade,jas:S.jas,streak:S.streak,stats:S.stats||{},last:today(),wk:S.wk&&S.wk.w===weekId()?S.wk.p:0,exams:(S.exams||[]).slice(-5)}).catch(()=>{})}
-HOOKS.push({points:n=>{bump(n);save()},finish:()=>pushBoard(),sync:()=>memberSync()});
+function famSync(){if(!APP.child||!S)return;bump(0);const v={wk:{w:S.wk.w,p:S.wk.p},mo:{m:S.mo.m,p:S.mo.p}};Object.assign(APP.child,v);API.updateChild(APP.child.id,v).catch(()=>{})}
+HOOKS.push({points:n=>{bump(n);save()},finish:()=>famSync(),sync:()=>{memberSync();famSync()}});
 
 async function viewLeague(){
   if(!APP.child)return go('kids');
-  const per=ui.lgPer||'w',g=APP.child.grade;bump(0);
-  const key=per==='w'?`w${weekId()}_g${g}`:`m${monthId()}_g${g}`,mine=per==='w'?S.wk.p:S.mo.p;
+  const per=ui.lgPer||'w',me=APP.child.id;bump(0);
+  if(!ui.lgFresh){ui.lgFresh=1;API.listChildren().then(L=>{if(!L||!L.length)return;L.forEach(k=>{const o=APP.kids.find(x=>x.id===k.id);if(o)Object.assign(o,{wk:k.wk,mo:k.mo,name:k.name,grade:k.grade})});if(VIEWS.league&&document.querySelector('.fam-wrap'))viewLeague()}).catch(()=>{})}
+  const ptsOf=k=>{if(k.id===me)return per==='w'?S.wk.p:S.mo.p;const x=per==='w'?k.wk:k.mo;return x&&(per==='w'?x.w===weekId():x.m===monthId())?(+x.p||0):0};
+  const kids=(APP.kids||[]).map(k=>({id:k.id,n:k.name,g:k.grade,p:ptsOf(k),me:k.id===me})).sort((a,b)=>b.p-a.p);
   const monthName=new Intl.DateTimeFormat('ar-SY',{month:'long'}).format(new Date());
-  V.innerHTML=`<h1 class="ptitle">🏆 المسابقة</h1>
-  ${APP.set.prize?`<div class="lg-prize"><span class="big">🎁</span><span>جائزة شهر ${monthName}: ${esc(APP.set.prize)}</span></div>`:''}
+  const vs=S.duelVs||{},opp=[['ماما','👩'],['بابا','👨']].concat((APP.kids||[]).filter(k=>k.id!==me).map(k=>[k.name,'🧒']));
+  const top=kids[0],lead=kids.length>1&&top.p>0&&(kids[1].p<top.p);
+  V.innerHTML=`<h1 class="ptitle">🏆 مسابقة العيلة</h1>
+  <p class="muted">مين الأشطر بالبيت؟ كل جواب صح وكل امتحان بيزيد النقاط. والأهل بيلعبوا من «تحدّي العيلة».</p>
+  <div class="fam-wrap">
   <div class="tabs"><button data-act="lg_per" data-p="w" class="${per==='w'?'on':''}">هالأسبوع</button><button data-act="lg_per" data-p="m" class="${per==='m'?'on':''}">شهر ${monthName}</button></div>
-  <p class="muted small">ترتيب أطفال الصف ${GRADES[g-1]} حسب النقاط يلي جمعوها ${per==='w'?'من السبت لهلق':'هالشهر'}. كل جواب صح وكل امتحان بيزيد نقاطك!</p>
-  <div id="lgbox"><p class="muted">جارِ التحميل…</p></div>${tabbar('league')}`;
-  if(S.noBoard){V.querySelector('#lgbox').innerHTML=`<section class="panel"><p>اسم ${esc(APP.child.name)} مخفي من المسابقة. فيك تفعّلها من ركن الأهل.</p><p>نقاطك: <b>${ar(mine)}</b></p></section>`;return}
-  pushBoard();
-  let L=[];try{L=await API.boardGet(key)}catch(e){V.querySelector('#lgbox').innerHTML=`<section class="panel"><p>المسابقة رح تشتغل قريباً إن شاء الله 🌟</p><p>نقاطك ${per==='w'?'هالأسبوع':'هالشهر'}: <b>${ar(mine)}</b></p></section>`;return}
-  const me=APP.child.id;L=L.filter(x=>x.cid!==me);if(mine>0)L.push({cid:me,n:String(APP.child.name).split(' ')[0],av:avatarOf(),p:mine});
-  L.sort((a,b)=>b.p-a.p);const rk=L.findIndex(x=>x.cid===me);
-  const top=L.slice(0,3),col=['#C99410','#8FA3AE','#C7773B'],h=[110,80,64];
-  const pod=top.length>=3?`<div class="lg-podium">${[1,0,2].map(i=>`<div><span class="av">${top[i].av||'🧒'}</span><b class="lg-n" style="max-width:100%">${esc(top[i].n)}</b><span class="lg-p">${JAS()}${ar(top[i].p)}</span><div class="col" style="background:${col[i]};height:${h[i]}px">${ar(i+1)}</div></div>`).join('')}</div>`:'';
-  V.querySelector('#lgbox').innerHTML=`${pod}
-    ${rk>=0?`<div class="status ok"><span>ترتيبك: <b>${ar(rk+1)}</b> من ${ar(L.length)} · ${ar(mine)} نقطة</span></div>`:`<div class="status trial"><span>لسا ما جمعت نقاط ${per==='w'?'هالأسبوع':'هالشهر'}. حل تحدي اليوم لتدخل المسابقة!</span></div>`}
-    <div class="lg-list">${L.slice(0,30).map((x,i)=>`<div class="lg-row ${x.cid===me?'me':''}"><span class="lg-rk">${i<3?['🥇','🥈','🥉'][i]:ar(i+1)}</span><span class="lg-av">${x.av||'🧒'}</span><span class="lg-n">${esc(x.n)}${x.cid===me?' (أنت)':''}</span><span class="lg-p">${JAS()}${ar(x.p)}</span></div>`).join('')||'<p class="muted">لسا ما حدا دخل المسابقة. كون الأول! 🚀</p>'}</div>
-    ${rk>29?`<div class="lg-row me"><span class="lg-rk">${ar(rk+1)}</span><span class="lg-av">${avatarOf()}</span><span class="lg-n">${esc(APP.child.name)} (أنت)</span><span class="lg-p">${JAS()}${ar(mine)}</span></div>`:''}`;
+  <section class="panel"><h3>👧👦 الإخوة</h3>
+  ${kids.length>1?`${lead?`<div class="status ok"><span>👑 ${esc(top.n)} بالمقدمة ${per==='w'?'هالأسبوع':'هالشهر'}!</span></div>`:''}
+    <div class="lg-list">${kids.map((x,i)=>`<div class="lg-row ${x.me?'me':''}"><span class="lg-rk">${x.p>0&&i<3?['🥇','🥈','🥉'][i]:ar(i+1)}</span><span class="lg-av">${x.me?avatarOf():'🧒'}</span><span class="lg-n">${esc(x.n)}${x.me?' (أنت)':''}<small class="muted" style="display:block;font-weight:600">الصف ${GRADES[(x.g||1)-1]}</small></span><span class="lg-p">${JAS()}${ar(x.p)}</span></div>`).join('')}</div>
+    <p class="muted small">النقاط بتتحدّث لما كل واحد يفتح التطبيق ويتمرّن.</p>`
+  :`<p>${esc(APP.child.name)} لحاله هلق. ضيف أخوه أو أخته لحساب العيلة، ولما يحلّوا تمارين بيطلعوا هون وبيتنافسوا على النقاط.</p><p>نقاطك ${per==='w'?'هالأسبوع':'هالشهر'}: <b>${ar(kids[0]?kids[0].p:0)}</b></p><button class="btn teal" data-act="go" data-v="kidForm">➕ ضيف أخ أو أخت</button>`}
+  </section>
+  <section class="panel"><h3>⚔️ ضد ماما وبابا والإخوة</h3><p class="muted small">نتائج «تحدّي العيلة» على نفس الموبايل.</p>
+    <div class="lg-list">${opp.map(([n,e])=>{const r=vs[String(n).trim()]||{w:0,l:0,t:0},played=r.w+r.l+r.t;return`<div class="lg-row"><span class="lg-av">${e}</span><span class="lg-n">${esc(APP.child.name)} ضد ${esc(n)}<small class="muted" style="display:block;font-weight:600">${played?`فاز ${ar(r.w)} · خسر ${ar(r.l)} · تعادل ${ar(r.t)}`:'لسا ما لعبتوا'}</small></span><button class="btn ${played?'ghost':'sun'} sm" data-act="lg_duel" data-n="${esc(n)}">تحدّى</button></div>`}).join('')}</div>
+  </section></div>${tabbar('league')}`;
 }
 
 /* ---- صف الأستاذ: انضمام الطفل (ركن الأهل) ---- */
@@ -68,7 +70,6 @@ window.classPanelHTML=()=>{const c=APP.child;
   ${c.cls?`<p>${esc(c.name)} منضم لصف ${ui.clsName?'«'+esc(ui.clsName)+'»':'برمز'} <b dir="ltr">${esc(c.cls)}</b>. الأستاذ بيشوف تقدّمه بالتطبيق.</p><button class="btn ghost" data-act="cls_leave">الخروج من الصف</button>`
   :`<p class="muted">إذا أستاذ ${esc(c.name)} عطاكم رمز صف، اكتبوه هون ليتابع تقدّمه.</p>
    <div class="row"><input id="clsin" type="tel" dir="ltr" inputmode="numeric" maxlength="6" placeholder="رمز من ٦ أرقام" style="flex:1"><button class="btn teal sm" data-act="cls_join">انضمام</button></div>`}
-  <div class="row between" style="margin-top:8px"><span>إظهار الاسم بالمسابقة</span><button class="btn ${S.noBoard?'teal':'ghost'} sm" data-act="lg_toggle">${S.noBoard?'إظهار':'إخفاء'}</button></div>
   ${ui.clsMsg?`<p class="msg ${ui.clsMsg.ok?'ok':'no'}">${ui.clsMsg.t}</p>`:''}</section>`};
 
 /* ---- لوحة الأستاذ ---- */
@@ -102,7 +103,8 @@ async function viewTeacher(){
 VIEWS.league=viewLeague;VIEWS.teacher=viewTeacher;
 
 document.addEventListener('click',async e=>{const b=e.target.closest('[data-act]');if(!b||b.disabled)return;const a=b.dataset.act;
-  if(a==='lg_per'){ui.lgPer=b.dataset.p;viewLeague()}
+  if(a==='lg_per'){ui.lgPer=b.dataset.p;ui.lgFresh=1;viewLeague()}
+  else if(a==='lg_duel'){if(window.duelWith)duelWith(b.dataset.n);else go('duel')}
   else if(a==='lg_toggle'){S.noBoard=!S.noBoard;save();viewParent()}
   else if(a==='tc_sel'){ui.tcCode=b.dataset.c;viewTeacher()}
   else if(a==='tc_del'){if(!confirm('متأكد بدك تحذف الصف؟'))return;try{await API.classDel(b.dataset.c);ui.tcCode=null}catch(err){}viewTeacher()}
