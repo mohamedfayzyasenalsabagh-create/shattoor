@@ -5,6 +5,8 @@ for f in glob.glob('node_modules/@fontsource/tajawal/files/tajawal-*-normal.woff
     b=os.path.basename(f)
     if any(x in b for x in ('-arabic-','-latin-')) and '-latin-ext-' not in b: shutil.copy(f,out+'/fonts/'+b)
 open(out+'/.nojekyll','w').close()
+for x in ('manifest.json','dl.html'):
+    if os.path.exists('app/'+x): shutil.copy('app/'+x,out+'/'+x)
 if os.path.exists('app/curriculum.js'):
     parts=[open('app/curriculum.js').read()]+['(function(){\n'+open(f).read()+'\n})();' for f in sorted(glob.glob('build-tools/content/*.js'))]
     open(out+'/curriculum.js','w').write('\n'.join(parts))

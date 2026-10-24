@@ -1,6 +1,12 @@
 <title>شطّور</title>
 <link rel="icon" type="image/png" href="assets/icon-192.png">
 <link rel="apple-touch-icon" href="assets/icon-512.png">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0E7C77">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="شطّور">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lalezar&family=Tajawal:wght@400;500;700;800&display=swap">
 <style>
@@ -338,6 +344,9 @@ a.btn{text-decoration:none;white-space:nowrap}
 .examcard .sicon{background:#7A4FD1}.examcard .go{font-size:1.4rem;color:#7A4FD1;font-weight:800}
 .helpmsg{display:block;margin-top:4px;font-weight:700;opacity:.9}
 .extime{color:#7A4FD1}.extime.low{color:var(--pom);animation:pulse 1s infinite}
+.instbar{position:fixed;z-index:40;inset-inline:10px;top:calc(10px + env(safe-area-inset-top,0px));max-width:500px;margin:0 auto;display:flex;align-items:center;gap:10px;background:var(--card);border:2px solid var(--teal);border-radius:18px;padding:10px 12px;box-shadow:0 10px 30px -10px #0006;animation:up .3s ease-out}
+.instbar img{width:44px;height:44px;border-radius:12px}.instbar div{flex:1;display:flex;flex-direction:column;gap:2px}.instbar small{color:var(--muted);line-height:1.5}
+.instbar>button{border:0;background:none;font-size:1.5rem;color:var(--muted);padding:0 4px}.ios-share{color:#007AFF;display:inline-flex;vertical-align:-3px}
 .offbar{position:sticky;top:0;z-index:25;background:#FFF3C4;color:#7A5A00;text-align:center;font-weight:800;font-size:.85rem;padding:6px;border-radius:0 0 12px 12px}
 @media (prefers-reduced-motion:reduce){.m-body,.pnode.now,.bigstars i,.sheet{animation:none}}
 
@@ -1497,7 +1506,9 @@ async function adminStatsHTML(){
 }
 
 /* ---- التنقّل وزر الرجوع في تطبيق الأندرويد ---- */
-const IN_APP=/ShattoorApp/.test(navigator.userAgent)||location.protocol==='file:';
+const IS_IOS=/iPhone|iPad|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+const STANDALONE=navigator.standalone===true||(window.matchMedia&&matchMedia('(display-mode: standalone)').matches);
+const IN_APP=/ShattoorApp/.test(navigator.userAgent)||location.protocol==='file:'||STANDALONE;
 function push(v){if(!IN_APP)return;try{if(history.state)history.replaceState({v},'','#'+v);else history.pushState({v},'','#'+v)}catch(e){}}
 const rootView=()=>!APP.user?'auth':APP.child?'home':isAdmin()?'admin':'kids';
 window.addEventListener('popstate',()=>{Q=null;go(rootView(),true)});
@@ -1581,6 +1592,18 @@ document.addEventListener('click',async e=>{
 /* ---- بلا إنترنت ---- */
 if('serviceWorker' in navigator&&location.protocol==='https:'){window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}
 function offBar(){let b=document.getElementById('offbar');if(navigator.onLine){if(b)b.remove();return}if(!b){b=document.createElement('div');b.id='offbar';b.className='offbar';b.textContent='📴 بدون إنترنت: فيك تكمل التمارين، والنتائج بتنرفع لما يرجع النت';document.body.prepend(b)}}
+/* ---- شريط التثبيت: آيفون (إضافة للشاشة الرئيسية) وأندرويد (تنزيل التطبيق) ---- */
+function installBar(){
+  if(IN_APP||/ShattoorApp/.test(navigator.userAgent))return;
+  let k='shInstHide';try{if(+localStorage.getItem(k)>Date.now())return}catch(e){}
+  const and=/Android/i.test(navigator.userAgent);if(!IS_IOS&&!and)return;
+  const b=document.createElement('div');b.className='instbar';
+  b.innerHTML=IS_IOS?`<img src="assets/icon-192.png" alt=""><div><b>ثبّت شطّور على الآيفون</b><small>اضغط زر المشاركة <span class="ios-share" aria-label="مشاركة"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 8l5-5 5 5"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg></span> تحت، وبعدين «إضافة إلى الشاشة الرئيسية» ➕</small></div><button aria-label="إخفاء">×</button>`
+    :`<img src="assets/icon-192.png" alt=""><div><b>نزّل تطبيق شطّور</b><small>أسرع وأسهل من المتصفح</small></div><a class="btn teal sm" href="shattoor.apk" download>تنزيل</a><button aria-label="إخفاء">×</button>`;
+  b.querySelector('button').onclick=()=>{try{localStorage.setItem(k,Date.now()+3*864e5)}catch(e){}b.remove()};
+  document.body.appendChild(b);
+}
+setTimeout(installBar,1500);
 window.addEventListener('online',()=>{offBar();if(APP.child)syncSummary()});window.addEventListener('offline',offBar);offBar();
 (async()=>{
   try{if(IN_APP&&history.state)history.replaceState(null,'',location.pathname)}catch(e){}
