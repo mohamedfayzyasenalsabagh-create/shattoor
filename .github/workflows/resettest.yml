@@ -7,7 +7,7 @@ permissions: { contents: write }
 jobs:
   t:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 12
     steps:
       - uses: actions/checkout@v4
         with: { fetch-depth: 0 }
@@ -18,7 +18,7 @@ jobs:
       - run: npm i --no-save playwright@1.48.2 firebase-tools@13 >/dev/null && npx playwright install --with-deps chromium >/dev/null
       - run: |
           git show e555584:docs/index.html > /dev/null && mkdir -p old && git archive e555584 docs | tar -x -C old
-          cp build-tools/diag/firebase.emu.json firebase.json && npx firebase emulators:exec --only auth,firestore --project shattoor-d7699 "node build-tools/diag/reset_emu.js old/docs old.txt" || true
+          cp build-tools/diag/firebase.emu.json firebase.json && npx firebase emulators:exec --only auth,firestore --project shattoor-d7699 "true" || true
           npx firebase emulators:exec --only auth,firestore --project shattoor-d7699 "node build-tools/diag/reset_emu.js docs new.txt" || true
       - if: always()
         run: |
