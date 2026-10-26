@@ -1,5 +1,8 @@
 name: اختبار إعادة تعيين كلمة السر (محاكي)
-on: workflow_dispatch
+on:
+  push:
+    branches: [fixreset]
+  workflow_dispatch:
 permissions: { contents: write }
 jobs:
   t:
