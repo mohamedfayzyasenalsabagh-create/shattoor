@@ -1,0 +1,23 @@
+name: اختبار إعادة تعيين كلمة السر (محاكي)
+on: workflow_dispatch
+permissions: { contents: write }
+jobs:
+  t:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - uses: actions/setup-node@v4
+        with: { node-version: "20" }
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: "21" }
+      - run: npm i --no-save playwright@1.48.2 firebase-tools@13 >/dev/null && npx playwright install --with-deps chromium >/dev/null
+      - run: |
+          git show e555584:docs/index.html > /dev/null && mkdir -p old && git archive e555584 docs | tar -x -C old
+          npx firebase emulators:exec --only auth,firestore --project shattoor-d7699 "node build-tools/diag/reset_emu.js old/docs old.txt; node build-tools/diag/reset_emu.js docs new.txt" || true
+      - if: always()
+        run: |
+          mkdir -p /tmp/o && cp old.txt new.txt /tmp/o/ 2>/dev/null || true
+          git config user.name ci; git config user.email ci@x
+          git checkout --orphan rt && git rm -rqf . && git clean -fdq && cp /tmp/o/* . && git add -A && git commit -qm r && git push -f origin rt:resettest
