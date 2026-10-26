@@ -757,7 +757,9 @@ function FirebaseBackend(cfg){
       let c;
       try{c=await auth.createUserWithEmailAndPassword(emailOf(phone,code),pass)}
       catch(e){if(e.code==='auth/email-already-in-use'){c=await auth.signInWithEmailAndPassword(emailOf(phone,code),pass).catch(()=>{throw fail('bad-code')})}else throw e}
-      try{const ex=await P(phone).get().catch(()=>null);const b=db.batch();if(ex&&ex.exists)b.update(P(phone),{uid:c.user.uid});else b.set(P(phone),{phone,name:'',uid:c.user.uid,created:FV.serverTimestamp()});b.set(db.collection('logins').doc(phone),{key:code});b.delete(db.collection('resets').doc(phone));await b.commit()}
+      /* الحساب الجديد ما بيقدر يقرأ ملف الأهل قبل ما ينربط، فمنجرّب أولاً نربط الحساب الموجود (uid بس، بلا ما نمسح الاسم)، وإذا ما كان موجود منكمّل حساب ناقص */
+      const commit=full=>{const b=db.batch();if(full)b.set(P(phone),{phone,name:'',uid:c.user.uid,created:FV.serverTimestamp()});else b.update(P(phone),{uid:c.user.uid});b.set(db.collection('logins').doc(phone),{key:code});b.delete(db.collection('resets').doc(phone));return b.commit()};
+      try{try{await commit(false)}catch(e1){await commit(true)}}
       catch(e){try{await c.user.delete()}catch(x){}await auth.signOut().catch(()=>{});throw fail(e.code==='permission-denied'?'bad-code':e.code)}
       return load(c.user)},
     async signOut(){await auth.signOut();U=null},
@@ -1262,7 +1264,7 @@ async function viewAdmin(){
     const f=ui.found;
     box.innerHTML=`<form class="panel" id="ff" novalidate><div class="field"><label for="fp">رقم موبايل وليّ الأمر</label><input id="fp" type="tel" dir="ltr" inputmode="tel" placeholder="09XX XXX XXX" value="${esc(ui.fp||'')}"></div><button class="btn teal" type="submit" id="ffb">بحث</button>${msgHTML()}</form>
     ${f?`<section class="panel"><h3>${esc(f.name)}</h3><div class="row between"><span>رقم الموبايل</span><b dir="ltr">${esc(f.phone)}</b></div>${f.missing?`<p class="muted">إذا صاحب الرقم سجّل وما ظهر حسابه هون، يعني التسجيل ما كمل عنده (غالباً انقطع النت لحظة التسجيل). اعطه رمز إعادة تعيين، وبس يدخل الرمز من «نسيت كلمة السر؟» بيكمل حسابه لحاله. وإذا ما سجّل أصلاً، خلّيه يعمل «حساب جديد».</p>`:`<div class="row between"><span>انضم</span><span>${fmtDay(f.created)}</span></div>`}
-        ${f.reset?`<div class="codebox"><span>رمز إعادة تعيين كلمة السر</span><b class="code sel">${f.reset}</b><small class="muted">ابعته لوليّ الأمر على واتساب. بيدخله من «نسيت كلمة السر؟» بشاشة الدخول.</small><button class="btn ghost sm" data-act="copyCode">نسخ الرمز</button></div>`
+        ${f.reset?`<div class="codebox"><span>رمز إعادة تعيين كلمة السر</span><b class="code sel">${f.reset}</b><small class="muted">ابعته لوليّ الأمر على واتساب. بيدخله من «نسيت كلمة السر؟» بشاشة الدخول.</small><div class="row" style="justify-content:center;flex-wrap:wrap;gap:8px"><button class="btn ghost sm" data-act="copyCode">نسخ الرمز</button><a class="btn teal sm" target="_blank" rel="noopener" href="${waLink(f.phone,`رمز إعادة تعيين كلمة السر بتطبيق شطّور: ${f.reset}\nافتح التطبيق ← «نسيت كلمة السر؟» ← اكتب رقم موبايلك والرمز وكلمة سر جديدة.`)}">ابعته واتساب</a><button class="btn sun sm" data-act="mkReset">🔄 رمز جديد</button></div><small class="muted">كل رمز جديد بيلغي يلي قبله.</small></div>`
           :`<button class="btn ghost" data-act="mkReset">إعادة تعيين كلمة السر</button>`}
         ${!f.missing&&!isAdminPhone(f.phone)?(ui.delAsk?`<div class="confirm"><b>رح ينحذف حساب ${esc(f.name)} وكل أطفاله واشتراكاتهم نهائياً. متأكد؟</b><div class="row"><button class="btn red sm" data-act="delParent">نعم، احذف</button><button class="btn ghost sm" data-act="delParentNo">إلغاء</button></div></div>`:`<button class="btn ghost sm" style="color:var(--pom)" data-act="delParentAsk">🗑 حذف الحساب</button>`):''}</section>
       ${f.children.length?f.children.map((k,i)=>{const g=ui['g'+i]||k.grade,p=ui['p'+i]||'monthly';return`<section class="panel">
