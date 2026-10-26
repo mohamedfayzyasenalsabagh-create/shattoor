@@ -8,7 +8,7 @@ const srv=http.createServer((q,r)=>{let f=path.join(DIR,decodeURIComponent(q.url
   r.writeHead(200,{'content-type':f.endsWith('.html')?'text/html':f.endsWith('.js')?'text/javascript':'application/octet-stream'});r.end(d)}).listen(5055);
 const U='http://127.0.0.1:5055/';
 const txt=p=>p.evaluate(()=>document.getElementById('view').innerText.replace(/\s+/g,' ').slice(0,200));
-async function page(b){const c=await b.newContext({viewport:{width:390,height:844}});const p=await c.newPage();p.on('pageerror',e=>L('[pageerror] '+e.message));await p.goto(U);await p.waitForTimeout(2500);return p}
+async function page(b){const c=await b.newContext({viewport:{width:390,height:844}});const p=await c.newPage();p.on('pageerror',e=>L('[pageerror] '+e.message));p.on('console',m=>{if(m.type()==='error'||m.type()==='warning')L('[console] '+m.text().slice(0,200))});await p.goto(U);await p.waitForTimeout(2500);return p}
 async function signup(p,ph,name,pw){await p.click('[data-act=mode][data-m=signup]');await p.fill('#an',name);await p.fill('#ap',ph);await p.fill('#aw',pw);await p.click('#authb');await p.waitForTimeout(3500)}
 async function login(p,ph,pw){await p.fill('#ap',ph);await p.fill('#aw',pw);await p.click('#authb');await p.waitForTimeout(3500)}
 async function reset(p,ph,code,pw){await p.click('[data-act=mode][data-m=reset]');await p.fill('#ap',ph);await p.fill('#ac',code);await p.fill('#aw',pw);await p.click('#authb');await p.waitForTimeout(4000)}
