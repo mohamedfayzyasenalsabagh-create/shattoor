@@ -273,7 +273,7 @@ async function admAccts(box){
       ${x.act.length?`<small style="color:#1F7A42;font-weight:700">${x.act.map(a=>esc(a.k.name)+': '+esc(planName(a.s.plan))+' حتى '+fmtDay(a.s.until,{day:'numeric',month:'short'})).join(' · ')}</small>`:''}</span>
     <span class="ac-st ${x.stt}">${NM[x.stt]}</span></button>`).join('')||'<p class="muted">ما في حسابات.</p>'}</div>`;
 }
-window.SUBADM={req:admReq,hist:admHist,set:admSet,accts:admAccts};
+window.SUBADM=Object.assign(window.SUBADM||{},{req:admReq,hist:admHist,set:admSet,accts:admAccts});
 function setBadge(n){const b=V.querySelector('.admtabs [data-t=req]');if(b)b.innerHTML='الطلبات'+(n?` <i class="badge">${ar(n)}</i>`:'')}
 const _va=viewAdmin;viewAdmin=async function(){await _va();if((ui.tab||'req')!=='req')API.pending().then(L=>setBadge(L.length)).catch(()=>{})};
 VIEWS.admin=viewAdmin;
